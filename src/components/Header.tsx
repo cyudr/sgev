@@ -118,12 +118,12 @@ export const Header: React.FC<HeaderProps> = ({
           <button
             type="button"
             onClick={handleLowBatteryClick}
-            title="FIND NEAREST NOW!!"
+            title="TAKE ME THERE NOW!!"
             className="px-2 py-1 rounded-full bg-[#ffdad6] text-[#ba1a1a] hover:bg-[#ffb4ab] active:scale-95 transition-all text-[10px] font-black flex items-center gap-1 cursor-pointer border border-[#ba1a1a]/20 shadow-sm"
           >
             <span className="material-symbols-outlined text-[15px] animate-pulse">battery_alert</span>
-            <span className="hidden xs:inline">FIND NEAREST NOW!!</span>
-            <span className="xs:hidden">Nearest</span>
+            <span className="hidden xs:inline">TAKE ME THERE NOW!!</span>
+            <span className="xs:hidden">Take Me There</span>
           </button>
 
           {/* Refresh Live API */}
