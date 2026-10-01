@@ -1,0 +1,6 @@
+{
+  "name": "ChargeSG - Singapore EV Charging Network",
+  "description": "Real-time Singapore EV charging station finder with live bay availability, high-speed DC charger status, transparent tariffs, and seamless charging session management.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
