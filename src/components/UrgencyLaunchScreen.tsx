@@ -43,40 +43,51 @@ export const UrgencyLaunchScreen: React.FC<UrgencyLaunchScreenProps> = ({
       </div>
 
       {/* Centered Interactive Hero Block */}
-      <div className="relative z-10 flex-1 flex flex-col justify-center items-center my-auto w-full max-w-sm sm:max-w-md lg:max-w-lg mx-auto px-2 text-center">
+      <div className="relative z-10 flex-1 flex flex-col justify-center items-center my-auto w-full max-w-sm sm:max-w-md lg:max-w-lg mx-auto px-2 text-center min-w-0">
         <h2 className="text-2xl sm:text-3xl lg:text-4xl font-black text-white leading-tight text-center max-w-md">
           How urgent is your charge?
         </h2>
 
-        {/* Merged Single Action Card: Nearest Ready Point & TAKE ME THERE NOW!! */}
-        <div className="mt-4 sm:mt-6 w-full p-4 sm:p-5 rounded-3xl bg-white/10 backdrop-blur-md border border-white/20 shadow-2xl flex flex-col items-center justify-center text-center">
-          <div className="flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#85f8c4]/20 border border-[#85f8c4]/40 text-[#85f8c4] text-[10px] sm:text-xs font-black uppercase tracking-wider mb-2">
-            <span className="material-symbols-outlined text-[15px]">near_me</span>
+        {/* Streamlined Single Card: No Overflows, Zero Duplication */}
+        <div className="mt-4 sm:mt-6 w-full max-w-full p-4 sm:p-5 rounded-3xl bg-white/10 backdrop-blur-md border border-white/20 shadow-2xl flex flex-col items-center justify-center text-center overflow-hidden">
+          <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#85f8c4]/20 border border-[#85f8c4]/40 text-[#85f8c4] text-[10px] sm:text-xs font-black uppercase tracking-wider mb-2 shrink-0">
+            <span className="material-symbols-outlined text-[14px]">near_me</span>
             <span>Nearest Ready Point</span>
           </div>
 
-          <h3 className="text-base sm:text-lg lg:text-xl font-black text-white truncate max-w-sm sm:max-w-md">
+          {/* Location Name: Responsive, wraps cleanly without overflow */}
+          <h3 className="w-full text-base sm:text-lg lg:text-xl font-black text-white leading-snug break-words line-clamp-2 px-1 text-center min-w-0">
             {nearestStation ? nearestStation.name : 'Scanning Singapore EV Network...'}
           </h3>
 
-          <p className="text-xs sm:text-sm text-slate-300 mt-1 mb-4">
-            {nearestStation
-              ? `${nearestStation.distanceKm} km away • ${nearestStation.availableBays} bays free • ~${nearestStation.driveTimeMins} mins drive`
-              : 'connecting, do not panic, try again after 1s'}
-          </p>
+          {/* Concise, non-duplicated metrics row */}
+          {nearestStation ? (
+            <div className="flex flex-wrap items-center justify-center gap-1.5 sm:gap-2 mt-2 mb-4 text-[11px] sm:text-xs">
+              <span className="px-2.5 py-1 rounded-full bg-white/10 text-slate-200 font-medium">
+                {nearestStation.distanceKm} km · ~{nearestStation.driveTimeMins} mins
+              </span>
+              <span className="px-2.5 py-1 rounded-full bg-[#006948]/70 text-[#85f8c4] font-bold border border-[#85f8c4]/30">
+                {nearestStation.availableBays} bays free
+              </span>
+            </div>
+          ) : (
+            <p className="text-xs text-slate-300 mt-2 mb-4">
+              connecting, do not panic, try again after 1s
+            </p>
+          )}
 
           {/* Action Button: TAKE ME THERE NOW!! */}
           <button
             type="button"
             onClick={onFindNow}
-            className="group relative w-full py-3.5 sm:py-4 px-5 rounded-2xl bg-[#006948] hover:bg-[#00855d] active:scale-[0.98] transition-all duration-200 text-white font-black shadow-[0_8px_24px_rgba(0,105,72,0.5)] border border-[#85f8c4]/50 cursor-pointer overflow-hidden flex items-center justify-center gap-2"
+            className="group relative w-full py-3.5 sm:py-4 px-4 rounded-2xl bg-[#006948] hover:bg-[#00855d] active:scale-[0.98] transition-all duration-200 text-white font-black shadow-[0_8px_24px_rgba(0,105,72,0.5)] border border-[#85f8c4]/50 cursor-pointer overflow-hidden flex items-center justify-center gap-2 shrink-0"
           >
             <div className="absolute inset-0 -translate-x-full group-hover:translate-x-full bg-gradient-to-r from-transparent via-white/25 to-transparent transition-transform duration-1000" />
 
-            <span className="material-symbols-outlined text-[24px] sm:text-[26px] text-[#85f8c4] group-hover:scale-110 transition-transform">
+            <span className="material-symbols-outlined text-[22px] sm:text-[26px] text-[#85f8c4] group-hover:scale-110 transition-transform shrink-0">
               bolt
             </span>
-            <span className="tracking-wide text-sm sm:text-base lg:text-lg font-black">
+            <span className="tracking-wide text-sm sm:text-base lg:text-lg font-black truncate">
               TAKE ME THERE NOW!!
             </span>
           </button>

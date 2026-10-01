@@ -690,10 +690,10 @@ export const InteractiveMap: React.FC<InteractiveMapProps> = ({
                       {activeCardStation.distanceKm} km away • ~{activeCardStation.driveTimeMins} mins drive
                     </span>
                   </div>
-                  <h3 className="text-xs sm:text-sm font-bold text-[#0d1c2f] mt-0.5 truncate">
+                  <h3 className="text-xs sm:text-sm font-bold text-[#0d1c2f] mt-0.5 truncate" title={activeCardStation.name}>
                     {activeCardStation.name}
                   </h3>
-                  <p className="text-[10px] text-slate-500 truncate">{activeCardStation.address}</p>
+                  <p className="text-[10px] text-slate-500 truncate" title={activeCardStation.address}>{activeCardStation.address}</p>
                 </div>
 
                 <button
@@ -745,9 +745,6 @@ export const InteractiveMap: React.FC<InteractiveMapProps> = ({
                 >
                   <span className="material-symbols-outlined text-[17px] text-[#85f8c4]">navigation</span>
                   <span>Navigate</span>
-                  <span className="text-[10px] text-emerald-200 font-normal">
-                    (~{activeCardStation.driveTimeMins}m · {activeCardStation.distanceKm}km)
-                  </span>
                 </button>
               </div>
             </div>
