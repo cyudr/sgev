@@ -210,9 +210,11 @@ export const NavigationModal: React.FC<NavigationModalProps> = ({
     onClose();
   };
 
+  const etaFormatted = new Date(Date.now() + minsRemaining * 60000).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+
   return (
     <div className="fixed inset-0 z-50 bg-[#0d1c2f] flex flex-col justify-between text-white p-2.5 sm:p-4 max-w-lg mx-auto h-[100dvh] max-h-[100dvh] overflow-hidden select-none">
-      {/* Top Turn Maneuver Banner (Google Maps Navigation Style) with Voice Audio Controls */}
+      {/* Top Turn Maneuver Banner (Google Maps Navigation Style) with Route Time Estimate & Voice Audio Controls */}
       <div className="bg-[#005a36] p-3 sm:p-3.5 rounded-2xl shadow-xl flex items-center justify-between gap-3 border border-[#85f8c4]/40 shrink-0">
         <div className="flex items-center gap-2.5 min-w-0">
           <div className="w-10 h-10 sm:w-11 sm:h-11 rounded-xl bg-white/20 flex items-center justify-center text-white shrink-0">
@@ -221,9 +223,14 @@ export const NavigationModal: React.FC<NavigationModalProps> = ({
             </span>
           </div>
           <div className="min-w-0">
-            <span className="text-[10px] sm:text-[11px] font-bold uppercase tracking-wider text-[#85f8c4] block">
-              In {steps[stepIndex]?.distance || '300m'}
-            </span>
+            <div className="flex items-center gap-1.5">
+              <span className="text-[10px] sm:text-[11px] font-bold uppercase tracking-wider text-[#85f8c4]">
+                In {steps[stepIndex]?.distance || '300m'}
+              </span>
+              <span className="text-[9px] px-1.5 py-0.2 rounded bg-black/30 text-white font-extrabold">
+                ~{minsRemaining}m est.
+              </span>
+            </div>
             <h4 className="text-xs sm:text-sm font-extrabold leading-tight text-white truncate">
               {steps[stepIndex]?.instruction || 'Follow road network'}
             </h4>
@@ -285,7 +292,7 @@ export const NavigationModal: React.FC<NavigationModalProps> = ({
           </div>
         </div>
 
-        {/* In-App Live Driving Banner Floating Bottom-Center */}
+        {/* In-App Live Driving Banner with Route Time Estimate */}
         <div className="absolute bottom-2.5 inset-x-2.5 z-[400] p-2.5 rounded-xl bg-[#0d1c2f]/95 backdrop-blur-md border border-white/20 flex items-center justify-between text-xs shadow-xl">
           <div className="flex items-center gap-2 min-w-0">
             <span className="w-2.5 h-2.5 rounded-full bg-[#85f8c4] animate-ping shrink-0" />
@@ -293,8 +300,8 @@ export const NavigationModal: React.FC<NavigationModalProps> = ({
               <span className="font-extrabold text-white text-[11px] block truncate">
                 {station.name}
               </span>
-              <span className="text-[9.5px] text-emerald-300">
-                {station.availableBays} bays free • {station.address.slice(0, 24)}…
+              <span className="text-[9.5px] text-emerald-300 font-semibold">
+                Route Time Estimate: ~{minsRemaining} mins ({distanceRemaining} km) · ETA {etaFormatted}
               </span>
             </div>
           </div>
@@ -309,21 +316,25 @@ export const NavigationModal: React.FC<NavigationModalProps> = ({
         </div>
       </div>
 
-      {/* Bottom Route Summary & In-App Actions */}
+      {/* Bottom Route Summary & In-App Actions with Prominent Route Time Estimate */}
       <div className="bg-[#101724] p-3 sm:p-3.5 rounded-2xl flex flex-col gap-2 border border-slate-800 shrink-0">
         <div className="flex items-center justify-between">
           <div>
-            <div className="text-xl font-black text-white">
-              {minsRemaining} <span className="text-xs font-semibold text-slate-400">mins</span>
+            <div className="text-[10px] uppercase font-bold text-[#85f8c4] tracking-wider flex items-center gap-1">
+              <span className="material-symbols-outlined text-[14px]">schedule</span>
+              <span>Route Time Estimate</span>
             </div>
-            <div className="text-[10px] text-slate-400 font-medium">
-              {distanceRemaining} km • ETA {new Date(Date.now() + minsRemaining * 60000).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+            <div className="text-xl font-black text-white leading-tight">
+              ~{minsRemaining} <span className="text-xs font-semibold text-slate-400">mins</span>
+            </div>
+            <div className="text-[10.5px] text-slate-300 font-medium mt-0.5">
+              {distanceRemaining} km driving distance · ETA {etaFormatted}
             </div>
           </div>
 
           <div className="flex items-center gap-1.5">
-            <span className="px-2 py-0.5 rounded-lg bg-[#006948] text-[#85f8c4] text-[9.5px] font-bold">
-              GPS Navigation Active
+            <span className="px-2.5 py-1 rounded-lg bg-[#006948] text-[#85f8c4] text-[10px] font-extrabold shadow-sm">
+              Live GPS Route
             </span>
           </div>
         </div>
@@ -332,7 +343,7 @@ export const NavigationModal: React.FC<NavigationModalProps> = ({
         <button
           type="button"
           onClick={handleArrivalClick}
-          className="w-full py-2.5 rounded-xl bg-[#85f8c4] text-[#002114] font-black text-xs sm:text-sm shadow-md hover:bg-[#a6ffd6] active:scale-[0.99] transition-all flex items-center justify-center gap-2 cursor-pointer"
+          className="w-full py-2.5 rounded-xl bg-[#85f8c4] text-[#002114] font-black text-xs sm:text-sm shadow-md hover:bg-[#a6ffd6] active:scale-[0.99] transition-all flex items-center justify-center gap-2 cursor-pointer mt-1"
         >
           <span className="material-symbols-outlined text-[18px]">bolt</span>
           <span>I Have Arrived at EV Bay (Start Charging)</span>

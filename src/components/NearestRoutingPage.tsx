@@ -226,9 +226,9 @@ export const NearestRoutingPage: React.FC<NearestRoutingPageProps> = ({
           <div className="w-10 h-10 rounded-2xl bg-white/10 flex items-center justify-center text-[#85f8c4]">
             <span className="material-symbols-outlined text-[24px]">ev_station</span>
           </div>
-          <h2 className="text-lg font-bold">No Stations Available</h2>
+          <h2 className="text-lg font-bold">Connecting to EV Network</h2>
           <p className="text-xs text-slate-300 max-w-xs">
-            Connecting to Singapore LTA DataMall to locate the nearest active EV charging bay.
+            connecting, do not panic, try again after 1s
           </p>
           <button
             type="button"
@@ -251,11 +251,13 @@ export const NearestRoutingPage: React.FC<NearestRoutingPageProps> = ({
     }
   };
 
+  const etaFormatted = new Date(Date.now() + minsRemaining * 60000).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+
   return (
     <div className="h-[100dvh] max-h-[100dvh] overflow-hidden bg-[#0d1c2f] text-white flex flex-col justify-between p-2.5 sm:p-4 max-w-lg mx-auto selection:bg-[#85f8c4] selection:text-[#002114] select-none relative">
       {/* Top Header: Overview or Google Maps Navigation Maneuver Banner */}
       {isLiveNavigating ? (
-        /* Real Google Maps Turn Maneuver Header with Voice Audio Controls */
+        /* Real Google Maps Turn Maneuver Header with Prominent Route Time Estimate & Voice Controls */
         <div className="bg-[#005a36] p-3 rounded-2xl shadow-xl flex items-center justify-between gap-3 border border-[#85f8c4]/40 shrink-0 animate-in fade-in">
           <div className="flex items-center gap-2.5 min-w-0">
             <div className="w-10 h-10 rounded-xl bg-white/20 flex items-center justify-center text-white shrink-0">
@@ -264,9 +266,14 @@ export const NearestRoutingPage: React.FC<NearestRoutingPageProps> = ({
               </span>
             </div>
             <div className="min-w-0">
-              <span className="text-[10px] font-bold uppercase tracking-wider text-[#85f8c4] block">
-                In {navSteps[navStepIndex]?.distance || '300m'}
-              </span>
+              <div className="flex items-center gap-1.5">
+                <span className="text-[10px] font-bold uppercase tracking-wider text-[#85f8c4]">
+                  In {navSteps[navStepIndex]?.distance || '300m'}
+                </span>
+                <span className="text-[9px] px-1.5 py-0.2 rounded bg-black/30 text-white font-extrabold">
+                  ~{minsRemaining}m est.
+                </span>
+              </div>
               <h4 className="text-xs sm:text-sm font-extrabold leading-tight text-white truncate">
                 {navSteps[navStepIndex]?.instruction || 'Follow road network'}
               </h4>
@@ -322,7 +329,7 @@ export const NearestRoutingPage: React.FC<NearestRoutingPageProps> = ({
 
           <div className="text-center">
             <span className="text-[9px] uppercase font-bold tracking-widest text-[#85f8c4] block leading-tight">
-              Real Road Navigation
+              Route Time Estimate: ~{minsRemaining} mins
             </span>
             <h2 className="text-xs font-bold text-white leading-tight">Nearest EV Station</h2>
           </div>
@@ -380,14 +387,14 @@ export const NearestRoutingPage: React.FC<NearestRoutingPageProps> = ({
           </button>
         </div>
 
-        {/* Bottom Floating Route Info Pill */}
+        {/* Bottom Floating Route Info Pill with Prominent Route Time Estimate */}
         <div className="absolute bottom-2 inset-x-2 z-[400] flex items-center justify-between p-2 rounded-xl bg-[#0d1c2f]/95 backdrop-blur-md border border-white/20 text-xs shadow-xl">
           <div className="flex items-center gap-1.5 min-w-0">
             <span className="w-2 h-2 rounded-full bg-[#85f8c4] animate-ping shrink-0" />
             <div className="min-w-0">
               <span className="font-extrabold text-white text-[11px] block truncate">{station.name}</span>
-              <span className="text-[9px] text-emerald-300">
-                {isLiveNavigating ? `${distanceRemaining} km • ~${minsRemaining} mins remaining` : `${station.availableBays} bays free • ${distanceRemaining} km driving`}
+              <span className="text-[9.5px] text-emerald-300 font-semibold">
+                Route Time Estimate: ~{minsRemaining} mins ({distanceRemaining} km) · ETA {etaFormatted}
               </span>
             </div>
           </div>
@@ -413,7 +420,7 @@ export const NearestRoutingPage: React.FC<NearestRoutingPageProps> = ({
         </div>
       </div>
 
-      {/* Station Overview & Selected Bay (Compact Mobile Card) */}
+      {/* Station Overview & Route Time Estimate Card */}
       <div className="bg-white/10 backdrop-blur-md rounded-2xl p-2.5 border border-white/15 shadow-xl flex flex-col gap-2 shrink-0">
         <div className="flex items-start justify-between gap-2">
           <div className="min-w-0 flex-1">
@@ -434,6 +441,17 @@ export const NearestRoutingPage: React.FC<NearestRoutingPageProps> = ({
             <span className="text-[7px] font-bold uppercase tracking-tight text-[#85f8c4]">
               Free
             </span>
+          </div>
+        </div>
+
+        {/* Highlighted Route Time Estimate Banner */}
+        <div className="px-2.5 py-1.5 rounded-xl bg-[#006948]/50 border border-[#85f8c4]/30 flex items-center justify-between text-xs">
+          <div className="flex items-center gap-1.5 text-[#85f8c4] font-extrabold">
+            <span className="material-symbols-outlined text-[16px]">schedule</span>
+            <span>Route Time Estimate:</span>
+          </div>
+          <div className="font-black text-white text-[11px]">
+            ~{minsRemaining} mins ({distanceRemaining} km · ETA {etaFormatted})
           </div>
         </div>
 

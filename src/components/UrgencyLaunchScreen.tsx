@@ -42,85 +42,70 @@ export const UrgencyLaunchScreen: React.FC<UrgencyLaunchScreenProps> = ({
         </div>
       </div>
 
-      {/* Centered Interactive Hero Block: Perfectly Centered in Viewport */}
-      <div className="relative z-10 flex-1 flex flex-col justify-center items-center my-auto w-full max-w-sm mx-auto px-1">
+      {/* Centered Interactive Hero Block: Completely Centralized Text & Icons */}
+      <div className="relative z-10 flex-1 flex flex-col justify-center items-center my-auto w-full max-w-sm mx-auto px-1 text-center">
         <h2 className="text-2xl sm:text-3xl font-black text-white leading-tight text-center max-w-xs">
           How urgent is your charge?
         </h2>
 
-        {/* Nearest Station Radar Snapshot Card */}
-        <div className="mt-4 w-full p-3 rounded-2xl bg-white/10 backdrop-blur-md border border-white/15 flex items-center justify-between text-left shadow-lg">
-          <div className="flex items-center gap-2.5 min-w-0">
-            <div className="w-8 h-8 rounded-xl bg-[#85f8c4] text-[#002114] flex items-center justify-center font-bold shrink-0">
-              <span className="material-symbols-outlined text-[18px]">near_me</span>
-            </div>
-            <div className="min-w-0">
-              <span className="text-[9px] uppercase font-bold text-[#85f8c4] tracking-wider block">
-                Nearest Ready Point
-              </span>
-              <h4 className="text-[11px] font-bold text-white truncate max-w-[155px]">
-                {nearestStation ? nearestStation.name : 'Scanning Singapore EV Network...'}
-              </h4>
-              <p className="text-[9px] text-slate-300 truncate">
-                {nearestStation
-                  ? `${nearestStation.distanceKm} km away • ${nearestStation.availableBays} bays free now`
-                  : 'Locating nearest available charging bays...'}
-              </p>
-            </div>
+        {/* Nearest Station Radar Snapshot Card (Centralized) */}
+        <div className="mt-4 w-full p-3.5 rounded-2xl bg-white/10 backdrop-blur-md border border-white/15 flex flex-col items-center justify-center text-center shadow-lg">
+          <div className="w-8 h-8 rounded-xl bg-[#85f8c4] text-[#002114] flex items-center justify-center font-bold mb-1.5 shadow-md shrink-0">
+            <span className="material-symbols-outlined text-[19px]">near_me</span>
           </div>
-          <span className="text-xs font-black text-[#85f8c4] shrink-0 pl-1">
-            {nearestStation ? `${nearestStation.driveTimeMins}m` : '...'}
+          <span className="text-[9.5px] uppercase font-extrabold text-[#85f8c4] tracking-wider block">
+            Nearest Ready Point
           </span>
+          <h4 className="text-xs sm:text-sm font-bold text-white truncate max-w-xs mt-0.5">
+            {nearestStation ? nearestStation.name : 'Scanning Singapore EV Network...'}
+          </h4>
+          <p className="text-[10px] text-slate-300 mt-0.5">
+            {nearestStation
+              ? `${nearestStation.distanceKm} km away • ${nearestStation.availableBays} bays free • ~${nearestStation.driveTimeMins} mins drive`
+              : 'connecting, do not panic, try again after 1s'}
+          </p>
         </div>
 
-        {/* Centered Action Buttons: FIND NEAREST NOW!! & Show me around */}
+        {/* Centered Action Buttons */}
         <div className="mt-4 sm:mt-5 flex flex-col gap-2.5 w-full">
-          {/* Button 1: FIND NEAREST NOW!! */}
+          {/* Button 1: FIND NEAREST NOW!! (Centralized Icon & Text) */}
           <button
             type="button"
             onClick={onFindNow}
-            className="group relative w-full py-3.5 sm:py-4 px-4 sm:px-5 rounded-2xl bg-[#006948] hover:bg-[#00855d] active:scale-[0.98] transition-all duration-200 text-white font-black text-sm sm:text-base shadow-[0_8px_24px_rgba(0,105,72,0.5)] flex items-center justify-between border border-[#85f8c4]/40 cursor-pointer overflow-hidden"
+            className="group relative w-full py-3.5 sm:py-4 px-4 rounded-2xl bg-[#006948] hover:bg-[#00855d] active:scale-[0.98] transition-all duration-200 text-white font-black shadow-[0_8px_24px_rgba(0,105,72,0.5)] border border-[#85f8c4]/40 cursor-pointer overflow-hidden flex flex-col items-center justify-center text-center"
           >
             <div className="absolute inset-0 -translate-x-full group-hover:translate-x-full bg-gradient-to-r from-transparent via-white/20 to-transparent transition-transform duration-1000" />
 
-            <div className="flex items-center gap-2.5 sm:gap-3">
-              <div className="w-9 h-9 rounded-xl bg-[#85f8c4] text-[#002114] flex items-center justify-center shrink-0 font-black">
-                <span className="material-symbols-outlined text-[22px]">bolt</span>
-              </div>
-              <div className="text-left">
-                <div className="tracking-wide text-sm sm:text-base font-black">FIND NEAREST NOW!!</div>
-                <div className="text-[10px] font-medium text-emerald-200 leading-tight">
-                  Route directly to nearest EV point {nearestStation ? `(${nearestStation.distanceKm} km)` : ''}
-                </div>
-              </div>
+            <div className="flex items-center justify-center gap-2">
+              <span className="material-symbols-outlined text-[22px] text-[#85f8c4] group-hover:scale-110 transition-transform">
+                bolt
+              </span>
+              <span className="tracking-wide text-sm sm:text-base font-black">
+                FIND NEAREST NOW!!
+              </span>
             </div>
-
-            <span className="material-symbols-outlined text-[22px] text-[#85f8c4] group-hover:translate-x-1 transition-transform">
-              arrow_forward
-            </span>
+            <div className="text-[10.5px] font-medium text-emerald-200 leading-tight mt-0.5 text-center">
+              Route directly to nearest EV point {nearestStation ? `(${nearestStation.distanceKm} km · ~${nearestStation.driveTimeMins}m)` : ''}
+            </div>
           </button>
 
-          {/* Button 2: Show me around */}
+          {/* Button 2: Show me around (Centralized Icon & Text) */}
           <button
             type="button"
             onClick={onShowMeAround}
-            className="w-full py-3 sm:py-3.5 px-4 sm:px-5 rounded-2xl bg-white/10 hover:bg-white/15 active:scale-[0.98] transition-all duration-200 text-white font-bold text-xs sm:text-sm border border-white/20 flex items-center justify-between shadow-md cursor-pointer"
+            className="w-full py-3 sm:py-3.5 px-4 rounded-2xl bg-white/10 hover:bg-white/15 active:scale-[0.98] transition-all duration-200 text-white font-bold border border-white/20 shadow-md cursor-pointer flex flex-col items-center justify-center text-center"
           >
-            <div className="flex items-center gap-2.5 sm:gap-3">
-              <div className="w-8 h-8 rounded-xl bg-white/10 text-white flex items-center justify-center shrink-0">
-                <span className="material-symbols-outlined text-[20px]">tune</span>
-              </div>
-              <div className="text-left">
-                <div className="tracking-wide text-xs sm:text-sm font-bold">Show me around</div>
-                <div className="text-[10px] font-medium text-slate-300 leading-tight">
-                  Explore charging points with filters & attributes
-                </div>
-              </div>
+            <div className="flex items-center justify-center gap-2">
+              <span className="material-symbols-outlined text-[19px] text-slate-300">
+                tune
+              </span>
+              <span className="tracking-wide text-xs sm:text-sm font-bold">
+                Show me around
+              </span>
             </div>
-
-            <span className="material-symbols-outlined text-[20px] text-slate-300">
-              travel_explore
-            </span>
+            <div className="text-[10px] font-medium text-slate-300 leading-tight mt-0.5 text-center">
+              Explore charging points with filters & attributes
+            </div>
           </button>
         </div>
       </div>

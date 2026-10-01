@@ -602,24 +602,6 @@ export const InteractiveMap: React.FC<InteractiveMapProps> = ({
         </div>
       )}
 
-      {/* Dedicated Navigation Option in the Viewing Area */}
-      {nearestNavTarget && (
-        <div className="absolute top-20 right-3 z-10 pointer-events-auto">
-          <button
-            type="button"
-            onClick={() => onStartNavigation(nearestNavTarget)}
-            className="px-3 py-2 rounded-2xl bg-[#006948] hover:bg-[#00855d] text-white font-extrabold text-xs flex items-center gap-1.5 shadow-[0_6px_20px_rgba(0,105,72,0.45)] border border-[#85f8c4]/40 active:scale-95 transition-all cursor-pointer"
-            title={`Start In-App Navigation to ${nearestNavTarget.name}`}
-          >
-            <span className="material-symbols-outlined text-[18px] text-[#85f8c4]">navigation</span>
-            <span>Navigate</span>
-            <span className="text-[10px] text-emerald-200 font-normal">
-              ({nearestNavTarget.distanceKm}km)
-            </span>
-          </button>
-        </div>
-      )}
-
       {/* Floating Right Map Controls (Google Maps Zoom, 2km Radius Snap, Recenter, Layer) */}
       <div className="absolute right-2.5 bottom-28 z-10 flex flex-col gap-1.5">
         {/* Recenter GPS & Snap to 2km Radius */}
@@ -691,80 +673,87 @@ export const InteractiveMap: React.FC<InteractiveMapProps> = ({
         </div>
       </div>
 
-      {/* Bottom Place Card (In-App Selection & Zero-Scroll Mobile Card) */}
-      {selectedStation && (
-        <div className="relative z-10 p-2 sm:p-3 max-w-lg mx-auto w-full">
-          <div className="bg-white/95 backdrop-blur-md rounded-2xl p-3 shadow-xl border border-slate-200 flex flex-col gap-2">
-            <div className="flex items-start justify-between gap-1.5">
-              <div className="min-w-0 flex-1">
-                <div className="flex items-center gap-1.5">
-                  <span className="px-1.5 py-0.5 rounded-full bg-[#85f8c4] text-[#002114] text-[9px] font-bold">
-                    {selectedStation.provider}
+      {/* Bottom Place Card (In-App Selection & Location Card with Navigate Button) */}
+      {(() => {
+        const activeCardStation = selectedStation || nearestNavTarget;
+        if (!activeCardStation) return null;
+        return (
+          <div className="relative z-10 p-2 sm:p-3 max-w-lg mx-auto w-full">
+            <div className="bg-white/95 backdrop-blur-md rounded-2xl p-3 shadow-xl border border-slate-200 flex flex-col gap-2">
+              <div className="flex items-start justify-between gap-1.5">
+                <div className="min-w-0 flex-1">
+                  <div className="flex items-center gap-1.5">
+                    <span className="px-1.5 py-0.5 rounded-full bg-[#85f8c4] text-[#002114] text-[9px] font-bold">
+                      {activeCardStation.provider}
+                    </span>
+                    <span className="text-[10px] text-slate-500 font-medium">
+                      {activeCardStation.distanceKm} km away • ~{activeCardStation.driveTimeMins} mins drive
+                    </span>
+                  </div>
+                  <h3 className="text-xs sm:text-sm font-bold text-[#0d1c2f] mt-0.5 truncate">
+                    {activeCardStation.name}
+                  </h3>
+                  <p className="text-[10px] text-slate-500 truncate">{activeCardStation.address}</p>
+                </div>
+
+                <button
+                  type="button"
+                  onClick={() => onToggleSaveStation(activeCardStation.id)}
+                  className="w-7 h-7 rounded-full flex items-center justify-center text-slate-400 hover:text-red-500 active:scale-95 cursor-pointer shrink-0"
+                >
+                  <span
+                    className="material-symbols-outlined text-[18px]"
+                    style={{
+                      fontVariationSettings: savedStationIds.includes(activeCardStation.id) ? "'FILL' 1" : "'FILL' 0",
+                      color: savedStationIds.includes(activeCardStation.id) ? '#ba1a1a' : undefined,
+                    }}
+                  >
+                    bookmark
                   </span>
-                  <span className="text-[10px] text-slate-500">
-                    {selectedStation.distanceKm} km away
+                </button>
+              </div>
+
+              {/* Availability & Charger Info */}
+              <div className="grid grid-cols-2 gap-1.5 text-xs">
+                <div className="p-1.5 rounded-lg bg-slate-50 flex items-center justify-between">
+                  <span className="text-[10px] text-slate-500 font-medium">Bays</span>
+                  <span className="font-bold text-[#006948] text-[11px]">
+                    {activeCardStation.availableBays} / {activeCardStation.totalBays} Free
                   </span>
                 </div>
-                <h3 className="text-xs sm:text-sm font-bold text-[#0d1c2f] mt-0.5 truncate">
-                  {selectedStation.name}
-                </h3>
-                <p className="text-[10px] text-slate-500 truncate">{selectedStation.address}</p>
+                <div className="p-1.5 rounded-lg bg-slate-50 flex items-center justify-between">
+                  <span className="text-[10px] text-slate-500 font-medium">Max Speed</span>
+                  <span className="font-bold text-[#0d1c2f] text-[11px]">
+                    {activeCardStation.connectors[0]?.powerKw || 22} kW
+                  </span>
+                </div>
               </div>
 
-              <button
-                type="button"
-                onClick={() => onToggleSaveStation(selectedStation.id)}
-                className="w-7 h-7 rounded-full flex items-center justify-center text-slate-400 hover:text-red-500 active:scale-95 cursor-pointer shrink-0"
-              >
-                <span
-                  className="material-symbols-outlined text-[18px]"
-                  style={{
-                    fontVariationSettings: savedStationIds.includes(selectedStation.id) ? "'FILL' 1" : "'FILL' 0",
-                    color: savedStationIds.includes(selectedStation.id) ? '#ba1a1a' : undefined,
-                  }}
+              {/* In-App Actions with Prominent Navigate Button in the location card at the bottom */}
+              <div className="flex items-center gap-1.5 pt-0.5">
+                <button
+                  type="button"
+                  onClick={() => onOpenStationDetails(activeCardStation)}
+                  className="py-2.5 px-3 rounded-xl bg-slate-100 hover:bg-slate-200 text-[#0d1c2f] text-[11px] font-bold transition-colors cursor-pointer"
                 >
-                  bookmark
-                </span>
-              </button>
-            </div>
-
-            {/* Availability & Charger Info */}
-            <div className="grid grid-cols-2 gap-1.5 text-xs">
-              <div className="p-1.5 rounded-lg bg-slate-50 flex items-center justify-between">
-                <span className="text-[10px] text-slate-500 font-medium">Bays</span>
-                <span className="font-bold text-[#006948] text-[11px]">
-                  {selectedStation.availableBays} / {selectedStation.totalBays} Free
-                </span>
+                  Details
+                </button>
+                <button
+                  type="button"
+                  onClick={() => onStartNavigation(activeCardStation)}
+                  className="flex-1 py-2.5 px-3 rounded-xl bg-[#006948] hover:bg-[#00855d] text-white text-xs font-black flex items-center justify-center gap-1.5 transition-all shadow-md active:scale-98 cursor-pointer border border-[#85f8c4]/30"
+                >
+                  <span className="material-symbols-outlined text-[17px] text-[#85f8c4]">navigation</span>
+                  <span>Navigate</span>
+                  <span className="text-[10px] text-emerald-200 font-normal">
+                    (~{activeCardStation.driveTimeMins}m · {activeCardStation.distanceKm}km)
+                  </span>
+                </button>
               </div>
-              <div className="p-1.5 rounded-lg bg-slate-50 flex items-center justify-between">
-                <span className="text-[10px] text-slate-500 font-medium">Max Speed</span>
-                <span className="font-bold text-[#0d1c2f] text-[11px]">
-                  {selectedStation.connectors[0]?.powerKw || 22} kW
-                </span>
-              </div>
-            </div>
-
-            {/* In-App Actions (No External Redirection) */}
-            <div className="flex items-center gap-1.5 pt-0.5">
-              <button
-                type="button"
-                onClick={() => onOpenStationDetails(selectedStation)}
-                className="flex-1 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-[#0d1c2f] text-[11px] font-bold transition-colors cursor-pointer"
-              >
-                Details
-              </button>
-              <button
-                type="button"
-                onClick={() => onStartNavigation(selectedStation)}
-                className="flex-1 py-2 rounded-xl bg-[#006948] hover:bg-[#00855d] text-white text-[11px] font-bold flex items-center justify-center gap-1 transition-colors shadow-sm cursor-pointer"
-              >
-                <span className="material-symbols-outlined text-[15px]">navigation</span>
-                <span>In-App Nav</span>
-              </button>
             </div>
           </div>
-        </div>
-      )}
+        );
+      })()}
     </div>
   );
 };

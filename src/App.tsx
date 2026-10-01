@@ -134,7 +134,7 @@ export default function App() {
 
   const handleFindNow = () => {
     if (!nearestStation) {
-      showToast('Awaiting LTA DataMall connection... Set LTA_ACCOUNT_KEY environment variable.');
+      showToast('connecting, do not panic, try again after 1s');
       return;
     }
     setSelectedStation(nearestStation);
