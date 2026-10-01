@@ -603,7 +603,7 @@ export const InteractiveMap: React.FC<InteractiveMapProps> = ({
       )}
 
       {/* Floating Right Map Controls (Google Maps Zoom, 2km Radius Snap, Recenter, Layer) */}
-      <div className="absolute right-2.5 sm:right-4 lg:right-6 bottom-28 lg:bottom-32 z-10 flex flex-col gap-1.5">
+      <div className="absolute right-2.5 sm:right-4 lg:right-6 bottom-36 sm:bottom-44 z-10 flex flex-col gap-1.5">
         {/* Recenter GPS & Snap to 2km Radius */}
         <button
           type="button"
@@ -678,7 +678,7 @@ export const InteractiveMap: React.FC<InteractiveMapProps> = ({
         const activeCardStation = selectedStation || nearestNavTarget;
         if (!activeCardStation) return null;
         return (
-          <div className="relative z-10 p-2 sm:p-3 lg:p-4 max-w-lg sm:max-w-xl lg:max-w-2xl mx-auto w-full">
+          <div className="relative z-20 mb-16 sm:mb-20 px-2.5 sm:px-4 max-w-lg sm:max-w-xl lg:max-w-2xl mx-auto w-full pointer-events-auto">
             <div className="bg-white/95 backdrop-blur-md rounded-2xl p-3 shadow-xl border border-slate-200 flex flex-col gap-2">
               <div className="flex items-start justify-between gap-1.5">
                 <div className="min-w-0 flex-1">

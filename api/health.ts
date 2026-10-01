@@ -120,7 +120,7 @@ export default async function handler(req: any, res: any) {
         apiUrl: api.apiUrl,
         status: 'unconfigured',
         latencyMs: 0,
-        details: 'connecting, do not panic, try again after 1s',
+        details: 'Awaiting LTA_ACCOUNT_KEY environment variable.',
       });
     }
   } else {
