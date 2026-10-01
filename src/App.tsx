@@ -425,8 +425,8 @@ export default function App() {
 
       {/* Bottom Floating Navigation Dock */}
       {!isDetailsView && (
-        <nav className="fixed bottom-0 inset-x-0 z-30 bg-[#f8f9ff]/90 backdrop-blur-md border-t border-[#dde9ff] max-w-lg mx-auto">
-          <div className="flex items-center justify-around py-2 px-2">
+        <nav className="fixed bottom-0 inset-x-0 z-30 bg-[#f8f9ff]/90 backdrop-blur-md border-t border-[#dde9ff] w-full">
+          <div className="flex items-center justify-around py-2 sm:py-2.5 px-3 sm:px-6 max-w-lg sm:max-w-xl lg:max-w-2xl mx-auto">
             <button
               type="button"
               onClick={() => setCurrentTab('map')}

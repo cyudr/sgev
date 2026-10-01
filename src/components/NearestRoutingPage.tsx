@@ -211,7 +211,7 @@ export const NearestRoutingPage: React.FC<NearestRoutingPageProps> = ({
 
   if (!station) {
     return (
-      <div className="h-[100dvh] max-h-[100dvh] overflow-hidden bg-[#0d1c2f] text-white flex flex-col justify-between p-4 max-w-lg mx-auto">
+      <div className="w-full h-[100dvh] max-h-[100dvh] overflow-hidden bg-[#0d1c2f] text-white flex flex-col justify-between p-4 max-w-5xl mx-auto">
         <div className="flex items-center justify-between pt-1 pb-2 border-b border-white/10 shrink-0">
           <button
             type="button"
@@ -254,7 +254,8 @@ export const NearestRoutingPage: React.FC<NearestRoutingPageProps> = ({
   const etaFormatted = new Date(Date.now() + minsRemaining * 60000).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
 
   return (
-    <div className="h-[100dvh] max-h-[100dvh] overflow-hidden bg-[#0d1c2f] text-white flex flex-col justify-between p-2.5 sm:p-4 max-w-lg mx-auto selection:bg-[#85f8c4] selection:text-[#002114] select-none relative">
+    <div className="w-full h-[100dvh] max-h-[100dvh] overflow-hidden bg-[#0d1c2f] text-white flex flex-col justify-between p-2.5 sm:p-4 lg:p-6 selection:bg-[#85f8c4] selection:text-[#002114] select-none relative">
+      <div className="w-full max-w-5xl mx-auto flex-1 flex flex-col justify-between min-h-0">
       {/* Top Header: Overview or Google Maps Navigation Maneuver Banner */}
       {isLiveNavigating ? (
         /* Real Google Maps Turn Maneuver Header with Prominent Route Time Estimate & Voice Controls */
@@ -539,6 +540,7 @@ export const NearestRoutingPage: React.FC<NearestRoutingPageProps> = ({
             </button>
           </>
         )}
+      </div>
       </div>
     </div>
   );

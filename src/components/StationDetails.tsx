@@ -73,7 +73,7 @@ export const StationDetails: React.FC<StationDetailsProps> = ({
   };
 
   return (
-    <div className="flex flex-col w-full pb-32 max-w-lg mx-auto bg-[#f8f9ff]">
+    <div className="flex flex-col w-full pb-32 max-w-lg sm:max-w-2xl lg:max-w-4xl mx-auto bg-[#f8f9ff]">
       {/* Toast Notification */}
       {toastMessage && (
         <div className="fixed top-20 inset-x-4 z-50 max-w-sm mx-auto bg-[#0d1c2f] text-white p-3 rounded-2xl shadow-xl flex items-center gap-2.5 text-xs font-semibold animate-in fade-in">

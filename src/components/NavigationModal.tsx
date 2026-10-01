@@ -213,7 +213,8 @@ export const NavigationModal: React.FC<NavigationModalProps> = ({
   const etaFormatted = new Date(Date.now() + minsRemaining * 60000).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
 
   return (
-    <div className="fixed inset-0 z-50 bg-[#0d1c2f] flex flex-col justify-between text-white p-2.5 sm:p-4 max-w-lg mx-auto h-[100dvh] max-h-[100dvh] overflow-hidden select-none">
+    <div className="fixed inset-0 z-50 bg-[#0d1c2f] flex flex-col justify-between text-white p-2.5 sm:p-4 lg:p-6 w-full h-[100dvh] max-h-[100dvh] overflow-hidden select-none">
+      <div className="w-full max-w-5xl mx-auto h-full flex flex-col justify-between min-h-0">
       {/* Top Turn Maneuver Banner (Google Maps Navigation Style) with Route Time Estimate & Voice Audio Controls */}
       <div className="bg-[#005a36] p-3 sm:p-3.5 rounded-2xl shadow-xl flex items-center justify-between gap-3 border border-[#85f8c4]/40 shrink-0">
         <div className="flex items-center gap-2.5 min-w-0">
@@ -348,6 +349,7 @@ export const NavigationModal: React.FC<NavigationModalProps> = ({
           <span className="material-symbols-outlined text-[18px]">bolt</span>
           <span>I Have Arrived at EV Bay (Start Charging)</span>
         </button>
+      </div>
       </div>
     </div>
   );

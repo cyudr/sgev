@@ -19,7 +19,7 @@ export const ActivityTab: React.FC<ActivityTabProps> = ({
   const totalCo2 = pastSessions.reduce((sum, s) => sum + s.co2SavedKg, 0);
 
   return (
-    <div className="flex flex-col w-full pb-24 max-w-lg mx-auto p-4 gap-4">
+    <div className="flex flex-col w-full pb-24 max-w-lg sm:max-w-2xl lg:max-w-4xl mx-auto p-4 sm:p-6 lg:p-8 gap-4 sm:gap-6">
       <div>
         <h2 className="text-xl font-extrabold text-[#0d1c2f]">Charging Activity</h2>
         <p className="text-xs text-[#3d4a42]">Monitor active charges & past Singapore network receipts</p>
