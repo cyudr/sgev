@@ -320,11 +320,16 @@ export default function App() {
       <Header
         currentScreen={currentScreen}
         onBackToMap={handleBackToMap}
+        onGoToLaunch={() => {
+          setIsDetailsView(false);
+          setAppFlowMode('launch');
+        }}
+        onFindNearestNow={handleFindNow}
         onOpenProfile={() => {
           setIsDetailsView(false);
           setCurrentTab('profile');
         }}
-        onOpenUrgency={() => setAppFlowMode('launch')}
+        onOpenUrgency={handleFindNow}
         dataSource={dataSource}
         onRefreshApi={refreshApi}
         isLoadingApi={apiLoading}

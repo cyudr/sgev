@@ -4,6 +4,8 @@ import { PWAInstallButton } from './PWAInstallButton';
 interface HeaderProps {
   currentScreen: 'map' | 'details' | 'saved' | 'activity' | 'profile';
   onBackToMap?: () => void;
+  onGoToLaunch?: () => void;
+  onFindNearestNow?: () => void;
   onOpenNotifications?: () => void;
   onOpenProfile?: () => void;
   onOpenUrgency?: () => void;
@@ -15,10 +17,11 @@ interface HeaderProps {
 export const Header: React.FC<HeaderProps> = ({
   currentScreen,
   onBackToMap,
+  onGoToLaunch,
+  onFindNearestNow,
   onOpenNotifications,
   onOpenProfile,
   onOpenUrgency,
-  dataSource,
   onRefreshApi,
   isLoadingApi,
 }) => {
@@ -29,10 +32,10 @@ export const Header: React.FC<HeaderProps> = ({
       const chip = document.getElementById("api-status");
       if (!chip) return;
       const controller = new AbortController();
-      const timer = setTimeout(() => controller.abort(), 15000); // Allow longer 15s timeout
+      const timer = setTimeout(() => controller.abort(), 15000);
       try {
         const r = await fetch("/api/health", { signal: controller.signal });
-        const raw = await r.text();             // text first, never .json()
+        const raw = await r.text();
         if (!r.ok) { throw new Error(r.status + " " + raw.slice(0, 80)); }
         const h = JSON.parse(raw);
         if (h.status !== "ok") { throw new Error("status " + h.status); }
@@ -49,35 +52,79 @@ export const Header: React.FC<HeaderProps> = ({
     showHealth();
   }, []);
 
+  const handleLogoClick = () => {
+    if (onGoToLaunch) {
+      onGoToLaunch();
+    } else if (onOpenUrgency) {
+      onOpenUrgency();
+    }
+  };
+
+  const handleLowBatteryClick = () => {
+    if (onFindNearestNow) {
+      onFindNearestNow();
+    } else if (onOpenUrgency) {
+      onOpenUrgency();
+    }
+  };
+
   return (
     <header className="sticky top-0 z-30 w-full bg-[#f8f9ff]/90 backdrop-blur-md border-b border-[#dde9ff] shrink-0">
       <div className="max-w-lg mx-auto px-2.5 sm:px-4 py-1.5 sm:py-2 flex items-center justify-between">
-        {/* Left: Brand & Live API Status */}
+        {/* Left: Brand logo & name linked to launch page */}
         <div className="flex items-center gap-1.5 sm:gap-2 min-w-0">
           {currentScreen !== 'map' && onBackToMap ? (
             <button
               type="button"
               onClick={onBackToMap}
-              className="w-7 h-7 sm:w-8 sm:h-8 rounded-full flex items-center justify-center text-[#0d1c2f] hover:bg-[#eff4ff] active:scale-95 transition-all shrink-0"
+              className="w-7 h-7 sm:w-8 sm:h-8 rounded-full flex items-center justify-center text-[#0d1c2f] hover:bg-[#eff4ff] active:scale-95 transition-all shrink-0 cursor-pointer"
+              title="Back to Map"
             >
               <span className="material-symbols-outlined text-[18px] sm:text-[22px]">arrow_back</span>
             </button>
           ) : (
-            <div className="w-7 h-7 sm:w-8 sm:h-8 rounded-xl sm:rounded-2xl bg-gradient-to-tr from-[#006948] to-[#00a86b] flex items-center justify-center text-white shadow-sm shadow-[#006948]/20 shrink-0">
+            <button
+              type="button"
+              onClick={handleLogoClick}
+              className="w-7 h-7 sm:w-8 sm:h-8 rounded-xl sm:rounded-2xl bg-gradient-to-tr from-[#006948] to-[#00a86b] flex items-center justify-center text-white shadow-sm shadow-[#006948]/20 shrink-0 cursor-pointer hover:scale-105 active:scale-95 transition-all"
+              title="Return to Launch Page"
+            >
               <span className="material-symbols-outlined text-[18px] sm:text-[22px]">bolt</span>
-            </div>
+            </button>
           )}
 
-          <div className="min-w-0">
-            <h1 className="font-extrabold text-sm sm:text-base tracking-tight text-[#0d1c2f] leading-none">ChargeSG</h1>
-            <p className="text-[10px] font-medium text-[#3d4a42] leading-tight mt-0.5">Singapore EV Charging</p>
-          </div>
+          {/* ChargeSG Text linked to Launch Page */}
+          <button
+            type="button"
+            onClick={handleLogoClick}
+            className="min-w-0 text-left cursor-pointer group active:opacity-80"
+            title="ChargeSG - Tap to return to Launch Page"
+          >
+            <h1 className="font-extrabold text-sm sm:text-base tracking-tight text-[#0d1c2f] group-hover:text-[#006948] leading-none transition-colors">
+              ChargeSG
+            </h1>
+            <p className="text-[10px] font-medium text-[#3d4a42] leading-tight mt-0.5">
+              Singapore EV Charging
+            </p>
+          </button>
         </div>
 
         {/* Right: Actions */}
         <div className="flex items-center gap-1 sm:gap-2 shrink-0">
           {/* One-Click Install Button (Auto-hides if installed) */}
           <PWAInstallButton variant="header" />
+
+          {/* Low Battery Urgent Icon linked to FIND NEAREST NOW!! */}
+          <button
+            type="button"
+            onClick={handleLowBatteryClick}
+            title="FIND NEAREST NOW!!"
+            className="px-2 py-1 rounded-full bg-[#ffdad6] text-[#ba1a1a] hover:bg-[#ffb4ab] active:scale-95 transition-all text-[10px] font-black flex items-center gap-1 cursor-pointer border border-[#ba1a1a]/20 shadow-sm"
+          >
+            <span className="material-symbols-outlined text-[15px] animate-pulse">battery_alert</span>
+            <span className="hidden xs:inline">FIND NEAREST NOW!!</span>
+            <span className="xs:hidden">Nearest</span>
+          </button>
 
           {/* Refresh Live API */}
           {onRefreshApi && (
@@ -86,25 +133,13 @@ export const Header: React.FC<HeaderProps> = ({
               onClick={onRefreshApi}
               disabled={isLoadingApi}
               title="Refresh live data from LTA DataMall"
-              className="w-7 h-7 sm:w-8 sm:h-8 rounded-full flex items-center justify-center text-[#3d4a42] hover:bg-[#eff4ff] active:scale-95 transition-all disabled:opacity-50"
+              className="w-7 h-7 sm:w-8 sm:h-8 rounded-full flex items-center justify-center text-[#3d4a42] hover:bg-[#eff4ff] active:scale-95 transition-all disabled:opacity-50 cursor-pointer"
             >
               <span
                 className={`material-symbols-outlined text-[17px] sm:text-[19px] ${isLoadingApi ? 'animate-spin text-[#006948]' : ''}`}
               >
                 refresh
               </span>
-            </button>
-          )}
-
-          {/* Urgent / Emergency Low Battery Finder */}
-          {onOpenUrgency && (
-            <button
-              type="button"
-              onClick={onOpenUrgency}
-              className="px-2 py-1 rounded-full bg-[#ffdad6] text-[#ba1a1a] hover:bg-[#ffb4ab] active:scale-95 transition-all text-[10px] font-bold flex items-center gap-0.5"
-            >
-              <span className="material-symbols-outlined text-[14px]">battery_alert</span>
-              <span className="hidden xs:inline">Urgent</span>
             </button>
           )}
 
@@ -119,7 +154,8 @@ export const Header: React.FC<HeaderProps> = ({
                 setTimeout(() => setShowNotificationToast(false), 2500);
               }
             }}
-            className="w-7 h-7 sm:w-8 sm:h-8 rounded-full flex items-center justify-center text-[#3d4a42] hover:bg-[#eff4ff] active:scale-95 transition-all relative"
+            className="w-7 h-7 sm:w-8 sm:h-8 rounded-full flex items-center justify-center text-[#3d4a42] hover:bg-[#eff4ff] active:scale-95 transition-all relative cursor-pointer"
+            title="Notifications"
           >
             <span className="material-symbols-outlined text-[17px] sm:text-[19px]">notifications</span>
             <span className="absolute top-1 right-1 w-1.5 h-1.5 rounded-full bg-[#006948]" />
@@ -130,7 +166,8 @@ export const Header: React.FC<HeaderProps> = ({
             <button
               type="button"
               onClick={onOpenProfile}
-              className="w-7 h-7 sm:w-8 sm:h-8 rounded-full bg-[#006948] text-white flex items-center justify-center font-bold text-[10px] sm:text-xs hover:bg-[#00855d] active:scale-95 transition-all"
+              className="w-7 h-7 sm:w-8 sm:h-8 rounded-full bg-[#006948] text-white flex items-center justify-center font-bold text-[10px] sm:text-xs hover:bg-[#00855d] active:scale-95 transition-all cursor-pointer shadow-sm"
+              title="Vehicle Profile & Settings"
             >
               EV
             </button>
@@ -138,11 +175,9 @@ export const Header: React.FC<HeaderProps> = ({
         </div>
       </div>
 
-      {/* Notification Toast */}
       {showNotificationToast && (
-        <div className="fixed top-14 inset-x-4 z-50 max-w-sm mx-auto bg-[#0d1c2f] text-white p-3 rounded-2xl shadow-xl flex items-center gap-2.5 text-xs animate-in fade-in">
-          <span className="material-symbols-outlined text-[#85f8c4] text-[18px]">check_circle</span>
-          <span className="flex-1">Live alerts active: connected to Singapore LTA DataMall.</span>
+        <div className="fixed top-14 right-4 z-50 bg-[#0d1c2f] text-white text-[11px] p-2.5 rounded-xl shadow-xl border border-white/10 animate-in fade-in">
+          All Singapore EV charging systems operational · LTA Live Feed Active
         </div>
       )}
     </header>

@@ -109,9 +109,6 @@ export const InteractiveMap: React.FC<InteractiveMapProps> = ({
       if (activeFilter === 'available') {
         return station.availableBays > 0;
       }
-      if (activeFilter === 'dc_fast') {
-        return station.connectors.some((c) => c.type.includes('DC') && c.powerKw >= 50);
-      }
       if (activeFilter === 'sp') {
         return station.provider.toLowerCase().includes('sp');
       }
@@ -574,17 +571,6 @@ export const InteractiveMap: React.FC<InteractiveMapProps> = ({
           </button>
           <button
             type="button"
-            onClick={() => setActiveFilter('dc_fast')}
-            className={`px-2.5 py-0.5 rounded-full text-[11px] font-semibold whitespace-nowrap transition-all shadow-sm cursor-pointer ${
-              activeFilter === 'dc_fast'
-                ? 'bg-[#006948] text-white'
-                : 'bg-white/95 text-slate-700 hover:bg-slate-50 border border-slate-200'
-            }`}
-          >
-            DC Fast (≥50kW)
-          </button>
-          <button
-            type="button"
             onClick={() => setActiveFilter('sp')}
             className={`px-2.5 py-0.5 rounded-full text-[11px] font-semibold whitespace-nowrap transition-all shadow-sm cursor-pointer ${
               activeFilter === 'sp'
@@ -593,6 +579,17 @@ export const InteractiveMap: React.FC<InteractiveMapProps> = ({
             }`}
           >
             SP Mobility
+          </button>
+          <button
+            type="button"
+            onClick={() => setActiveFilter('cdg')}
+            className={`px-2.5 py-0.5 rounded-full text-[11px] font-semibold whitespace-nowrap transition-all shadow-sm cursor-pointer ${
+              activeFilter === 'cdg'
+                ? 'bg-[#006948] text-white'
+                : 'bg-white/95 text-slate-700 hover:bg-slate-50 border border-slate-200'
+            }`}
+          >
+            CDG ENGIE
           </button>
         </div>
       </div>

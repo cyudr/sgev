@@ -73,9 +73,9 @@ export const UrgencyLaunchScreen: React.FC<UrgencyLaunchScreenProps> = ({
           </span>
         </div>
 
-        {/* Centered Action Buttons: FIND NOW & Show me around */}
+        {/* Centered Action Buttons: FIND NEAREST NOW!! & Show me around */}
         <div className="mt-4 sm:mt-5 flex flex-col gap-2.5 w-full">
-          {/* Button 1: FIND NOW */}
+          {/* Button 1: FIND NEAREST NOW!! */}
           <button
             type="button"
             onClick={onFindNow}
@@ -88,7 +88,7 @@ export const UrgencyLaunchScreen: React.FC<UrgencyLaunchScreenProps> = ({
                 <span className="material-symbols-outlined text-[22px]">bolt</span>
               </div>
               <div className="text-left">
-                <div className="tracking-wide text-sm font-black">FIND NOW</div>
+                <div className="tracking-wide text-sm sm:text-base font-black">FIND NEAREST NOW!!</div>
                 <div className="text-[10px] font-medium text-emerald-200 leading-tight">
                   Route directly to nearest EV point {nearestStation ? `(${nearestStation.distanceKm} km)` : ''}
                 </div>
