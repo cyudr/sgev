@@ -30,6 +30,20 @@ export const StationDetails: React.FC<StationDetailsProps> = ({
 }) => {
   const [toastMessage, setToastMessage] = useState<string | null>(null);
   const [notifiedBays, setNotifiedBays] = useState<string[]>([]);
+  const touchStartYRef = React.useRef<number | null>(null);
+
+  const handleTouchStart = (e: React.TouchEvent) => {
+    touchStartYRef.current = e.touches[0].clientY;
+  };
+
+  const handleTouchEnd = (e: React.TouchEvent) => {
+    if (touchStartYRef.current === null) return;
+    const deltaY = e.changedTouches[0].clientY - touchStartYRef.current;
+    if (deltaY > 55) { // Swiped downward
+      onBackToMap();
+    }
+    touchStartYRef.current = null;
+  };
 
   const showToast = (msg: string) => {
     setToastMessage(msg);
@@ -89,8 +103,26 @@ export const StationDetails: React.FC<StationDetailsProps> = ({
         </div>
       )}
 
+      {/* Top Visual Pull Handle */}
+      <div
+        onTouchStart={handleTouchStart}
+        onTouchEnd={handleTouchEnd}
+        onClick={onBackToMap}
+        className="w-full flex flex-col items-center justify-center pt-2 pb-1 cursor-pointer group select-none"
+        title="Tap or swipe down to return to map"
+      >
+        <div className="w-12 h-1.5 rounded-full bg-slate-300 group-hover:bg-[#006948] transition-colors" />
+        <span className="text-[9px] text-slate-400 group-hover:text-[#006948] font-semibold mt-0.5">
+          Pull down or tap to return to map
+        </span>
+      </div>
+
       {/* Top Navigation & Context Bar */}
-      <div className="px-4 pt-3 pb-2 flex items-center justify-between">
+      <div
+        onTouchStart={handleTouchStart}
+        onTouchEnd={handleTouchEnd}
+        className="px-4 pt-1 pb-2 flex items-center justify-between"
+      >
         <button
           type="button"
           onClick={onBackToMap}

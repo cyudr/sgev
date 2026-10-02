@@ -637,9 +637,9 @@ export const InteractiveMap: React.FC<InteractiveMapProps> = ({
       {/* Real Google Maps Tile Engine */}
       <div ref={mapContainerRef} className="absolute inset-0 w-full h-full z-0" />
 
-      {/* Top Floating Search & Quick Filters with 30% Opacity Backdrop Container */}
+      {/* Top Floating Search & Quick Filters with 30% Opacity White-Based Backdrop Container */}
       <div className="relative z-10 p-2 sm:p-3.5 max-w-lg sm:max-w-xl lg:max-w-2xl mx-auto w-full pointer-events-none">
-        <div className="bg-slate-900/30 backdrop-blur-md rounded-2xl sm:rounded-3xl p-2 sm:p-2.5 shadow-xl border border-white/20 flex flex-col gap-1.5 pointer-events-auto">
+        <div className="bg-white/30 backdrop-blur-md rounded-2xl sm:rounded-3xl p-2 sm:p-2.5 shadow-lg border border-white/40 flex flex-col gap-1.5 pointer-events-auto">
           {/* Search Bar */}
           <div className="h-10 sm:h-11 bg-white/95 backdrop-blur-md rounded-full shadow-md px-3.5 flex items-center justify-between gap-2 border border-slate-200">
             <span className="material-symbols-outlined text-[#006948] text-[20px] shrink-0">

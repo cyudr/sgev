@@ -158,7 +158,7 @@ This document collates all user prompts, architectural specifications, iterative
    - Automatically detects and reads: Vehicle Model, Car Plate, Battery State of Charge (SoC %), Remaining Range (km), Battery Capacity (kWh), and Preferred Plug Standard.
    - Auto-populates Driver Profile inputs, persists to cookies, and broadcasts updates instantly across the app.
 3. **30% Opacity Container Behind Explore Search & Filters (`InteractiveMap.tsx`)**:
-   - Added a container behind the floating search bar and filter chips with `bg-slate-900/30 backdrop-blur-md rounded-2xl sm:rounded-3xl p-2 sm:p-2.5 shadow-xl border border-white/20` to substantially improve contrast and visibility over map tiles.
+   - Added a container behind the floating search bar and filter chips to substantially improve contrast and visibility over map tiles.
 4. **Multiple Filter Selection with AND Logic (`InteractiveMap.tsx`)**:
    - Replaced single-select state with multi-select `selectedFilters: string[]`.
    - Multiple active filters combine strictly with **AND logic** (e.g. `Available Now` AND `Fastest` AND `CCS2`).
@@ -169,6 +169,48 @@ This document collates all user prompts, architectural specifications, iterative
      - **Nearby Restaurants & Dining**: Walking distance, cuisine, hours, ratings (e.g. Din Tai Fung, Ya Kun Kaya Toast, Kopitiam, Starbucks, Shake Shack).
      - **Places of Interest (POI) & Retail**: Supermarkets (NTUC FairPrice, Don Don Donki), Shopping Mall retail, IMAX Cinema, Sky Park.
      - **Driver Amenities & Services**: Restrooms, free 1-hour parking with charging, high-pressure tire air & water, touchless car wash, Wi-Fi lounge, 24/7 security.
+- **Commit**: `da9518d`
+
+---
+
+### Prompt 14: Smooth Slide-Up Transition for Station Details & White-Based Search Container
+> *"1. the swipe up gesture to expose details of station card should have a smooth animation instead of abrupt change to details page; 2. change the search card contain in explore page to white based"*
+
+#### Requirements & Implementations:
+1. **Smooth Slide-Up Transition & Sheet Animation (`App.tsx`, `StationDetails.tsx`)**:
+   - Replaced abrupt view switching with an overlay sheet animated with `transition-all duration-300 ease-out will-change-transform`.
+   - Slides smoothly from `translate-y-full` to `translate-y-0` when swiping up on the station card or tapping Details.
+   - Retains the underlying `InteractiveMap` mounted in the DOM, eliminating map re-initialization flickers and preserving zoom, camera position, and active markers.
+   - Added interactive top grab handle pill in `StationDetails.tsx` with downward swipe gesture (`deltaY > 55px`) to smoothly slide the details sheet back down.
+2. **White-Based Search & Filter Container (`InteractiveMap.tsx`)**:
+   - Updated the 30% opacity backdrop container behind the explore search bar and filter chips to a white-frosted glass design:
+     `bg-white/30 backdrop-blur-md rounded-2xl sm:rounded-3xl p-2 sm:p-2.5 shadow-lg border border-white/40`.
+
+---
+
+### Prompt 15: Launch Page Redesign Inspired by Courier Hero Layout in Singapore Emerald Theme
+> *"Improve the launch page with reference to the attached UI, keeping my current color scheme"*
+
+#### Requirements & Implementations:
+1. **Curved Hero Image Composition (`UrgencyLaunchScreen.tsx`)**:
+   - Created organic curved arched graphic frame (`rounded-[2.5rem] rounded-tr-[5rem] rounded-bl-[1.5rem]`) displaying a cinematic Singapore expressway perspective with light trails and electric vehicles.
+   - Added a floating emerald teardrop map pin marker (`#006948` to `#004f35` with pulsing neon `#85f8c4` core) on the top-left of the photo, mirroring the reference design.
+   - Added soft radial atmospheric gradient aura and live LTA DataMall pill badge overlay.
+2. **Brand Header & Tagline (`UrgencyLaunchScreen.tsx`)**:
+   - Left: ChargeSG bolt squircle emblem + `ChargeSG` title + `SG 🇸🇬` badge + tagline `any EV, anywhere, anytime`.
+   - Right: Quick-access action pill button + one-click PWA installation trigger.
+3. **Typography & Content Hierarchy (`UrgencyLaunchScreen.tsx`)**:
+   - Overline category: `SINGAPORE EV CHARGING SERVICES` (uppercase, bold, tracking-widest, `#006948`).
+   - Main punchy headline: `Charge anything, anywhere, anytime` (crisp, bold, `#0d1c2f`).
+   - Supportive copy: `When every kilowatt counts, trust us to find live available chargers, lowest tariffs, and fastest routes instantly.`
+4. **Interactive Criteria Selection & Active Station Card (`UrgencyLaunchScreen.tsx`)**:
+   - Interactive segment pills: `[ 📍 Nearest ]  [ 💰 Cheapest ]  [ ⚡ Fastest ]`.
+   - Dynamic station recommendation card with live metrics, distance, drive time, free bay count, and tariff/speed.
+5. **Dual Pill Action Buttons (`UrgencyLaunchScreen.tsx`)**:
+   - Primary filled pill CTA: **"TAKE ME THERE NOW!!"** (`bg-gradient-to-r from-[#006948] to-[#00855d] text-white shadow-lg shadow-[#006948]/25 rounded-full py-3.5 px-6 font-black`).
+   - Secondary clean outlined pill CTA: **"Show me around (Explore)"** (`rounded-full border border-slate-300 text-slate-800 py-3 px-6 font-bold hover:bg-slate-50`).
+6. **Unified Bottom Navigation Strip (`App.tsx`)**:
+   - Restyled bottom navigation bar on launch screen to clean white glass (`bg-white/95 backdrop-blur-md border-t border-slate-200/80 shadow-[0_-4px_20px_rgba(0,0,0,0.05)]`) matching the elevated light aesthetic with emerald active highlights.
 
 ---
 

@@ -310,8 +310,8 @@ export default function App() {
           onShowMeAround={handleShowMeAround}
         />
 
-        {/* Bottom Strip dynamically matched to dark Launch background */}
-        <nav className="fixed bottom-0 inset-x-0 z-30 bg-[#002114]/90 backdrop-blur-md border-t border-white/10 w-full select-none">
+        {/* Bottom Strip matching clean white and Singapore emerald theme */}
+        <nav className="fixed bottom-0 inset-x-0 z-30 bg-white/95 backdrop-blur-md border-t border-slate-200/80 shadow-[0_-4px_20px_rgba(0,0,0,0.05)] w-full select-none">
           <div className="flex items-center justify-around py-2 sm:py-2.5 px-3 sm:px-6 max-w-lg sm:max-w-xl lg:max-w-2xl mx-auto">
             <button
               type="button"
@@ -319,7 +319,7 @@ export default function App() {
                 setAppFlowMode('explore');
                 setCurrentTab('map');
               }}
-              className="flex flex-col items-center gap-0.5 py-1 px-3 rounded-xl transition-all cursor-pointer text-slate-300 hover:text-[#85f8c4] active:scale-95"
+              className="flex flex-col items-center gap-0.5 py-1 px-3 rounded-xl transition-all cursor-pointer text-slate-600 hover:text-[#006948] active:scale-95"
             >
               <span className="material-symbols-outlined text-[24px]">map</span>
               <span className="text-[11px] font-semibold">Explore</span>
@@ -331,7 +331,7 @@ export default function App() {
                 setAppFlowMode('explore');
                 setCurrentTab('saved');
               }}
-              className="flex flex-col items-center gap-0.5 py-1 px-3 rounded-xl transition-all cursor-pointer text-slate-300 hover:text-[#85f8c4] active:scale-95"
+              className="flex flex-col items-center gap-0.5 py-1 px-3 rounded-xl transition-all cursor-pointer text-slate-600 hover:text-[#006948] active:scale-95"
             >
               <span className="material-symbols-outlined text-[24px]">bookmark</span>
               <span className="text-[11px] font-semibold">Saved</span>
@@ -343,12 +343,12 @@ export default function App() {
                 setAppFlowMode('explore');
                 setCurrentTab('activity');
               }}
-              className="flex flex-col items-center gap-0.5 py-1 px-3 rounded-xl transition-all cursor-pointer text-slate-300 hover:text-[#85f8c4] active:scale-95 relative"
+              className="flex flex-col items-center gap-0.5 py-1 px-3 rounded-xl transition-all cursor-pointer text-slate-600 hover:text-[#006948] active:scale-95 relative"
             >
               <span className="material-symbols-outlined text-[24px]">history</span>
               <span className="text-[11px] font-semibold">Activity</span>
               {activeSession && (
-                <span className="absolute top-1 right-2 w-2 h-2 rounded-full bg-[#85f8c4] animate-ping" />
+                <span className="absolute top-1 right-2 w-2 h-2 rounded-full bg-[#006948] animate-ping" />
               )}
             </button>
 
@@ -358,7 +358,7 @@ export default function App() {
                 setAppFlowMode('explore');
                 setCurrentTab('profile');
               }}
-              className="flex flex-col items-center gap-0.5 py-1 px-3 rounded-xl transition-all cursor-pointer text-slate-300 hover:text-[#85f8c4] active:scale-95"
+              className="flex flex-col items-center gap-0.5 py-1 px-3 rounded-xl transition-all cursor-pointer text-slate-600 hover:text-[#006948] active:scale-95"
             >
               <span className="material-symbols-outlined text-[24px]">person</span>
               <span className="text-[11px] font-semibold">Profile</span>
@@ -458,95 +458,102 @@ export default function App() {
       />
 
       {/* Main View Area */}
-      <main className="flex-1 min-h-0 flex flex-col w-full overflow-hidden">
-        {isDetailsView && selectedStation ? (
-          <div className="flex-1 overflow-y-auto">
-            <StationDetails
-              station={selectedStation}
-              onBackToMap={handleBackToMap}
-              onStartNavigation={(st) => {
+      <main className="relative flex-1 min-h-0 flex flex-col w-full overflow-hidden">
+        {currentTab === 'map' && (
+          <InteractiveMap
+            stations={stationsWithRealDistance}
+            selectedStation={selectedStation}
+            userLocation={userLocation}
+            onSelectStation={(st) => setSelectedStation(st)}
+            onOpenStationDetails={handleOpenStationDetails}
+            onStartNavigation={(st) => {
+              setSelectedStation(st);
+              setShowNavigationModal(true);
+              pushNavState('navigation_modal');
+            }}
+            savedStationIds={savedStationIds}
+            onToggleSaveStation={handleToggleSaveStation}
+            onLocateUser={requestUserLocation}
+            isLocating={isLocating}
+          />
+        )}
+
+        {currentTab === 'saved' && (
+          <div className="flex-1 min-h-0 w-full overflow-y-auto overscroll-contain">
+            <SavedTab
+              stations={stationsWithRealDistance}
+              savedStationIds={savedStationIds}
+              onSelectStation={(st) => {
                 setSelectedStation(st);
-                setShowNavigationModal(true);
-                pushNavState('navigation_modal');
+                setCurrentTab('map');
               }}
-              onPlugInToStart={(bay) => handleStartCharging(bay.code, selectedStation)}
-              onScanQR={() => {
-                setShowQRScanner(true);
-                pushNavState('qr_scanner');
-              }}
-              onOpenPortSelector={() => {
-                setShowPortSelector(true);
-                pushNavState('port_selector');
-              }}
-              onOpenReserveModal={() => {
-                setShowReservationModal(true);
-                pushNavState('reservation_modal');
-              }}
-              onOpenReportModal={() => {
-                setShowReportModal(true);
-                pushNavState('report_modal');
-              }}
-              onOpenReviewsModal={() => {
-                setShowReviewsModal(true);
-                pushNavState('reviews_modal');
-              }}
-              isSaved={savedStationIds.includes(selectedStation.id)}
-              onToggleSave={() => handleToggleSaveStation(selectedStation.id)}
+              onOpenDetails={handleOpenStationDetails}
+              onToggleSave={handleToggleSaveStation}
             />
           </div>
-        ) : (
-          <>
-            {currentTab === 'map' && (
-              <InteractiveMap
-                stations={stationsWithRealDistance}
-                selectedStation={selectedStation}
-                userLocation={userLocation}
-                onSelectStation={(st) => setSelectedStation(st)}
-                onOpenStationDetails={handleOpenStationDetails}
+        )}
+
+        {currentTab === 'activity' && (
+          <div className="flex-1 min-h-0 w-full overflow-y-auto overscroll-contain">
+            <ActivityTab
+              activeSession={activeSession}
+              pastSessions={pastSessions}
+              onOpenActiveSessionModal={() => setShowChargingModal(true)}
+            />
+          </div>
+        )}
+
+        {currentTab === 'profile' && (
+          <div className="flex-1 min-h-0 w-full overflow-y-auto overscroll-contain">
+            <ProfileTab />
+          </div>
+        )}
+
+        {/* Smooth Slide-up Station Details Sheet with Native Physics & Fluid Animation */}
+        <div
+          className={`absolute inset-0 z-40 bg-[#f8f9ff] flex flex-col transition-all duration-300 ease-out will-change-transform ${
+            isDetailsView && selectedStation
+              ? 'translate-y-0 opacity-100 pointer-events-auto shadow-2xl'
+              : 'translate-y-full opacity-0 pointer-events-none'
+          }`}
+        >
+          {selectedStation && (
+            <div className="flex-1 overflow-y-auto overscroll-contain">
+              <StationDetails
+                station={selectedStation}
+                onBackToMap={handleBackToMap}
                 onStartNavigation={(st) => {
                   setSelectedStation(st);
                   setShowNavigationModal(true);
                   pushNavState('navigation_modal');
                 }}
-                savedStationIds={savedStationIds}
-                onToggleSaveStation={handleToggleSaveStation}
-                onLocateUser={requestUserLocation}
-                isLocating={isLocating}
+                onPlugInToStart={(bay) => handleStartCharging(bay.code, selectedStation)}
+                onScanQR={() => {
+                  setShowQRScanner(true);
+                  pushNavState('qr_scanner');
+                }}
+                onOpenPortSelector={() => {
+                  setShowPortSelector(true);
+                  pushNavState('port_selector');
+                }}
+                onOpenReserveModal={() => {
+                  setShowReservationModal(true);
+                  pushNavState('reservation_modal');
+                }}
+                onOpenReportModal={() => {
+                  setShowReportModal(true);
+                  pushNavState('report_modal');
+                }}
+                onOpenReviewsModal={() => {
+                  setShowReviewsModal(true);
+                  pushNavState('reviews_modal');
+                }}
+                isSaved={savedStationIds.includes(selectedStation.id)}
+                onToggleSave={() => handleToggleSaveStation(selectedStation.id)}
               />
-            )}
-
-            {currentTab === 'saved' && (
-              <div className="flex-1 min-h-0 w-full overflow-y-auto overscroll-contain">
-                <SavedTab
-                  stations={stationsWithRealDistance}
-                  savedStationIds={savedStationIds}
-                  onSelectStation={(st) => {
-                    setSelectedStation(st);
-                    setCurrentTab('map');
-                  }}
-                  onOpenDetails={handleOpenStationDetails}
-                  onToggleSave={handleToggleSaveStation}
-                />
-              </div>
-            )}
-
-            {currentTab === 'activity' && (
-              <div className="flex-1 min-h-0 w-full overflow-y-auto overscroll-contain">
-                <ActivityTab
-                  activeSession={activeSession}
-                  pastSessions={pastSessions}
-                  onOpenActiveSessionModal={() => setShowChargingModal(true)}
-                />
-              </div>
-            )}
-
-            {currentTab === 'profile' && (
-              <div className="flex-1 min-h-0 w-full overflow-y-auto overscroll-contain">
-                <ProfileTab />
-              </div>
-            )}
-          </>
-        )}
+            </div>
+          )}
+        </div>
       </main>
 
       {/* Active Charging Pill */}
