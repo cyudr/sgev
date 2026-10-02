@@ -1,11 +1,53 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import { Station } from '../types/charging';
 import { PWAInstallButton } from './PWAInstallButton';
 import { ChargeSGLogo } from './ChargeSGLogo';
 import { useGreenTheme } from '../context/ThemeContext';
-import heroHighwayImg from '../assets/images/ev_highway_hero_1790913547161.jpg';
+import fastChargingImg from '../assets/images/sg_ev_fast_charging_1790916358550.jpg';
+import solarCanopyImg from '../assets/images/sg_ev_solar_canopy_1790916371372.jpg';
+import nightSuperchargerImg from '../assets/images/sg_ev_night_supercharger_1790916385093.jpg';
+import expresswayHubImg from '../assets/images/sg_ev_expressway_hub_1790916396581.jpg';
 
 export type FrontPageCriteria = 'nearest' | 'cheapest' | 'fastest';
+
+interface EVSlide {
+  id: string;
+  img: string;
+  title: string;
+  tag: string;
+  criteria?: FrontPageCriteria;
+}
+
+const EV_SLIDES: EVSlide[] = [
+  {
+    id: 'fast_charging',
+    img: fastChargingImg,
+    title: 'High-Power DC Ultra-Fast Hub',
+    tag: '⚡ 150kW Dual CCS2 • Live Status',
+    criteria: 'fastest',
+  },
+  {
+    id: 'solar_canopy',
+    img: solarCanopyImg,
+    title: 'Solar Canopy Green Energy Hub',
+    tag: '☀️ Eco Off-Peak Tariffs • $0.52/kWh',
+    criteria: 'cheapest',
+  },
+  {
+    id: 'night_supercharger',
+    img: nightSuperchargerImg,
+    title: 'Marina Bay Skyline Night Charger',
+    tag: '🌃 24/7 High-Availability Station',
+    criteria: 'nearest',
+  },
+  {
+    id: 'expressway_hub',
+    img: expresswayHubImg,
+    title: 'Express Islandway Quick Charge',
+    tag: '🛣️ Rapid Turnkey Bay • PIE Expressway',
+    criteria: 'nearest',
+  },
+];
 
 interface UrgencyLaunchScreenProps {
   stations: Station[];
@@ -22,6 +64,31 @@ export const UrgencyLaunchScreen: React.FC<UrgencyLaunchScreenProps> = ({
 }) => {
   const { toggleTheme, isDark } = useGreenTheme();
   const [selectedCriteria, setSelectedCriteria] = useState<FrontPageCriteria>('nearest');
+  const [currentSlideIdx, setCurrentSlideIdx] = useState<number>(0);
+
+  // Auto-advance dynamic EV scenes every 5.5 seconds
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setCurrentSlideIdx((prev) => (prev + 1) % EV_SLIDES.length);
+    }, 5500);
+    return () => clearInterval(timer);
+  }, []);
+
+  const handleNextSlide = () => {
+    setCurrentSlideIdx((prev) => (prev + 1) % EV_SLIDES.length);
+  };
+
+  const handleSelectCriteria = (crit: FrontPageCriteria) => {
+    setSelectedCriteria(crit);
+    // Dynamically align EV image to the chosen criteria
+    if (crit === 'fastest') {
+      setCurrentSlideIdx(0); // Ultra-fast charging
+    } else if (crit === 'cheapest') {
+      setCurrentSlideIdx(1); // Solar eco off-peak
+    } else {
+      setCurrentSlideIdx(3); // Express turnkey bay
+    }
+  };
 
   // Compute Cheapest Station
   const cheapestStation = useMemo(() => {
@@ -146,7 +213,7 @@ export const UrgencyLaunchScreen: React.FC<UrgencyLaunchScreenProps> = ({
       />
 
       {/* Top Header: Brand, Theme Toggle & Install Button (Menu removed) */}
-      <header className="relative z-20 w-full max-w-sm sm:max-w-md mx-auto flex items-center justify-between shrink-0 py-1">
+      <header className="relative z-20 w-full max-w-sm sm:max-w-md md:max-w-lg lg:max-w-xl mx-auto flex items-center justify-between shrink-0 py-1">
         <ChargeSGLogo
           size="md"
           textColor={isDark ? 'text-white group-hover:text-[#85f8c4]' : 'text-[#0d1c2f] group-hover:text-[#006948]'}
@@ -174,22 +241,69 @@ export const UrgencyLaunchScreen: React.FC<UrgencyLaunchScreenProps> = ({
       </header>
 
       {/* Main Content Area - Fully contained, zero scrolling */}
-      <main className="relative z-10 w-full max-w-sm sm:max-w-md mx-auto flex-1 flex flex-col justify-evenly py-1 min-h-0">
-        {/* Curved Organic Hero Image Container */}
-        <div className="relative w-full max-w-[260px] sm:max-w-[290px] mx-auto shrink-0">
-          <div className="absolute inset-0 bg-gradient-to-tr from-[#006948]/15 to-[#85f8c4]/25 rounded-[2.5rem] blur-lg transform scale-105" />
+      <main className="relative z-10 w-full max-w-sm sm:max-w-md md:max-w-lg lg:max-w-xl mx-auto flex-1 flex flex-col justify-between py-1 sm:py-2 min-h-0 gap-1.5 sm:gap-2.5">
+        {/* Dynamic Responsive Centerpiece EV Showcase - Scales dynamically with viewport */}
+        <div className="relative w-full flex-1 min-h-[160px] max-h-[36vh] sm:max-h-[42vh] md:max-h-[46vh] lg:max-h-[48vh] flex items-center justify-center select-none py-0.5 sm:py-1">
+          <div className="relative w-full h-full max-w-[340px] sm:max-w-[440px] md:max-w-[500px] lg:max-w-[560px] flex items-center justify-center">
+            {/* Ambient Glow Aura */}
+            <div className="absolute inset-0 bg-gradient-to-tr from-[#006948]/20 to-[#85f8c4]/30 rounded-[2.5rem] blur-xl transform scale-105 pointer-events-none" />
 
-          <div
-            className={`relative w-full aspect-[16/10] rounded-[2rem] rounded-tr-[4.5rem] rounded-bl-[1.2rem] overflow-hidden shadow-xl border-2 transition-colors ${
-              isDark ? 'border-[#1b4434] bg-[#071711]' : 'border-white bg-slate-100'
-            }`}
-          >
-            <img
-              src={heroHighwayImg}
-              alt="Singapore EV Expressway"
-              className="w-full h-full object-cover transform scale-105"
-            />
-            <div className="absolute inset-0 bg-gradient-to-t from-black/35 via-transparent to-transparent pointer-events-none" />
+            <div
+              onClick={handleNextSlide}
+              className={`relative w-full h-full aspect-[16/10] max-h-[36vh] sm:max-h-[42vh] md:max-h-[46vh] lg:max-h-[48vh] rounded-[2rem] rounded-tr-[4.5rem] rounded-bl-[1.5rem] overflow-hidden shadow-2xl border-2 transition-all cursor-pointer group select-none ${
+                isDark ? 'border-[#1b4434] bg-[#071711]' : 'border-white bg-slate-100'
+              }`}
+              title="Tap or click to explore next Singapore EV charging scenario"
+            >
+              {EV_SLIDES.map((slide, idx) => (
+                <div
+                  key={slide.id}
+                  className={`absolute inset-0 transition-opacity duration-700 ease-in-out ${
+                    idx === currentSlideIdx ? 'opacity-100 z-10' : 'opacity-0 z-0 pointer-events-none'
+                  }`}
+                >
+                  <img
+                    src={slide.img}
+                    alt={slide.title}
+                    referrerPolicy="no-referrer"
+                    className="w-full h-full object-cover transform scale-102 group-hover:scale-105 transition-transform duration-700"
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/75 via-black/15 to-transparent pointer-events-none" />
+
+                  {/* Dynamic EV Scenario Badge & Title */}
+                  <div className="absolute bottom-2.5 sm:bottom-3 inset-x-3 sm:inset-x-4 flex items-end justify-between gap-2 pointer-events-none">
+                    <div className="min-w-0 flex-1">
+                      <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-black/60 backdrop-blur-md text-[#85f8c4] text-[9.5px] sm:text-[10.5px] font-bold border border-[#85f8c4]/30 shadow-xs mb-1">
+                        {slide.tag}
+                      </span>
+                      <h3 className="text-white text-xs sm:text-sm font-extrabold tracking-tight truncate drop-shadow-md">
+                        {slide.title}
+                      </h3>
+                    </div>
+
+                    {/* Interactive Slide Dots */}
+                    <div className="flex items-center gap-1 shrink-0 pb-1">
+                      {EV_SLIDES.map((_, dotIdx) => (
+                        <button
+                          key={dotIdx}
+                          type="button"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            setCurrentSlideIdx(dotIdx);
+                          }}
+                          aria-label={`Jump to slide ${dotIdx + 1}`}
+                          className={`rounded-full transition-all cursor-pointer pointer-events-auto ${
+                            dotIdx === currentSlideIdx
+                              ? 'w-4 h-1.5 bg-[#85f8c4]'
+                              : 'w-1.5 h-1.5 bg-white/50 hover:bg-white'
+                          }`}
+                        />
+                      ))}
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
           </div>
         </div>
 
@@ -215,7 +329,7 @@ export const UrgencyLaunchScreen: React.FC<UrgencyLaunchScreenProps> = ({
           {/* Nearest Button (Emerald Green) */}
           <button
             type="button"
-            onClick={() => setSelectedCriteria('nearest')}
+            onClick={() => handleSelectCriteria('nearest')}
             className={`flex-1 py-1.5 px-1.5 rounded-xl text-xs font-black transition-all flex items-center justify-center gap-1 cursor-pointer ${
               selectedCriteria === 'nearest'
                 ? 'bg-[#006948] text-white shadow-md'
@@ -231,7 +345,7 @@ export const UrgencyLaunchScreen: React.FC<UrgencyLaunchScreenProps> = ({
           {/* Cheapest Button (Amber Gold) */}
           <button
             type="button"
-            onClick={() => setSelectedCriteria('cheapest')}
+            onClick={() => handleSelectCriteria('cheapest')}
             className={`flex-1 py-1.5 px-1.5 rounded-xl text-xs font-black transition-all flex items-center justify-center gap-1 cursor-pointer ${
               selectedCriteria === 'cheapest'
                 ? 'bg-[#d97706] text-white shadow-md'
@@ -247,7 +361,7 @@ export const UrgencyLaunchScreen: React.FC<UrgencyLaunchScreenProps> = ({
           {/* Fastest Button (Electric Blue / Sky) */}
           <button
             type="button"
-            onClick={() => setSelectedCriteria('fastest')}
+            onClick={() => handleSelectCriteria('fastest')}
             className={`flex-1 py-1.5 px-1.5 rounded-xl text-xs font-black transition-all flex items-center justify-center gap-1 cursor-pointer ${
               selectedCriteria === 'fastest'
                 ? 'bg-[#0284c7] text-white shadow-md'

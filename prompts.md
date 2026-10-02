@@ -385,6 +385,28 @@ This document collates all user prompts, architectural specifications, iterative
 
 ---
 
+### Prompt 24: Dynamic Scaling & Dynamic EV Showcase on Launch Centerpiece
+
+> **User Prompt**:
+> 1. increase the size of the center picture, and scale the size of the center picture dynamically with viewing area; 2. change the content of the center picture dynamically (EV related)
+
+#### Implementation Details:
+1. **Dynamic Viewport-Aware Scaling**:
+   - Replaced fixed small pixel constraints (`max-w-[260px]`) with viewport-dynamic responsive sizing (`flex-1 min-h-[160px] max-h-[36vh] sm:max-h-[42vh] md:max-h-[46vh] lg:max-h-[48vh] max-w-[340px] sm:max-w-[440px] md:max-w-[500px] lg:max-w-[560px]`).
+   - The centerpiece photo dynamically expands and contracts to take full advantage of available viewport height and width on mobile, tablet, laptop, and desktop displays while preserving the strict zero-scroll single-page guarantee.
+2. **Dynamic EV Content Gallery (4 Singapore EV Scenarios)**:
+   - Generated 4 high-definition realistic Singapore EV charging scenes:
+     1. `sg_ev_fast_charging`: High-Power DC Ultra-Fast Hub (150kW Dual CCS2).
+     2. `sg_ev_solar_canopy`: Solar Canopy Green Energy Hub (Eco Off-Peak Tariffs).
+     3. `sg_ev_night_supercharger`: Marina Bay Skyline Night Charger (24/7 High-Availability).
+     4. `sg_ev_expressway_hub`: Express Islandway Quick Charge (PIE Expressway Turnkey Bay).
+3. **Multi-Mode Dynamic Switching**:
+   - **Automatic Interval**: Gently cross-fades to the next EV scene every 5.5 seconds.
+   - **Criteria Selection**: Tapping **Nearest**, **Cheapest**, or **Fastest** instantly synchronizes the picture to highlight the corresponding EV feature.
+   - **Direct Touch/Click Interaction**: Clicking or tapping the image cycles to the next slide with smooth cross-fade animation and interactive slide dot indicators.
+
+---
+
 ## Architecture Summary
 
 | Component | Responsibility |
