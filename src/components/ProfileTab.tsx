@@ -1,15 +1,54 @@
 import React, { useState } from 'react';
+import {
+  getJsonCookie,
+  setJsonCookie,
+  COOKIE_KEYS,
+  DEFAULT_VEHICLE_PREFS,
+  UserVehiclePreferences,
+} from '../utils/cookies';
 
 export const ProfileTab: React.FC = () => {
-  const [vehicleModel, setVehicleModel] = useState<string>('BYD Atto 3');
-  const [carPlate, setCarPlate] = useState<string>('');
-  const [preferredPlug, setPreferredPlug] = useState<'CCS2' | 'Type 2'>('CCS2');
+  const [prefs, setPrefs] = useState<UserVehiclePreferences>(() =>
+    getJsonCookie<UserVehiclePreferences>(COOKIE_KEYS.VEHICLE_PREFS, DEFAULT_VEHICLE_PREFS)
+  );
+
+  const [vehicleModel, setVehicleModel] = useState<string>(prefs.vehicleModel || 'BYD Atto 3');
+  const [carPlate, setCarPlate] = useState<string>((prefs as any).carPlate || '');
+  const [preferredPlug, setPreferredPlug] = useState<'CCS2' | 'Type 2' | 'CHAdeMO'>(
+    (prefs.connectorPreference as 'CCS2' | 'Type 2' | 'CHAdeMO') || 'CCS2'
+  );
   const [savedSuccess, setSavedSuccess] = useState<boolean>(false);
 
   const handleSave = (e: React.FormEvent) => {
     e.preventDefault();
+    const updated: UserVehiclePreferences & { carPlate?: string } = {
+      ...prefs,
+      vehicleModel,
+      carPlate,
+      connectorPreference: preferredPlug,
+    };
+    setPrefs(updated);
+    setJsonCookie(COOKIE_KEYS.VEHICLE_PREFS, updated);
+    if (typeof window !== 'undefined') {
+      window.dispatchEvent(new CustomEvent('sgev-prefs-updated', { detail: updated }));
+    }
     setSavedSuccess(true);
     setTimeout(() => setSavedSuccess(false), 2500);
+  };
+
+  const handleSelectPlug = (plug: 'CCS2' | 'Type 2' | 'CHAdeMO') => {
+    setPreferredPlug(plug);
+    const updated: UserVehiclePreferences & { carPlate?: string } = {
+      ...prefs,
+      vehicleModel,
+      carPlate,
+      connectorPreference: plug,
+    };
+    setPrefs(updated);
+    setJsonCookie(COOKIE_KEYS.VEHICLE_PREFS, updated);
+    if (typeof window !== 'undefined') {
+      window.dispatchEvent(new CustomEvent('sgev-prefs-updated', { detail: updated }));
+    }
   };
 
   return (
@@ -59,30 +98,41 @@ export const ProfileTab: React.FC = () => {
 
         <div>
           <label className="text-[11px] font-bold text-[#3d4a42] uppercase tracking-wider block mb-1">
-            Default Connector Standard
+            Default Connector Standard (Used by "Preferred" Filter)
           </label>
-          <div className="grid grid-cols-2 gap-2">
+          <div className="grid grid-cols-3 gap-2">
             <button
               type="button"
-              onClick={() => setPreferredPlug('CCS2')}
-              className={`py-2 px-3 rounded-xl text-xs font-bold border transition-all ${
+              onClick={() => handleSelectPlug('CCS2')}
+              className={`py-2 px-2.5 rounded-xl text-xs font-bold border transition-all cursor-pointer ${
                 preferredPlug === 'CCS2'
-                  ? 'bg-[#006948] text-white border-[#006948]'
+                  ? 'bg-[#006948] text-white border-[#006948] shadow-sm'
                   : 'bg-[#eff4ff] text-[#3d4a42] border-transparent hover:border-slate-300'
               }`}
             >
-              CCS2 (DC Fast)
+              CCS2 (DC)
             </button>
             <button
               type="button"
-              onClick={() => setPreferredPlug('Type 2')}
-              className={`py-2 px-3 rounded-xl text-xs font-bold border transition-all ${
+              onClick={() => handleSelectPlug('Type 2')}
+              className={`py-2 px-2.5 rounded-xl text-xs font-bold border transition-all cursor-pointer ${
                 preferredPlug === 'Type 2'
-                  ? 'bg-[#006948] text-white border-[#006948]'
+                  ? 'bg-[#006948] text-white border-[#006948] shadow-sm'
                   : 'bg-[#eff4ff] text-[#3d4a42] border-transparent hover:border-slate-300'
               }`}
             >
               Type 2 (AC)
+            </button>
+            <button
+              type="button"
+              onClick={() => handleSelectPlug('CHAdeMO')}
+              className={`py-2 px-2.5 rounded-xl text-xs font-bold border transition-all cursor-pointer ${
+                preferredPlug === 'CHAdeMO'
+                  ? 'bg-[#006948] text-white border-[#006948] shadow-sm'
+                  : 'bg-[#eff4ff] text-[#3d4a42] border-transparent hover:border-slate-300'
+              }`}
+            >
+              CHAdeMO
             </button>
           </div>
         </div>

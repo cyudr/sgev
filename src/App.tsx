@@ -18,6 +18,7 @@ import { UrgencyLaunchScreen } from './components/UrgencyLaunchScreen';
 import { NearestRoutingPage } from './components/NearestRoutingPage';
 import { useEvStations } from '@/api';
 import { getJsonCookie, setJsonCookie, COOKIE_KEYS } from './utils/cookies';
+import { useMobileNavigation } from './hooks/useMobileNavigation';
 
 function getDistKm(lat1: number, lon1: number, lat2: number, lon2: number): number {
   const R = 6371;
@@ -124,6 +125,61 @@ export default function App() {
   // Global Toast
   const [toastMessage, setToastMessage] = useState<string | null>(null);
 
+  // Check if any popup or modal is currently visible
+  const hasOpenModal = Boolean(
+    showChargingModal ||
+    showQRScanner ||
+    showReservationModal ||
+    showReportModal ||
+    showPortSelector ||
+    showNavigationModal ||
+    showReviewsModal
+  );
+
+  const handleCloseOpenModal = useCallback(() => {
+    if (showReviewsModal) { setShowReviewsModal(false); return; }
+    if (showNavigationModal) { setShowNavigationModal(false); return; }
+    if (showPortSelector) { setShowPortSelector(false); return; }
+    if (showReportModal) { setShowReportModal(false); return; }
+    if (showReservationModal) { setShowReservationModal(false); return; }
+    if (showQRScanner) { setShowQRScanner(false); return; }
+    if (showChargingModal) { setShowChargingModal(false); return; }
+  }, [
+    showReviewsModal,
+    showNavigationModal,
+    showPortSelector,
+    showReportModal,
+    showReservationModal,
+    showQRScanner,
+    showChargingModal,
+  ]);
+
+  const handleBackToMap = useCallback(() => {
+    setIsDetailsView(false);
+    setCurrentTab('map');
+  }, []);
+
+  const handleBackToLaunch = useCallback(() => {
+    setIsDetailsView(false);
+    setAppFlowMode('launch');
+  }, []);
+
+  const handleSetTab = useCallback((tab: 'map' | 'saved' | 'activity' | 'profile') => {
+    setCurrentTab(tab);
+  }, []);
+
+  // Mobile User Detection and Swipe-Back Navigation Hook
+  const { isMobile, pushNavState } = useMobileNavigation({
+    appFlowMode,
+    isDetailsView,
+    currentTab,
+    hasOpenModal,
+    onCloseOpenModal: handleCloseOpenModal,
+    onBackToMap: handleBackToMap,
+    onBackToLaunch: handleBackToLaunch,
+    onSetTab: handleSetTab,
+  });
+
   // Genuine nearest available station from user's current GPS position
   const nearestStation = useMemo(() => {
     if (!stationsWithRealDistance || stationsWithRealDistance.length === 0) return null;
@@ -139,11 +195,13 @@ export default function App() {
     }
     setSelectedStation(nearestStation);
     setAppFlowMode('routing_nearest');
+    pushNavState('routing_nearest');
     showToast(`Planning route from your location to ${nearestStation.name}`);
   };
 
   const handleShowMeAround = () => {
     setAppFlowMode('explore');
+    pushNavState('explore');
   };
 
   const showToast = (msg: string) => {
@@ -167,11 +225,7 @@ export default function App() {
   const handleOpenStationDetails = (station: Station) => {
     setSelectedStation(station);
     setIsDetailsView(true);
-  };
-
-  const handleBackToMap = () => {
-    setIsDetailsView(false);
-    setCurrentTab('map');
+    pushNavState(`station_${station.id}`);
   };
 
   const handleStartCharging = (bayCode: string, station: Station) => {
@@ -201,6 +255,7 @@ export default function App() {
 
     setActiveSession(newSession);
     setShowChargingModal(true);
+    pushNavState('charging_modal');
     showToast(`Charging started at ${station.name}!`);
   };
 
@@ -330,12 +385,16 @@ export default function App() {
               handleStartCharging(bay, nearestStation);
             }
           }}
-          onOpenReserveModal={() => setShowReservationModal(true)}
+          onOpenReserveModal={() => {
+            setShowReservationModal(true);
+            pushNavState('reservation_modal');
+          }}
           onOpenDetails={() => {
             if (nearestStation) {
               setSelectedStation(nearestStation);
               setAppFlowMode('explore');
               setIsDetailsView(true);
+              pushNavState(`station_${nearestStation.id}`);
             }
           }}
         />
@@ -401,13 +460,29 @@ export default function App() {
               onStartNavigation={(st) => {
                 setSelectedStation(st);
                 setShowNavigationModal(true);
+                pushNavState('navigation_modal');
               }}
               onPlugInToStart={(bay) => handleStartCharging(bay.code, selectedStation)}
-              onScanQR={() => setShowQRScanner(true)}
-              onOpenPortSelector={() => setShowPortSelector(true)}
-              onOpenReserveModal={() => setShowReservationModal(true)}
-              onOpenReportModal={() => setShowReportModal(true)}
-              onOpenReviewsModal={() => setShowReviewsModal(true)}
+              onScanQR={() => {
+                setShowQRScanner(true);
+                pushNavState('qr_scanner');
+              }}
+              onOpenPortSelector={() => {
+                setShowPortSelector(true);
+                pushNavState('port_selector');
+              }}
+              onOpenReserveModal={() => {
+                setShowReservationModal(true);
+                pushNavState('reservation_modal');
+              }}
+              onOpenReportModal={() => {
+                setShowReportModal(true);
+                pushNavState('report_modal');
+              }}
+              onOpenReviewsModal={() => {
+                setShowReviewsModal(true);
+                pushNavState('reviews_modal');
+              }}
               isSaved={savedStationIds.includes(selectedStation.id)}
               onToggleSave={() => handleToggleSaveStation(selectedStation.id)}
             />
@@ -424,6 +499,7 @@ export default function App() {
                 onStartNavigation={(st) => {
                   setSelectedStation(st);
                   setShowNavigationModal(true);
+                  pushNavState('navigation_modal');
                 }}
                 savedStationIds={savedStationIds}
                 onToggleSaveStation={handleToggleSaveStation}
@@ -485,7 +561,10 @@ export default function App() {
           <div className="flex items-center justify-around py-2 sm:py-2.5 px-3 sm:px-6 max-w-lg sm:max-w-xl lg:max-w-2xl mx-auto">
             <button
               type="button"
-              onClick={() => setCurrentTab('map')}
+              onClick={() => {
+                handleSetTab('map');
+                pushNavState('tab_map');
+              }}
               className={`flex flex-col items-center gap-0.5 py-1 px-3 rounded-xl transition-all cursor-pointer ${
                 currentTab === 'map'
                   ? 'text-[#006948] font-bold'
@@ -503,7 +582,10 @@ export default function App() {
 
             <button
               type="button"
-              onClick={() => setCurrentTab('saved')}
+              onClick={() => {
+                handleSetTab('saved');
+                pushNavState('tab_saved');
+              }}
               className={`flex flex-col items-center gap-0.5 py-1 px-3 rounded-xl transition-all cursor-pointer ${
                 currentTab === 'saved'
                   ? 'text-[#006948] font-bold'
@@ -521,7 +603,10 @@ export default function App() {
 
             <button
               type="button"
-              onClick={() => setCurrentTab('activity')}
+              onClick={() => {
+                handleSetTab('activity');
+                pushNavState('tab_activity');
+              }}
               className={`flex flex-col items-center gap-0.5 py-1 px-3 rounded-xl transition-all cursor-pointer relative ${
                 currentTab === 'activity'
                   ? 'text-[#006948] font-bold'
@@ -542,7 +627,10 @@ export default function App() {
 
             <button
               type="button"
-              onClick={() => setCurrentTab('profile')}
+              onClick={() => {
+                handleSetTab('profile');
+                pushNavState('tab_profile');
+              }}
               className={`flex flex-col items-center gap-0.5 py-1 px-3 rounded-xl transition-all cursor-pointer ${
                 currentTab === 'profile'
                   ? 'text-[#006948] font-bold'

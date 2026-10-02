@@ -86,10 +86,10 @@ export const Header: React.FC<HeaderProps> = ({
             <button
               type="button"
               onClick={handleLogoClick}
-              className="w-7 h-7 sm:w-8 sm:h-8 rounded-xl sm:rounded-2xl bg-gradient-to-tr from-[#006948] to-[#00a86b] flex items-center justify-center text-white shadow-sm shadow-[#006948]/20 shrink-0 cursor-pointer hover:scale-105 active:scale-95 transition-all"
+              className="w-5.5 h-5.5 sm:w-6 sm:h-6 rounded-lg bg-gradient-to-tr from-[#006948] to-[#00a86b] flex items-center justify-center text-white shadow-xs shadow-[#006948]/20 shrink-0 cursor-pointer hover:scale-105 active:scale-95 transition-all"
               title="Return to Launch Page"
             >
-              <span className="material-symbols-outlined text-[18px] sm:text-[22px]">bolt</span>
+              <span className="material-symbols-outlined text-[13px] sm:text-[15px]">bolt</span>
             </button>
           )}
 

@@ -1,6 +1,13 @@
 import React, { useState, useMemo, useEffect, useRef, useCallback } from 'react';
 import { Station } from '../types/charging';
-import { getCookie, setCookie, COOKIE_KEYS } from '../utils/cookies';
+import {
+  getCookie,
+  setCookie,
+  getJsonCookie,
+  COOKIE_KEYS,
+  DEFAULT_VEHICLE_PREFS,
+  UserVehiclePreferences,
+} from '../utils/cookies';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 
@@ -70,6 +77,25 @@ export const InteractiveMap: React.FC<InteractiveMapProps> = ({
     (getCookie(COOKIE_KEYS.MAP_TYPE, 'roadmap') as 'roadmap' | 'satellite')
   );
 
+  // User saved preferences for plug type filter
+  const [userPrefs, setUserPrefs] = useState<UserVehiclePreferences>(() =>
+    getJsonCookie<UserVehiclePreferences>(COOKIE_KEYS.VEHICLE_PREFS, DEFAULT_VEHICLE_PREFS)
+  );
+
+  useEffect(() => {
+    const handlePrefsUpdated = (e: any) => {
+      if (e?.detail) {
+        setUserPrefs(e.detail);
+      } else {
+        setUserPrefs(getJsonCookie<UserVehiclePreferences>(COOKIE_KEYS.VEHICLE_PREFS, DEFAULT_VEHICLE_PREFS));
+      }
+    };
+    window.addEventListener('sgev-prefs-updated', handlePrefsUpdated);
+    return () => window.removeEventListener('sgev-prefs-updated', handlePrefsUpdated);
+  }, []);
+
+  const preferredPlug = userPrefs?.connectorPreference || 'CCS2';
+
   const setActiveFilter = (filter: string) => {
     setActiveFilterState(filter);
     setCookie(COOKIE_KEYS.FILTER_PREF, filter);
@@ -93,7 +119,17 @@ export const InteractiveMap: React.FC<InteractiveMapProps> = ({
   const userMarkerRef = useRef<L.LayerGroup | null>(null);
   const radarCircleRef = useRef<L.Circle | null>(null);
 
-  // Filter stations based on search query and active quick filter
+  // Helper to check if a station has a specific connector standard
+  const stationHasPlug = useCallback((station: Station, plug: string): boolean => {
+    if (!plug || plug === 'all') return true;
+    const target = plug.toUpperCase().replace(/\s+/g, '');
+    return station.bays.some((bay) => {
+      const bType = (bay.connectorType || '').toUpperCase().replace(/\s+/g, '');
+      return bType.includes(target) || target.includes(bType);
+    });
+  }, []);
+
+  // Filter stations based on search query, plug type, and active filter
   const filteredStations = useMemo(() => {
     return stations.filter((station) => {
       const query = searchQuery.trim().toLowerCase();
@@ -106,6 +142,21 @@ export const InteractiveMap: React.FC<InteractiveMapProps> = ({
 
       if (!matchesSearch) return false;
 
+      // 1. Preferred filter: Takes user's saved preference as filter input
+      if (activeFilter === 'preferred') {
+        return stationHasPlug(station, preferredPlug);
+      }
+      // 2. Explicit plug type filters
+      if (activeFilter === 'ccs2') {
+        return stationHasPlug(station, 'CCS2');
+      }
+      if (activeFilter === 'type2') {
+        return stationHasPlug(station, 'Type 2');
+      }
+      if (activeFilter === 'chademo') {
+        return stationHasPlug(station, 'CHAdeMO');
+      }
+      // 3. Status and provider filters
       if (activeFilter === 'available') {
         return station.availableBays > 0;
       }
@@ -117,7 +168,7 @@ export const InteractiveMap: React.FC<InteractiveMapProps> = ({
       }
       return true;
     });
-  }, [stations, searchQuery, activeFilter]);
+  }, [stations, searchQuery, activeFilter, preferredPlug, stationHasPlug]);
 
   // Compute nearest available station for the floating navigation button in viewing area
   const nearestNavTarget = useMemo(() => {
@@ -546,11 +597,12 @@ export const InteractiveMap: React.FC<InteractiveMapProps> = ({
         </div>
 
         {/* Quick Filter Chips (Horizontal compact scroll, no cluttered status HUD) */}
-        <div className="flex items-center gap-1 overflow-x-auto no-scrollbar py-0.5 pointer-events-auto">
+        <div className="flex items-center gap-1.5 overflow-x-auto no-scrollbar py-0.5 pointer-events-auto">
+          {/* All Stations */}
           <button
             type="button"
             onClick={() => setActiveFilter('all')}
-            className={`px-2.5 py-0.5 rounded-full text-[11px] font-semibold whitespace-nowrap transition-all shadow-sm cursor-pointer ${
+            className={`px-2.5 py-0.5 rounded-full text-[11px] font-semibold whitespace-nowrap transition-all shadow-xs cursor-pointer ${
               activeFilter === 'all'
                 ? 'bg-[#006948] text-white'
                 : 'bg-white/95 text-slate-700 hover:bg-slate-50 border border-slate-200'
@@ -558,10 +610,69 @@ export const InteractiveMap: React.FC<InteractiveMapProps> = ({
           >
             All ({stations.length})
           </button>
+
+          {/* Preferred Filter: uses user saved preference */}
+          <button
+            type="button"
+            onClick={() => setActiveFilter('preferred')}
+            className={`px-2.5 py-0.5 rounded-full text-[11px] font-bold whitespace-nowrap transition-all shadow-xs cursor-pointer flex items-center gap-1 ${
+              activeFilter === 'preferred'
+                ? 'bg-[#006948] text-white ring-2 ring-[#85f8c4]/60'
+                : 'bg-white/95 text-emerald-800 hover:bg-emerald-50 border border-emerald-300'
+            }`}
+            title={`Filtered by your saved preference: ${preferredPlug}`}
+          >
+            <span className="material-symbols-outlined text-[13px] text-[#85f8c4]">star</span>
+            <span>Preferred ({preferredPlug})</span>
+          </button>
+
+          {/* Plug Type: CCS2 */}
+          <button
+            type="button"
+            onClick={() => setActiveFilter('ccs2')}
+            className={`px-2.5 py-0.5 rounded-full text-[11px] font-semibold whitespace-nowrap transition-all shadow-xs cursor-pointer flex items-center gap-1 ${
+              activeFilter === 'ccs2'
+                ? 'bg-[#006948] text-white'
+                : 'bg-white/95 text-slate-700 hover:bg-slate-50 border border-slate-200'
+            }`}
+          >
+            <span className="material-symbols-outlined text-[13px]">power</span>
+            <span>CCS2 (DC)</span>
+          </button>
+
+          {/* Plug Type: Type 2 */}
+          <button
+            type="button"
+            onClick={() => setActiveFilter('type2')}
+            className={`px-2.5 py-0.5 rounded-full text-[11px] font-semibold whitespace-nowrap transition-all shadow-xs cursor-pointer flex items-center gap-1 ${
+              activeFilter === 'type2'
+                ? 'bg-[#006948] text-white'
+                : 'bg-white/95 text-slate-700 hover:bg-slate-50 border border-slate-200'
+            }`}
+          >
+            <span className="material-symbols-outlined text-[13px]">power</span>
+            <span>Type 2 (AC)</span>
+          </button>
+
+          {/* Plug Type: CHAdeMO */}
+          <button
+            type="button"
+            onClick={() => setActiveFilter('chademo')}
+            className={`px-2.5 py-0.5 rounded-full text-[11px] font-semibold whitespace-nowrap transition-all shadow-xs cursor-pointer flex items-center gap-1 ${
+              activeFilter === 'chademo'
+                ? 'bg-[#006948] text-white'
+                : 'bg-white/95 text-slate-700 hover:bg-slate-50 border border-slate-200'
+            }`}
+          >
+            <span className="material-symbols-outlined text-[13px]">power</span>
+            <span>CHAdeMO</span>
+          </button>
+
+          {/* Available Now */}
           <button
             type="button"
             onClick={() => setActiveFilter('available')}
-            className={`px-2.5 py-0.5 rounded-full text-[11px] font-semibold whitespace-nowrap transition-all shadow-sm cursor-pointer ${
+            className={`px-2.5 py-0.5 rounded-full text-[11px] font-semibold whitespace-nowrap transition-all shadow-xs cursor-pointer ${
               activeFilter === 'available'
                 ? 'bg-[#006948] text-white'
                 : 'bg-white/95 text-slate-700 hover:bg-slate-50 border border-slate-200'
@@ -569,10 +680,12 @@ export const InteractiveMap: React.FC<InteractiveMapProps> = ({
           >
             Available Now
           </button>
+
+          {/* SP Mobility */}
           <button
             type="button"
             onClick={() => setActiveFilter('sp')}
-            className={`px-2.5 py-0.5 rounded-full text-[11px] font-semibold whitespace-nowrap transition-all shadow-sm cursor-pointer ${
+            className={`px-2.5 py-0.5 rounded-full text-[11px] font-semibold whitespace-nowrap transition-all shadow-xs cursor-pointer ${
               activeFilter === 'sp'
                 ? 'bg-[#006948] text-white'
                 : 'bg-white/95 text-slate-700 hover:bg-slate-50 border border-slate-200'
@@ -580,10 +693,12 @@ export const InteractiveMap: React.FC<InteractiveMapProps> = ({
           >
             SP Mobility
           </button>
+
+          {/* CDG ENGIE */}
           <button
             type="button"
             onClick={() => setActiveFilter('cdg')}
-            className={`px-2.5 py-0.5 rounded-full text-[11px] font-semibold whitespace-nowrap transition-all shadow-sm cursor-pointer ${
+            className={`px-2.5 py-0.5 rounded-full text-[11px] font-semibold whitespace-nowrap transition-all shadow-xs cursor-pointer ${
               activeFilter === 'cdg'
                 ? 'bg-[#006948] text-white'
                 : 'bg-white/95 text-slate-700 hover:bg-slate-50 border border-slate-200'
