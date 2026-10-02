@@ -77,7 +77,7 @@ export const Header: React.FC<HeaderProps> = ({
       <div className="w-full max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 py-2 sm:py-2.5 flex items-center justify-between">
         {/* Left: Brand logo & name linked to launch page */}
         <div className="flex items-center gap-1.5 sm:gap-2.5 min-w-0">
-          {currentScreen !== 'map' && onBackToMap && (
+          {currentScreen === 'details' && onBackToMap && (
             <button
               type="button"
               onClick={onBackToMap}
@@ -96,21 +96,8 @@ export const Header: React.FC<HeaderProps> = ({
           />
         </div>
 
-        {/* Right: Actions */}
+        {/* Right: Actions (Theme toggle removed on explore, save, activity, profile) */}
         <div className="flex items-center gap-1 sm:gap-2 shrink-0">
-          {/* Quick Green Theme Toggle: Light vs Dark */}
-          <button
-            type="button"
-            onClick={toggleTheme}
-            title={isDark ? "Switch to Light Green theme" : "Switch to Dark Emerald theme"}
-            aria-label="Toggle Green Theme"
-            className="w-7 h-7 sm:w-8 sm:h-8 rounded-full flex items-center justify-center text-[#3d4a42] dark:text-[#a5d8c3] hover:bg-[#eff4ff] dark:hover:bg-[#143b2c] active:scale-95 transition-all cursor-pointer"
-          >
-            <span className="material-symbols-outlined text-[18px] sm:text-[20px] text-[#006948] dark:text-[#85f8c4]">
-              {isDark ? 'light_mode' : 'dark_mode'}
-            </span>
-          </button>
-
           {/* One-Click Install Button (Auto-hides if installed) */}
           <PWAInstallButton variant="header" />
 

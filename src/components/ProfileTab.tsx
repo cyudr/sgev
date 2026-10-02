@@ -41,7 +41,7 @@ export const ProfileTab: React.FC = () => {
     getJsonCookie<UserVehiclePreferences>(COOKIE_KEYS.VEHICLE_PREFS, DEFAULT_VEHICLE_PREFS)
   );
 
-  const { theme, setTheme } = useGreenTheme();
+  const { theme, themeMode, setThemeMode, timeDescription } = useGreenTheme();
   const [vehicleModel, setVehicleModel] = useState<string>(prefs.vehicleModel || 'BYD Atto 3');
   const [carPlate, setCarPlate] = useState<string>((prefs as any).carPlate || '');
   const [preferredPlug, setPreferredPlug] = useState<'CCS2' | 'Type 2' | 'CHAdeMO'>(
@@ -377,45 +377,72 @@ export const ProfileTab: React.FC = () => {
       <div className="p-4 rounded-3xl bg-white dark:bg-[#0e291f] shadow-sm border border-[#dde9ff] dark:border-[#1b4434] flex flex-col gap-3 transition-colors">
         <div className="flex items-center justify-between">
           <span className="text-xs font-bold text-[#0d1c2f] dark:text-[#f0fbf6] flex items-center gap-1.5">
-            <span className="material-symbols-outlined text-[#006948] dark:text-[#85f8c4] text-[18px]">palette</span>
+            <span className="material-symbols-outlined text-[#006948] dark:text-[#85f8c4] text-[18px]">schedule</span>
             Color Theme Preference
           </span>
-          <span className="text-[10px] text-slate-500 dark:text-[#a5d8c3] font-medium">All Green Shades</span>
+          <span className="text-[10px] text-[#006948] dark:text-[#85f8c4] font-bold">
+            {timeDescription}
+          </span>
         </div>
 
-        <div className="grid grid-cols-2 gap-2.5">
-          {/* Light Green (Default) */}
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-2.5">
+          {/* Auto Time-based (Default) */}
           <button
             type="button"
-            onClick={() => setTheme('light')}
+            onClick={() => setThemeMode('auto')}
             className={`p-3 rounded-2xl border flex flex-col items-center gap-1.5 transition-all cursor-pointer ${
-              theme === 'light'
-                ? 'bg-[#e6f8ef] text-[#006948] border-[#006948] shadow-sm'
+              themeMode === 'auto'
+                ? 'bg-[#e6f8ef] dark:bg-[#0f3d2e] text-[#006948] dark:text-[#85f8c4] border-[#006948] dark:border-[#85f8c4] shadow-sm ring-1 ring-[#006948]/30 dark:ring-[#85f8c4]/30'
+                : 'bg-[#eff4ff] dark:bg-[#143b2c] text-slate-600 dark:text-[#a5d8c3] border-transparent hover:border-slate-300'
+            }`}
+          >
+            <div className="w-8 h-8 rounded-full bg-gradient-to-br from-[#006948] via-[#0284c7] to-[#85f8c4] flex items-center justify-center text-white shadow-xs">
+              <span className="material-symbols-outlined text-[17px]">timelapse</span>
+            </div>
+            <div className="text-center">
+              <span className="text-xs font-bold block">Auto (Time-based)</span>
+              <span className="text-[9px] text-slate-500 dark:text-[#a5d8c3]/80 block">
+                7am–7pm Light · 7pm–7am Dark
+              </span>
+            </div>
+          </button>
+
+          {/* Light Green */}
+          <button
+            type="button"
+            onClick={() => setThemeMode('light')}
+            className={`p-3 rounded-2xl border flex flex-col items-center gap-1.5 transition-all cursor-pointer ${
+              themeMode === 'light'
+                ? 'bg-[#e6f8ef] text-[#006948] border-[#006948] shadow-sm ring-1 ring-[#006948]/30'
                 : 'bg-[#eff4ff] dark:bg-[#143b2c] text-slate-600 dark:text-[#a5d8c3] border-transparent hover:border-slate-300'
             }`}
           >
             <div className="w-8 h-8 rounded-full bg-gradient-to-br from-[#006948] to-[#85f8c4] flex items-center justify-center text-white shadow-xs">
               <span className="material-symbols-outlined text-[17px]">light_mode</span>
             </div>
-            <span className="text-xs font-bold">Light Mint</span>
-            <span className="text-[9px] text-slate-500 dark:text-[#a5d8c3]/80">Default • Clean Sage</span>
+            <div className="text-center">
+              <span className="text-xs font-bold block">Always Light</span>
+              <span className="text-[9px] text-slate-500 dark:text-[#a5d8c3]/80 block">Clean Sage White</span>
+            </div>
           </button>
 
           {/* Dark Emerald */}
           <button
             type="button"
-            onClick={() => setTheme('dark')}
+            onClick={() => setThemeMode('dark')}
             className={`p-3 rounded-2xl border flex flex-col items-center gap-1.5 transition-all cursor-pointer ${
-              theme === 'dark'
-                ? 'bg-[#0f3d2e] text-[#85f8c4] border-[#85f8c4] shadow-sm'
+              themeMode === 'dark'
+                ? 'bg-[#0f3d2e] text-[#85f8c4] border-[#85f8c4] shadow-sm ring-1 ring-[#85f8c4]/30'
                 : 'bg-[#eff4ff] dark:bg-[#143b2c] text-slate-600 dark:text-[#a5d8c3] border-transparent hover:border-slate-300'
             }`}
           >
             <div className="w-8 h-8 rounded-full bg-gradient-to-br from-[#06150f] via-[#006948] to-[#85f8c4] flex items-center justify-center text-white shadow-xs">
               <span className="material-symbols-outlined text-[17px] text-[#85f8c4]">dark_mode</span>
             </div>
-            <span className="text-xs font-bold">Dark Emerald</span>
-            <span className="text-[9px] text-slate-500 dark:text-[#a5d8c3]/80">Midnight Forest</span>
+            <div className="text-center">
+              <span className="text-xs font-bold block">Always Dark</span>
+              <span className="text-[9px] text-slate-500 dark:text-[#a5d8c3]/80 block">Midnight Forest</span>
+            </div>
           </button>
         </div>
       </div>

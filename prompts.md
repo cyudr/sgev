@@ -284,6 +284,27 @@ This document collates all user prompts, architectural specifications, iterative
 
 ---
 
+### Prompt 19: Time-Based Auto Theme Toggling & Top Bar Cleanup
+
+> **User Prompt**:
+> 1. detect time and auto toggle theme between light and dark; 2. in the explore, save, activity and profile pages, remove the theme toggle and the back arrow in the top bar
+
+#### Implementation Details:
+1. **Time Detection & Auto Theme Toggling (`ThemeContext.tsx`)**:
+   - Implemented real-time hour detection (`new Date().getHours()`):
+     - **Daytime (7:00 AM – 6:59 PM / 07:00–18:59)**: Resolves to **Light Mint** theme.
+     - **Nighttime (7:00 PM – 6:59 AM / 19:00–06:59)**: Resolves to **Dark Emerald** theme.
+   - Built a dynamic scheduler that monitors local time every 10 seconds and automatically transitions the theme at the 7:00 AM/PM thresholds.
+   - Enhanced user preferences in `ProfileTab.tsx` with three distinct mode options:
+     - **Auto (Time-based)** (Default & Recommended): Automatically syncs with the day/night cycle, displaying live local time status (e.g. `21:23 (Nighttime · Dark)`).
+     - **Always Light**: Forced Light Mint theme.
+     - **Always Dark**: Forced Dark Emerald theme.
+2. **Top Bar Cleanup on Primary Navigation Pages (`Header.tsx`)**:
+   - **Back Arrow Removed**: On Explore (`map`), Saved (`saved`), Activity (`activity`), and Profile (`profile`), the back arrow `<` is removed since these are primary root tabs accessible via the bottom navigation dock. (The back arrow is retained solely on the station details sheet `details` to navigate back to the map).
+   - **Theme Toggle Removed**: Removed the manual sun/moon toggle button from the top bar across Explore, Save, Activity, and Profile pages, eliminating visual clutter in favor of seamless time-based auto-theming.
+
+---
+
 ## Architecture Summary
 
 | Component | Responsibility |
