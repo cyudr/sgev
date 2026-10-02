@@ -325,6 +325,22 @@ This document collates all user prompts, architectural specifications, iterative
 
 ---
 
+### Prompt 21: Top-Right Theme Toggle Restoration & Launch Pin Removal
+
+> **User Prompt**:
+> 1. bring back the theme toggle to the top right of the top bar; 2. remove the green map pin from (or near) the center picture in the launch page
+
+#### Implementation Details:
+1. **Top-Right Theme Toggle Restoration**:
+   - Restored the quick-toggle button (`light_mode` / `dark_mode`) to the top right of the header across all application screens in `Header.tsx`.
+   - Restored the matching top-right theme toggle button in `UrgencyLaunchScreen.tsx` beside the install button.
+   - Users can now instantaneously toggle between Light Mint and Dark Emerald directly from the top-right corner of any screen, complementing automatic time detection.
+2. **Removed Map Pin Marker from Launch Center Picture (`UrgencyLaunchScreen.tsx`)**:
+   - Removed the floating teardrop pin marker from the top-left edge of the organic highway picture container.
+   - The central visual is now completely clean, unobtrusive, and beautifully framed with organic curvature and soft ambient glow.
+
+---
+
 ## Architecture Summary
 
 | Component | Responsibility |

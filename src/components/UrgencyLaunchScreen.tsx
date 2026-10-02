@@ -152,9 +152,24 @@ export const UrgencyLaunchScreen: React.FC<UrgencyLaunchScreenProps> = ({
           textColor={isDark ? 'text-white group-hover:text-[#85f8c4]' : 'text-[#0d1c2f] group-hover:text-[#006948]'}
         />
 
-        {/* Top Right: One-Click Install Button */}
+        {/* Top Right: Theme Toggle & One-Click Install Button */}
         <div className="flex items-center gap-1.5 shrink-0">
           <PWAInstallButton variant="launch" />
+          <button
+            type="button"
+            onClick={toggleTheme}
+            title={isDark ? "Switch to Light Mint theme" : "Switch to Dark Emerald theme"}
+            aria-label="Toggle Theme"
+            className={`w-8 h-8 rounded-full flex items-center justify-center active:scale-95 transition-all cursor-pointer ${
+              isDark
+                ? 'text-[#85f8c4] bg-[#0e291f] hover:bg-[#143b2c] border border-[#1b4434]'
+                : 'text-[#006948] bg-white hover:bg-slate-50 border border-slate-200 shadow-xs'
+            }`}
+          >
+            <span className="material-symbols-outlined text-[17px]">
+              {isDark ? 'light_mode' : 'dark_mode'}
+            </span>
+          </button>
         </div>
       </header>
 
@@ -175,18 +190,6 @@ export const UrgencyLaunchScreen: React.FC<UrgencyLaunchScreenProps> = ({
               className="w-full h-full object-cover transform scale-105"
             />
             <div className="absolute inset-0 bg-gradient-to-t from-black/35 via-transparent to-transparent pointer-events-none" />
-          </div>
-
-          {/* Floating Teardrop Pin Marker with dynamic theme color */}
-          <div className="absolute -top-2.5 -left-1.5 z-20 flex flex-col items-center">
-            <div
-              className={`w-9 h-9 rounded-full rounded-br-none -rotate-45 bg-gradient-to-br ${theme.pinBg} flex items-center justify-center shadow-lg border-2 border-white transition-colors duration-300`}
-            >
-              <span
-                className={`w-3 h-3 rounded-full ${theme.pinDot} animate-pulse rotate-45 shadow-sm transition-colors duration-300`}
-              />
-            </div>
-            <div className="w-4 h-1 bg-black/20 rounded-full blur-[1px] mt-0.5" />
           </div>
         </div>
 

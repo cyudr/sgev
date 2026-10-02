@@ -1,6 +1,7 @@
 import React, { useEffect } from 'react';
 import { PWAInstallButton } from './PWAInstallButton';
 import { ChargeSGLogo } from './ChargeSGLogo';
+import { useGreenTheme } from '../context/ThemeContext';
 
 interface HeaderProps {
   currentScreen: 'map' | 'details' | 'saved' | 'activity' | 'profile';
@@ -67,6 +68,8 @@ export const Header: React.FC<HeaderProps> = ({
     }
   };
 
+  const { toggleTheme, isDark } = useGreenTheme();
+
   return (
     <header className="sticky top-0 z-30 w-full bg-[#f8f9ff]/90 dark:bg-[#071711]/95 backdrop-blur-md border-b border-[#dde9ff] dark:border-[#1b4434] shrink-0 transition-colors">
       <div className="w-full max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 py-2 sm:py-2.5 flex items-center justify-between">
@@ -91,8 +94,8 @@ export const Header: React.FC<HeaderProps> = ({
           />
         </div>
 
-        {/* Right: Optimized & Decluttered Actions */}
-        <div className="flex items-center gap-2 shrink-0">
+        {/* Right: Optimized Actions */}
+        <div className="flex items-center gap-1.5 sm:gap-2 shrink-0">
           {/* One-Click Install Button (Auto-hides if installed) */}
           <PWAInstallButton variant="header" />
 
@@ -101,12 +104,25 @@ export const Header: React.FC<HeaderProps> = ({
             type="button"
             onClick={handleLowBatteryClick}
             title="Find and navigate to nearest available charger"
-            className="px-3 py-1.5 rounded-full bg-[#ffdad6] dark:bg-[#3b1219] text-[#ba1a1a] dark:text-[#ffb4ab] hover:bg-[#ffb4ab] dark:hover:bg-[#4d1620] active:scale-95 transition-all text-xs font-black flex items-center gap-1.5 cursor-pointer border border-[#ba1a1a]/25 dark:border-[#ffb4ab]/30 shadow-xs"
+            className="px-2.5 sm:px-3 py-1.5 rounded-full bg-[#ffdad6] dark:bg-[#3b1219] text-[#ba1a1a] dark:text-[#ffb4ab] hover:bg-[#ffb4ab] dark:hover:bg-[#4d1620] active:scale-95 transition-all text-[11px] sm:text-xs font-black flex items-center gap-1 sm:gap-1.5 cursor-pointer border border-[#ba1a1a]/25 dark:border-[#ffb4ab]/30 shadow-xs"
           >
             <span className="material-symbols-outlined text-[15px] animate-pulse text-[#ba1a1a] dark:text-[#ff897d]">
               bolt
             </span>
             <span className="font-extrabold tracking-tight">nearest!</span>
+          </button>
+
+          {/* Theme Toggle Button (Light Mint / Dark Emerald) at top right */}
+          <button
+            type="button"
+            onClick={toggleTheme}
+            title={isDark ? "Switch to Light Mint theme" : "Switch to Dark Emerald theme"}
+            aria-label="Toggle Theme"
+            className="w-7 h-7 sm:w-8 sm:h-8 rounded-full flex items-center justify-center text-[#3d4a42] dark:text-[#a5d8c3] hover:bg-[#eff4ff] dark:hover:bg-[#143b2c] active:scale-95 transition-all cursor-pointer"
+          >
+            <span className="material-symbols-outlined text-[18px] sm:text-[20px] text-[#006948] dark:text-[#85f8c4]">
+              {isDark ? 'light_mode' : 'dark_mode'}
+            </span>
           </button>
         </div>
       </div>
