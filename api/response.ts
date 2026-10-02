@@ -9,7 +9,8 @@ export function sendJson(res: any, statusCode: number, data: any) {
     res.setHeader('Access-Control-Allow-Origin', '*');
     res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
     res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization, AccountKey');
-    res.setHeader('Content-Type', 'application/json');
+    res.setHeader('Content-Type', 'application/json; charset=utf-8');
+    res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate, proxy-revalidate');
   }
 
   if (typeof res.status === 'function') {

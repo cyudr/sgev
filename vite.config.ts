@@ -40,7 +40,12 @@ function apiDevServerPlugin(): Plugin {
           url === '/health' ||
           url === '/health/' ||
           url === '/healthcheck' ||
-          url === '/health-check'
+          url === '/health-check' ||
+          url === '/api/health.json' ||
+          url.endsWith('/api/health') ||
+          url.endsWith('/api/health/') ||
+          url.endsWith('/health') ||
+          url.endsWith('/health/')
         ) {
           return healthHandler(req, res);
         }
@@ -64,6 +69,9 @@ export default defineConfig(() => {
       VitePWA({
         registerType: 'autoUpdate',
         includeAssets: ['icon.svg', 'apple-touch-icon.png', 'pwa-192x192.png', 'pwa-512x512.png'],
+        workbox: {
+          navigateFallbackDenylist: [/^\/api/, /^\/health/, /api\/health/],
+        },
         manifest: {
           id: '/',
           name: 'ChargeSG - Singapore EV Charging',

@@ -38,7 +38,27 @@ app.use((req, res, next) => {
    ========================================================================== */
 
 // 1. Health & Diagnostics: Raw JSON report showing API connection & health
-app.all(['/api/health', '/api/health/', '/health', '/health/', '/healthcheck', '/health-check'], (req, res) => {
+app.use((req, res, next) => {
+  const cleanPath = (req.path || req.url || '').split('?')[0].replace(/\/+/g, '/').toLowerCase();
+  if (
+    cleanPath === '/api/health' ||
+    cleanPath === '/api/health/' ||
+    cleanPath === '/health' ||
+    cleanPath === '/health/' ||
+    cleanPath === '/healthcheck' ||
+    cleanPath === '/health-check' ||
+    cleanPath === '/api/health.json' ||
+    cleanPath.endsWith('/api/health') ||
+    cleanPath.endsWith('/api/health/') ||
+    cleanPath.endsWith('/health') ||
+    cleanPath.endsWith('/health/')
+  ) {
+    return healthHandler(req, res);
+  }
+  next();
+});
+
+app.all(['/api/health', '/api/health/*', '/health', '/health/*', '/healthcheck', '/health-check'], (req, res) => {
   return healthHandler(req, res);
 });
 
