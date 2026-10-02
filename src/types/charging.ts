@@ -5,6 +5,7 @@ export interface Connector {
   pricePerKwh?: number;
   priceType?: string;
   hasPublishedTariff: boolean;
+  isNominalRate?: boolean;
   availableCount: number;
   totalCount: number;
 }
@@ -17,6 +18,7 @@ export interface ChargingBay {
   connectorType: 'CCS2' | 'Type 2' | 'Tesla';
   pricePerKwh?: number;
   hasPublishedTariff: boolean;
+  isNominalRate?: boolean;
   provider: string;
   status: 'available' | 'in_use' | 'reserved' | 'offline';
   currentVehicle?: string;
@@ -64,6 +66,9 @@ export interface Station {
     acPrice?: number;
     priceType?: string;
     hasPublishedTariff: boolean;
+    isNominalRate?: boolean;
+    nominalDcPrice?: number;
+    nominalAcPrice?: number;
   };
   parkingFee: {
     title: string;
@@ -97,6 +102,7 @@ export interface ActiveChargingSession {
   energyDeliveredKwh: number;
   pricePerKwh?: number;
   hasPublishedTariff: boolean;
+  isNominalRate?: boolean;
   voltage: number;
   amperage: number;
 }

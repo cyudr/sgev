@@ -87,7 +87,8 @@ export function adaptLtaLocationToStation(loc: LtaEvLocation, index: number, use
       // Parse price strictly from API without fabricating defaults
       const parsedPrice = typeof pt.price === 'number' ? pt.price : parseFloat(String(pt.price));
       const hasPublishedTariff = !isNaN(parsedPrice) && parsedPrice > 0;
-      const price = hasPublishedTariff ? parsedPrice : undefined;
+      const nominalPrice = isDC ? 0.65 : 0.55;
+      const price = hasPublishedTariff ? parsedPrice : nominalPrice;
       const priceType = pt.priceType || '$/kWh';
 
       // Section 2.28 p.51-53:
@@ -113,6 +114,7 @@ export function adaptLtaLocationToStation(loc: LtaEvLocation, index: number, use
         pricePerKwh: price,
         priceType,
         hasPublishedTariff,
+        isNominalRate: !hasPublishedTariff,
         availableCount: plugAvail,
         totalCount: evCount,
       });
@@ -144,6 +146,7 @@ export function adaptLtaLocationToStation(loc: LtaEvLocation, index: number, use
           connectorType: isDC ? 'CCS2' : 'Type 2',
           pricePerKwh: price,
           hasPublishedTariff,
+          isNominalRate: !hasPublishedTariff,
           provider: primaryOperator,
           status: bayStatus,
         });
@@ -199,10 +202,13 @@ export function adaptLtaLocationToStation(loc: LtaEvLocation, index: number, use
     connectors,
     bays,
     tariffs: {
-      dcPrice: dcConn?.pricePerKwh,
-      acPrice: acConn?.pricePerKwh,
+      dcPrice: dcConn?.pricePerKwh ?? 0.650,
+      acPrice: acConn?.pricePerKwh ?? 0.550,
       priceType: dcConn?.priceType || acConn?.priceType || '$/kWh',
       hasPublishedTariff,
+      isNominalRate: !hasPublishedTariff,
+      nominalDcPrice: 0.650,
+      nominalAcPrice: 0.550,
     },
     parkingFee: {
       title: 'Carpark Rates',

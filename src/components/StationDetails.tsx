@@ -295,9 +295,15 @@ export const StationDetails: React.FC<StationDetailsProps> = ({
                       <p className="text-xs text-[#3d4a42]">
                         {isAvailable ? (
                           <>
-                            {bay.hasPublishedTariff && bay.pricePerKwh !== undefined
-                              ? `S$${bay.pricePerKwh.toFixed(3)} / kWh • `
-                              : 'Operator tariff • '}
+                            {bay.hasPublishedTariff && bay.pricePerKwh !== undefined ? (
+                              <span className="text-[#006948] font-bold">
+                                S${bay.pricePerKwh.toFixed(3)} / kWh (Live) •{' '}
+                              </span>
+                            ) : (
+                              <span className="text-amber-800 font-bold">
+                                ~S${(bay.pricePerKwh || (bay.category.includes('DC') ? 0.65 : 0.55)).toFixed(3)} / kWh (Nominal rate) •{' '}
+                              </span>
+                            )}
                             {bay.provider}
                           </>
                         ) : (
@@ -381,34 +387,62 @@ export const StationDetails: React.FC<StationDetailsProps> = ({
             <span className="material-symbols-outlined text-[#006948] text-[20px]">payments</span>
           </div>
 
-          {station.tariffs.hasPublishedTariff ? (
-            <div className="grid grid-cols-2 gap-2.5">
-              {station.tariffs.dcPrice !== undefined && (
-                <div className="p-3 rounded-2xl bg-[#eff4ff] flex flex-col">
-                  <span className="text-[11px] text-[#3d4a42] font-semibold">DC Fast Charging</span>
-                  <span className="text-lg text-[#0d1c2f] font-extrabold mt-0.5">
-                    S${station.tariffs.dcPrice.toFixed(3)}
-                  </span>
-                  <span className="text-[11px] text-[#3d4a42]">{station.tariffs.priceType || 'per kWh'}</span>
-                </div>
-              )}
-              {station.tariffs.acPrice !== undefined && (
-                <div className="p-3 rounded-2xl bg-[#eff4ff] flex flex-col">
-                  <span className="text-[11px] text-[#3d4a42] font-semibold">AC Normal Charging</span>
-                  <span className="text-lg text-[#0d1c2f] font-extrabold mt-0.5">
-                    S${station.tariffs.acPrice.toFixed(3)}
-                  </span>
-                  <span className="text-[11px] text-[#3d4a42]">{station.tariffs.priceType || 'per kWh'}</span>
-                </div>
-              )}
+          {/* Live Data vs Nominal Rate Indicator */}
+          <div className="flex items-center gap-2">
+            <span className="text-[11px] font-bold text-[#3d4a42]">Data Source:</span>
+            {station.tariffs.hasPublishedTariff ? (
+              <span className="px-2 py-0.5 rounded-full bg-[#85f8c4]/30 border border-[#85f8c4] text-[#002114] text-[10px] font-extrabold flex items-center gap-1">
+                <span className="w-1.5 h-1.5 rounded-full bg-[#006948] animate-pulse" />
+                Live Data Feed (Operator Published)
+              </span>
+            ) : (
+              <span className="px-2 py-0.5 rounded-full bg-amber-100 border border-amber-300 text-amber-900 text-[10px] font-extrabold flex items-center gap-1">
+                <span className="material-symbols-outlined text-[13px] text-amber-700">info</span>
+                Nominal Rate (Indicative Market Benchmark)
+              </span>
+            )}
+          </div>
+
+          <div className="grid grid-cols-2 gap-2.5">
+            <div className="p-3 rounded-2xl bg-[#eff4ff] flex flex-col border border-[#dde9ff]/80">
+              <div className="flex items-center justify-between">
+                <span className="text-[11px] text-[#3d4a42] font-semibold">DC Fast Charging</span>
+                {station.tariffs.hasPublishedTariff ? (
+                  <span className="text-[9px] font-extrabold text-[#006948] bg-[#85f8c4]/40 px-1.5 py-0.5 rounded">Live</span>
+                ) : (
+                  <span className="text-[9px] font-extrabold text-amber-800 bg-amber-100 border border-amber-300 px-1.5 py-0.5 rounded">Nominal Rate</span>
+                )}
+              </div>
+              <span className="text-lg text-[#0d1c2f] font-extrabold mt-0.5">
+                S${(station.tariffs.dcPrice ?? 0.650).toFixed(3)}
+              </span>
+              <span className="text-[10px] text-[#3d4a42]">
+                {station.tariffs.hasPublishedTariff ? 'per kWh (Live Tariff)' : 'per kWh (Nominal Rate)'}
+              </span>
             </div>
-          ) : (
-            <div className="p-3 rounded-2xl bg-[#eff4ff] text-xs text-[#3d4a42] flex flex-col gap-1">
-              <span className="font-bold text-[#0d1c2f]">Operator Tariff Applies</span>
-              <p className="text-[11px]">
-                Live tariff rate is not published by the operator in the LTA DataMall feed. Please refer to the charger screen or operator app before initiating charge.
-              </p>
+
+            <div className="p-3 rounded-2xl bg-[#eff4ff] flex flex-col border border-[#dde9ff]/80">
+              <div className="flex items-center justify-between">
+                <span className="text-[11px] text-[#3d4a42] font-semibold">AC Normal Charging</span>
+                {station.tariffs.hasPublishedTariff ? (
+                  <span className="text-[9px] font-extrabold text-[#006948] bg-[#85f8c4]/40 px-1.5 py-0.5 rounded">Live</span>
+                ) : (
+                  <span className="text-[9px] font-extrabold text-amber-800 bg-amber-100 border border-amber-300 px-1.5 py-0.5 rounded">Nominal Rate</span>
+                )}
+              </div>
+              <span className="text-lg text-[#0d1c2f] font-extrabold mt-0.5">
+                S${(station.tariffs.acPrice ?? 0.550).toFixed(3)}
+              </span>
+              <span className="text-[10px] text-[#3d4a42]">
+                {station.tariffs.hasPublishedTariff ? 'per kWh (Live Tariff)' : 'per kWh (Nominal Rate)'}
+              </span>
             </div>
+          </div>
+
+          {!station.tariffs.hasPublishedTariff && (
+            <p className="text-[11px] text-amber-900 bg-amber-50 p-2.5 rounded-xl border border-amber-200 leading-snug">
+              <strong>Notice on Nominal Rate:</strong> Operator has not published a live tariff feed to LTA for this point. Indicative Singapore market nominal rates shown (~S$0.65/kWh DC, ~S$0.55/kWh AC). Actual rate determined by operator app.
+            </p>
           )}
         </div>
       </div>

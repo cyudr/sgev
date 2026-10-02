@@ -140,7 +140,7 @@ export const ActivityTab: React.FC<ActivityTabProps> = ({
 
       {/* Receipt Modal */}
       {selectedReceipt && (
-        <div className="fixed inset-0 z-50 bg-[#0d1c2f]/70 backdrop-blur-md flex items-end sm:items-center justify-center p-0 sm:p-4 animate-in fade-in">
+        <div className="fixed inset-0 z-[100] bg-[#0d1c2f]/70 backdrop-blur-md flex items-end sm:items-center justify-center p-0 sm:p-4 animate-in fade-in">
           <div className="w-full max-w-md bg-white rounded-t-3xl sm:rounded-3xl shadow-2xl p-6 flex flex-col gap-4 border border-[#dde9ff]">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2">

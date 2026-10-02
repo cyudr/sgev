@@ -38,12 +38,13 @@ export const ChargingSessionModal: React.FC<ChargingSessionModalProps> = ({
     return () => clearInterval(timer);
   }, [session.targetSoc]);
 
-  const costSgd = session.pricePerKwh ? +(energyKwh * session.pricePerKwh).toFixed(2) : 0;
-  const minsElapsed = Math.floor(secondsElapsed / 60);
-  const secsRemaining = secondsElapsed % 60;
+    const rateToUse = session.pricePerKwh ?? (session.connectorType.includes('DC') || session.maxPowerKw >= 50 ? 0.65 : 0.55);
+    const costSgd = +(energyKwh * rateToUse).toFixed(2);
+    const minsElapsed = Math.floor(secondsElapsed / 60);
+    const secsRemaining = secondsElapsed % 60;
 
-  return (
-    <div className="fixed inset-0 z-50 bg-[#0d1c2f]/70 backdrop-blur-md flex items-end sm:items-center justify-center p-0 sm:p-4 animate-in fade-in">
+    return (
+      <div className="fixed inset-0 z-[100] bg-[#0d1c2f]/70 backdrop-blur-md flex items-end sm:items-center justify-center p-0 sm:p-4 animate-in fade-in">
       <div className="w-full max-w-md bg-white rounded-t-3xl sm:rounded-3xl shadow-2xl p-6 flex flex-col gap-5 border border-[#dde9ff] max-h-[92vh] overflow-y-auto no-scrollbar">
         {/* Header */}
         <div className="flex items-center justify-between">
@@ -143,10 +144,15 @@ export const ChargingSessionModal: React.FC<ChargingSessionModalProps> = ({
               Estimated Cost
             </span>
             <span className="text-xl font-black text-[#006948] mt-1">
-              {session.pricePerKwh ? `S$${costSgd}` : '—'}
+              S${costSgd}
             </span>
-            <span className="text-[10px] text-[#3d4a42]">
-              {session.pricePerKwh ? `@ S$${session.pricePerKwh.toFixed(3)}/kWh` : 'Operator tariff applies'}
+            <span className="text-[10px] text-[#3d4a42] flex items-center gap-1 mt-0.5">
+              <span>@ S${rateToUse.toFixed(3)}/kWh</span>
+              {session.hasPublishedTariff ? (
+                <span className="text-[8.5px] font-bold px-1.5 py-0.2 rounded bg-[#85f8c4] text-[#002114]">Live</span>
+              ) : (
+                <span className="text-[8.5px] font-bold px-1.5 py-0.2 rounded bg-amber-100 text-amber-900 border border-amber-300">Nominal Rate</span>
+              )}
             </span>
           </div>
         </div>

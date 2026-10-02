@@ -468,9 +468,15 @@ export const NearestRoutingPage: React.FC<NearestRoutingPageProps> = ({
                   Bay {bestAvailableBay.code} ({bestAvailableBay.powerKw} kW {bestAvailableBay.connectorType})
                 </div>
                 <div className="text-[9px] text-slate-300">
-                  {bestAvailableBay.hasPublishedTariff && bestAvailableBay.pricePerKwh
-                    ? `S$${bestAvailableBay.pricePerKwh.toFixed(3)}/kWh`
-                    : 'Standard operator tariff'}
+                  {bestAvailableBay.hasPublishedTariff && bestAvailableBay.pricePerKwh ? (
+                    <span className="text-[#85f8c4] font-semibold">
+                      Live Tariff: S${bestAvailableBay.pricePerKwh.toFixed(3)}/kWh
+                    </span>
+                  ) : (
+                    <span className="text-amber-300 font-semibold">
+                      Nominal Rate: ~S${(bestAvailableBay.pricePerKwh || (bestAvailableBay.category.includes('DC') ? 0.65 : 0.55)).toFixed(3)}/kWh
+                    </span>
+                  )}
                 </div>
               </div>
             </div>
