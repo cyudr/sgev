@@ -142,6 +142,36 @@ This document collates all user prompts, architectural specifications, iterative
 
 ---
 
+### Prompt 13: Front Page Modes (Cheapest/Fastest), Bluetooth EV Telematics, 30% Opacity Search Container, Multi-filter AND Logic & Station Detail Swipe-up Exploration
+> *"1. add also "Cheapest" and "Fastest" to front page, along with "Nearest", have it as an option, also add these to filters after "Preferred" in explore; 2. enable "bluetooth" connection to EV's API under profile, to auto detect fetch data from the EV to populate the profile; 3. add a container behind the search and filter card in the explore page to increase visibility, set opacity to 30%; 4. allow multiple filter selection, use AND logic for this; 5. in explore, allow swiping up gesture to explore the details of particular stations, also add restaurant, place of interest, amenities in the detail exploration; push when done"*
+
+#### Requirements & Implementations:
+1. **Front Page Criteria Selector (`UrgencyLaunchScreen.tsx`, `App.tsx`)**:
+   - Added interactive option selector on the launch page: `[ 📍 Nearest ]  [ 💰 Cheapest ]  [ ⚡ Fastest ]`.
+   - Dynamic recommendation card updates in real-time with customized metrics:
+     - **Nearest**: Closest available charging point with drive time and distance.
+     - **Cheapest**: Lowest published/nominal tariff ($/kWh).
+     - **Fastest**: Maximum charging speed (up to 150kW DC).
+   - "TAKE ME THERE NOW!!" launches route directly to the active choice.
+2. **Bluetooth EV Telematics API (`ProfileTab.tsx`)**:
+   - Implemented Web Bluetooth API (`navigator.bluetooth`) integration with BLE GATT / OBD-II dongle support and graceful simulation fallback.
+   - Automatically detects and reads: Vehicle Model, Car Plate, Battery State of Charge (SoC %), Remaining Range (km), Battery Capacity (kWh), and Preferred Plug Standard.
+   - Auto-populates Driver Profile inputs, persists to cookies, and broadcasts updates instantly across the app.
+3. **30% Opacity Container Behind Explore Search & Filters (`InteractiveMap.tsx`)**:
+   - Added a container behind the floating search bar and filter chips with `bg-slate-900/30 backdrop-blur-md rounded-2xl sm:rounded-3xl p-2 sm:p-2.5 shadow-xl border border-white/20` to substantially improve contrast and visibility over map tiles.
+4. **Multiple Filter Selection with AND Logic (`InteractiveMap.tsx`)**:
+   - Replaced single-select state with multi-select `selectedFilters: string[]`.
+   - Multiple active filters combine strictly with **AND logic** (e.g. `Available Now` AND `Fastest` AND `CCS2`).
+   - Added `Cheapest` and `Fastest` filter chips positioned directly after `Preferred`.
+5. **Swipe-up Gesture & Station Detail Exploration (`InteractiveMap.tsx`, `StationDetails.tsx`)**:
+   - Implemented touch swipe-up gesture (`deltaY > 35px`) and visual pull handle on the bottom place card to open full details.
+   - Added comprehensive Singapore exploration sections:
+     - **Nearby Restaurants & Dining**: Walking distance, cuisine, hours, ratings (e.g. Din Tai Fung, Ya Kun Kaya Toast, Kopitiam, Starbucks, Shake Shack).
+     - **Places of Interest (POI) & Retail**: Supermarkets (NTUC FairPrice, Don Don Donki), Shopping Mall retail, IMAX Cinema, Sky Park.
+     - **Driver Amenities & Services**: Restrooms, free 1-hour parking with charging, high-pressure tire air & water, touchless car wash, Wi-Fi lounge, 24/7 security.
+
+---
+
 ## Architecture Summary
 
 | Component | Responsibility |

@@ -188,15 +188,19 @@ export default function App() {
     return [...pool].sort((a, b) => a.distanceKm - b.distanceKm)[0];
   }, [stationsWithRealDistance]);
 
+  const handleNavigateToTarget = (station: Station) => {
+    setSelectedStation(station);
+    setAppFlowMode('routing_nearest');
+    pushNavState('routing_nearest');
+    showToast(`Planning route from your location to ${station.name}`);
+  };
+
   const handleFindNow = () => {
     if (!nearestStation) {
       showToast('connecting, do not panic, try again after 1s');
       return;
     }
-    setSelectedStation(nearestStation);
-    setAppFlowMode('routing_nearest');
-    pushNavState('routing_nearest');
-    showToast(`Planning route from your location to ${nearestStation.name}`);
+    handleNavigateToTarget(nearestStation);
   };
 
   const handleShowMeAround = () => {
@@ -300,8 +304,9 @@ export default function App() {
         )}
 
         <UrgencyLaunchScreen
+          stations={stationsWithRealDistance}
           nearestStation={nearestStation}
-          onFindNow={handleFindNow}
+          onNavigateToTarget={handleNavigateToTarget}
           onShowMeAround={handleShowMeAround}
         />
 
@@ -376,13 +381,14 @@ export default function App() {
         )}
 
         <NearestRoutingPage
-          station={nearestStation}
+          station={selectedStation || nearestStation}
           userLocation={userLocation}
           onBackToUrgency={() => setAppFlowMode('launch')}
           onShowExplore={() => setAppFlowMode('explore')}
           onStartCharging={(bay) => {
-            if (nearestStation) {
-              handleStartCharging(bay, nearestStation);
+            const st = selectedStation || nearestStation;
+            if (st) {
+              handleStartCharging(bay, st);
             }
           }}
           onOpenReserveModal={() => {
@@ -390,11 +396,12 @@ export default function App() {
             pushNavState('reservation_modal');
           }}
           onOpenDetails={() => {
-            if (nearestStation) {
-              setSelectedStation(nearestStation);
+            const st = selectedStation || nearestStation;
+            if (st) {
+              setSelectedStation(st);
               setAppFlowMode('explore');
               setIsDetailsView(true);
-              pushNavState(`station_${nearestStation.id}`);
+              pushNavState(`station_${st.id}`);
             }
           }}
         />

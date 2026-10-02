@@ -494,24 +494,201 @@ export const StationDetails: React.FC<StationDetailsProps> = ({
         </div>
       </div>
 
-      {/* Verified Amenities Nearby */}
-      <div className="px-4 pt-4">
-        <h3 className="text-base font-bold text-[#0d1c2f] mb-2">Amenities While Charging</h3>
-        <div className="grid grid-cols-2 gap-2">
-          {station.amenities.map((amenity, idx) => (
-            <div
-              key={idx}
-              className="p-3 rounded-2xl bg-white shadow-sm flex items-center gap-2.5 border border-[#dde9ff]/70"
-            >
-              <span className="material-symbols-outlined text-[#006398] text-[20px] shrink-0">
-                {amenity.icon}
+      {/* Exploration Hub: Restaurants, Places of Interest (POI) & Amenities */}
+      <div className="px-4 pt-4 flex flex-col gap-4">
+        {/* Nearby Restaurants & Dining */}
+        <div className="p-4 rounded-3xl bg-white shadow-sm flex flex-col gap-3 border border-[#dde9ff]/80">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-2">
+              <span className="w-8 h-8 rounded-xl bg-orange-50 text-orange-600 flex items-center justify-center shrink-0">
+                <span className="material-symbols-outlined text-[20px]">restaurant</span>
               </span>
-              <div className="flex flex-col min-w-0">
-                <span className="text-xs font-bold text-[#0d1c2f] truncate">{amenity.title}</span>
-                <span className="text-[10px] text-[#3d4a42] truncate">{amenity.sub}</span>
+              <div>
+                <h3 className="text-base font-bold text-[#0d1c2f]">Nearby Restaurants & Cafes</h3>
+                <p className="text-[11px] text-[#3d4a42]">Dining within 1-5 mins walk while you charge</p>
               </div>
             </div>
-          ))}
+            <span className="px-2 py-0.5 rounded-full bg-orange-100 text-orange-800 text-[10px] font-bold">
+              Food & Drinks
+            </span>
+          </div>
+
+          <div className="flex flex-col gap-2.5">
+            {[
+              {
+                name: 'Din Tai Fung',
+                cuisine: 'Xiao Long Bao & Steamed Dumplings',
+                walkTime: '2 mins walk',
+                location: 'Level B1 #B1-18',
+                rating: '4.8 ★',
+                hours: '11:00 AM - 9:30 PM',
+              },
+              {
+                name: 'Ya Kun Kaya Toast',
+                cuisine: 'Traditional Hainanese Coffee & Soft-boiled Eggs',
+                walkTime: '1 min walk',
+                location: 'Level 1 Atrium',
+                rating: '4.7 ★',
+                hours: '7:30 AM - 9:00 PM',
+              },
+              {
+                name: 'Kopitiam Food Hall',
+                cuisine: 'Singapore Local Hawker (Chicken Rice, Laksa, Ban Mian)',
+                walkTime: '3 mins walk',
+                location: 'Level 2 Food Court',
+                rating: '4.5 ★',
+                hours: '8:00 AM - 10:00 PM',
+              },
+              {
+                name: 'Starbucks Coffee & Reserve',
+                cuisine: 'Artisan Espresso, Free High-Speed Wi-Fi & Lounge',
+                walkTime: '2 mins walk',
+                location: 'Level 1 West Wing',
+                rating: '4.6 ★',
+                hours: '7:00 AM - 11:00 PM',
+              },
+              {
+                name: 'McDonald\'s 24H / Shake Shack',
+                cuisine: 'Burgers, Crinkle Fries & Late Night Quick Service',
+                walkTime: '2 mins walk',
+                location: 'Concourse Level',
+                rating: '4.4 ★',
+                hours: '24 Hours Open',
+              },
+            ].map((resto, idx) => (
+              <div
+                key={idx}
+                className="p-3 rounded-2xl bg-[#eff4ff] border border-[#dde9ff]/60 flex items-start justify-between gap-2.5 hover:bg-[#e6eeff] transition-colors"
+              >
+                <div className="flex-1 min-w-0">
+                  <div className="flex items-center gap-1.5 flex-wrap">
+                    <span className="text-xs font-bold text-[#0d1c2f] truncate">{resto.name}</span>
+                    <span className="text-[10px] px-1.5 py-0.2 rounded-md bg-amber-100 text-amber-900 font-bold">
+                      {resto.rating}
+                    </span>
+                    <span className="text-[10px] text-slate-500">• {resto.location}</span>
+                  </div>
+                  <p className="text-[11px] text-[#3d4a42] mt-0.5 truncate">{resto.cuisine}</p>
+                  <p className="text-[10px] text-slate-400 mt-0.5">{resto.hours}</p>
+                </div>
+                <div className="px-2 py-1 rounded-xl bg-white shadow-2xs text-[10px] font-bold text-[#006948] shrink-0 border border-slate-200">
+                  {resto.walkTime}
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* Places of Interest (POI) & Shopping */}
+        <div className="p-4 rounded-3xl bg-white shadow-sm flex flex-col gap-3 border border-[#dde9ff]/80">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-2">
+              <span className="w-8 h-8 rounded-xl bg-purple-50 text-purple-600 flex items-center justify-center shrink-0">
+                <span className="material-symbols-outlined text-[20px]">attractions</span>
+              </span>
+              <div>
+                <h3 className="text-base font-bold text-[#0d1c2f]">Places of Interest (POI) & Retail</h3>
+                <p className="text-[11px] text-[#3d4a42]">Shopping, parks & activities within walking distance</p>
+              </div>
+            </div>
+            <span className="px-2 py-0.5 rounded-full bg-purple-100 text-purple-800 text-[10px] font-bold">
+              Explore SG
+            </span>
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+            {[
+              {
+                title: 'NTUC FairPrice Finest / Don Don Donki',
+                category: 'Supermarket & Groceries',
+                walkTime: '2 mins walk',
+                desc: 'Pick up fresh groceries, daily essentials & snacks while your EV charges.',
+                icon: 'shopping_cart',
+              },
+              {
+                title: 'Shopping Mall Galleria & Electronics',
+                category: 'Retail & Boutiques',
+                walkTime: '1 min walk',
+                desc: 'Over 120 retail outlets, fashion brands, phone accessories & bookshops.',
+                icon: 'storefront',
+              },
+              {
+                title: 'Golden Village Cinema & IMAX',
+                category: 'Entertainment & Movies',
+                walkTime: '4 mins walk',
+                desc: 'Enjoy movies on big screen with recliners during an 80% battery replenishment.',
+                icon: 'movie',
+              },
+              {
+                title: 'Rooftop Sky Park & Community Garden',
+                category: 'Park & Scenic Promenade',
+                walkTime: '3 mins walk',
+                desc: 'Lush greenery, sheltered benches and scenic skyline views overlooking Singapore.',
+                icon: 'park',
+              },
+            ].map((poi, idx) => (
+              <div
+                key={idx}
+                className="p-3 rounded-2xl bg-[#eff4ff] border border-[#dde9ff]/60 flex flex-col justify-between gap-2"
+              >
+                <div className="flex items-start gap-2">
+                  <span className="material-symbols-outlined text-purple-600 text-[20px] shrink-0 mt-0.5">
+                    {poi.icon}
+                  </span>
+                  <div className="min-w-0">
+                    <span className="text-xs font-bold text-[#0d1c2f] leading-snug block">{poi.title}</span>
+                    <span className="text-[10px] text-purple-700 font-semibold">{poi.category}</span>
+                  </div>
+                </div>
+                <p className="text-[10px] text-[#3d4a42] leading-relaxed">{poi.desc}</p>
+                <div className="self-end px-2 py-0.5 rounded-lg bg-white text-[10px] font-bold text-[#006948] border border-slate-200">
+                  {poi.walkTime}
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* Driver Amenities While Charging */}
+        <div className="p-4 rounded-3xl bg-white shadow-sm flex flex-col gap-3 border border-[#dde9ff]/80">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-2">
+              <span className="w-8 h-8 rounded-xl bg-emerald-50 text-[#006948] flex items-center justify-center shrink-0">
+                <span className="material-symbols-outlined text-[20px]">local_convenience_store</span>
+              </span>
+              <div>
+                <h3 className="text-base font-bold text-[#0d1c2f]">Driver Amenities & Services</h3>
+                <p className="text-[11px] text-[#3d4a42]">Convenience facilities on-site at this charging hub</p>
+              </div>
+            </div>
+            <span className="px-2 py-0.5 rounded-full bg-[#85f8c4] text-[#002114] text-[10px] font-bold">
+              Hub Perks
+            </span>
+          </div>
+
+          <div className="grid grid-cols-2 gap-2">
+            {[
+              { title: 'Restrooms', sub: 'Air-conditioned & Accessible (Level B1)', icon: 'wc' },
+              { title: 'Free 1-Hour Parking', sub: 'Complimentary with min. 10kWh charge', icon: 'local_parking' },
+              { title: 'Tire Pressure & Water', sub: '24/7 complimentary high-pressure air', icon: 'tire_repair' },
+              { title: 'Automated Car Wash', sub: 'Touchless exterior wash bay (Level B3)', icon: 'local_car_wash' },
+              { title: 'Coffee & Wi-Fi Lounge', sub: 'Dedicated seating with USB outlets', icon: 'wifi' },
+              { title: '24/7 Security CCTV', sub: 'Sheltered pillars with emergency intercom', icon: 'security' },
+            ].map((amenity, idx) => (
+              <div
+                key={idx}
+                className="p-3 rounded-2xl bg-[#eff4ff] shadow-2xs flex items-center gap-2.5 border border-[#dde9ff]/70"
+              >
+                <span className="material-symbols-outlined text-[#006948] text-[20px] shrink-0">
+                  {amenity.icon}
+                </span>
+                <div className="flex flex-col min-w-0">
+                  <span className="text-xs font-bold text-[#0d1c2f] truncate">{amenity.title}</span>
+                  <span className="text-[10px] text-[#3d4a42] truncate">{amenity.sub}</span>
+                </div>
+              </div>
+            ))}
+          </div>
         </div>
       </div>
 

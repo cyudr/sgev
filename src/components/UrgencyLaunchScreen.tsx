@@ -1,18 +1,80 @@
-import React from 'react';
+import React, { useState, useMemo } from 'react';
 import { Station } from '../types/charging';
 import { PWAInstallButton } from './PWAInstallButton';
 
+export type FrontPageCriteria = 'nearest' | 'cheapest' | 'fastest';
+
 interface UrgencyLaunchScreenProps {
+  stations: Station[];
   nearestStation: Station | null;
-  onFindNow: () => void;
+  onNavigateToTarget: (station: Station) => void;
   onShowMeAround: () => void;
 }
 
 export const UrgencyLaunchScreen: React.FC<UrgencyLaunchScreenProps> = ({
+  stations,
   nearestStation,
-  onFindNow,
+  onNavigateToTarget,
   onShowMeAround,
 }) => {
+  const [selectedCriteria, setSelectedCriteria] = useState<FrontPageCriteria>('nearest');
+
+  // Compute Cheapest Station
+  const cheapestStation = useMemo(() => {
+    if (!stations || stations.length === 0) return nearestStation;
+    const available = stations.filter((s) => s.availableBays > 0);
+    const pool = available.length > 0 ? available : stations;
+
+    return [...pool].sort((a, b) => {
+      const priceA = a.tariffs.dcPrice || a.tariffs.nominalDcPrice || 0.59;
+      const priceB = b.tariffs.dcPrice || b.tariffs.nominalDcPrice || 0.59;
+      if (priceA !== priceB) return priceA - priceB;
+      return a.distanceKm - b.distanceKm;
+    })[0] || nearestStation;
+  }, [stations, nearestStation]);
+
+  // Compute Fastest Station (highest kW DC charger)
+  const fastestStation = useMemo(() => {
+    if (!stations || stations.length === 0) return nearestStation;
+    const available = stations.filter((s) => s.availableBays > 0);
+    const pool = available.length > 0 ? available : stations;
+
+    return [...pool].sort((a, b) => {
+      const powerA = Math.max(...a.bays.map((b) => b.powerKw), 22);
+      const powerB = Math.max(...b.bays.map((b) => b.powerKw), 22);
+      if (powerB !== powerA) return powerB - powerA;
+      return a.distanceKm - b.distanceKm;
+    })[0] || nearestStation;
+  }, [stations, nearestStation]);
+
+  // Active Station based on selected criteria
+  const activeStation = useMemo(() => {
+    if (selectedCriteria === 'cheapest') return cheapestStation || nearestStation;
+    if (selectedCriteria === 'fastest') return fastestStation || nearestStation;
+    return nearestStation;
+  }, [selectedCriteria, cheapestStation, fastestStation, nearestStation]);
+
+  const maxPowerKw = useMemo(() => {
+    if (!activeStation) return 50;
+    return Math.max(...activeStation.bays.map((b) => b.powerKw), 50);
+  }, [activeStation]);
+
+  const lowestTariff = useMemo(() => {
+    if (!activeStation) return 0.54;
+    return (
+      activeStation.tariffs.dcPrice ||
+      activeStation.tariffs.nominalDcPrice ||
+      activeStation.tariffs.acPrice ||
+      0.54
+    );
+  }, [activeStation]);
+
+  const handleTakeMeNow = () => {
+    if (activeStation) {
+      onNavigateToTarget(activeStation);
+    }
+  };
+
   return (
     <div className="w-full h-[100dvh] max-h-[100dvh] overflow-hidden bg-gradient-to-b from-[#0d1c2f] via-[#10221e] to-[#002114] text-white flex flex-col justify-between p-4 sm:p-6 lg:p-8 selection:bg-[#85f8c4] selection:text-[#002114] relative select-none pb-16 sm:pb-20">
       {/* Background Ambient EV Energy Glow */}
@@ -42,33 +104,109 @@ export const UrgencyLaunchScreen: React.FC<UrgencyLaunchScreenProps> = ({
         </div>
       </div>
 
-      {/* Centered Interactive Hero Block - Shifted Up Slightly for Bottom Strip */}
-      <div className="relative z-10 flex-1 flex flex-col justify-center items-center my-auto -translate-y-4 sm:-translate-y-6 w-full max-w-sm sm:max-w-md lg:max-w-lg mx-auto px-2 text-center min-w-0">
+      {/* Centered Interactive Hero Block */}
+      <div className="relative z-10 flex-1 flex flex-col justify-center items-center my-auto -translate-y-3 sm:-translate-y-5 w-full max-w-sm sm:max-w-md lg:max-w-lg mx-auto px-2 text-center min-w-0">
         <h2 className="text-2xl sm:text-3xl lg:text-4xl font-black text-white leading-tight text-center max-w-md">
           How urgent is your charge?
         </h2>
 
-        {/* Streamlined Single Card: No Overflows, Zero Duplication */}
-        <div className="mt-3.5 sm:mt-5 w-full max-w-full p-3.5 sm:p-4.5 rounded-3xl bg-white/10 backdrop-blur-md border border-white/20 shadow-2xl flex flex-col items-center justify-center text-center overflow-hidden">
+        {/* Criteria Option Selector: Nearest | Cheapest | Fastest */}
+        <div className="mt-3 sm:mt-4 p-1 rounded-2xl bg-white/10 backdrop-blur-md border border-white/15 flex items-center gap-1 w-full max-w-xs sm:max-w-sm shadow-md">
+          <button
+            type="button"
+            onClick={() => setSelectedCriteria('nearest')}
+            className={`flex-1 py-1.5 px-2 rounded-xl text-xs font-black transition-all flex items-center justify-center gap-1 cursor-pointer ${
+              selectedCriteria === 'nearest'
+                ? 'bg-[#006948] text-white shadow-md border border-[#85f8c4]/40'
+                : 'text-slate-300 hover:text-white'
+            }`}
+          >
+            <span className="material-symbols-outlined text-[15px]">near_me</span>
+            <span>Nearest</span>
+          </button>
+
+          <button
+            type="button"
+            onClick={() => setSelectedCriteria('cheapest')}
+            className={`flex-1 py-1.5 px-2 rounded-xl text-xs font-black transition-all flex items-center justify-center gap-1 cursor-pointer ${
+              selectedCriteria === 'cheapest'
+                ? 'bg-[#006948] text-white shadow-md border border-[#85f8c4]/40'
+                : 'text-slate-300 hover:text-white'
+            }`}
+          >
+            <span className="material-symbols-outlined text-[15px]">payments</span>
+            <span>Cheapest</span>
+          </button>
+
+          <button
+            type="button"
+            onClick={() => setSelectedCriteria('fastest')}
+            className={`flex-1 py-1.5 px-2 rounded-xl text-xs font-black transition-all flex items-center justify-center gap-1 cursor-pointer ${
+              selectedCriteria === 'fastest'
+                ? 'bg-[#006948] text-white shadow-md border border-[#85f8c4]/40'
+                : 'text-slate-300 hover:text-white'
+            }`}
+          >
+            <span className="material-symbols-outlined text-[15px]">bolt</span>
+            <span>Fastest</span>
+          </button>
+        </div>
+
+        {/* Dynamic Recommendation Card based on selected option */}
+        <div className="mt-3 sm:mt-4 w-full max-w-full p-3.5 sm:p-4.5 rounded-3xl bg-white/10 backdrop-blur-md border border-white/20 shadow-2xl flex flex-col items-center justify-center text-center overflow-hidden">
+          {/* Badge Label */}
           <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#85f8c4]/20 border border-[#85f8c4]/40 text-[#85f8c4] text-[10px] sm:text-xs font-black uppercase tracking-wider mb-1.5 shrink-0">
-            <span className="material-symbols-outlined text-[14px]">near_me</span>
-            <span>Nearest Ready Point</span>
+            {selectedCriteria === 'nearest' && (
+              <>
+                <span className="material-symbols-outlined text-[14px]">near_me</span>
+                <span>Nearest Ready Point</span>
+              </>
+            )}
+            {selectedCriteria === 'cheapest' && (
+              <>
+                <span className="material-symbols-outlined text-[14px]">savings</span>
+                <span>Cheapest Ready Point</span>
+              </>
+            )}
+            {selectedCriteria === 'fastest' && (
+              <>
+                <span className="material-symbols-outlined text-[14px]">speed</span>
+                <span>Fastest DC Rapid Charger</span>
+              </>
+            )}
           </div>
 
-          {/* Location Name: Responsive, wraps cleanly without overflow */}
+          {/* Location Name: Responsive, wraps cleanly */}
           <h3 className="w-full text-base sm:text-lg lg:text-xl font-black text-white leading-snug break-words line-clamp-2 px-1 text-center min-w-0">
-            {nearestStation ? nearestStation.name : 'Scanning Singapore EV Network...'}
+            {activeStation ? activeStation.name : 'Scanning Singapore EV Network...'}
           </h3>
 
-          {/* Concise, non-duplicated metrics row */}
-          {nearestStation ? (
+          {/* Dynamic Metrics Row */}
+          {activeStation ? (
             <div className="flex flex-wrap items-center justify-center gap-1.5 sm:gap-2 mt-2 mb-3.5 text-[11px] sm:text-xs">
               <span className="px-2.5 py-0.5 rounded-full bg-white/10 text-slate-200 font-medium">
-                {nearestStation.distanceKm} km · ~{nearestStation.driveTimeMins} mins
+                {activeStation.distanceKm} km · ~{activeStation.driveTimeMins} mins
               </span>
-              <span className="px-2.5 py-0.5 rounded-full bg-[#006948]/70 text-[#85f8c4] font-bold border border-[#85f8c4]/30">
-                {nearestStation.availableBays} bays free
-              </span>
+
+              {selectedCriteria === 'cheapest' ? (
+                <span className="px-2.5 py-0.5 rounded-full bg-[#006948]/70 text-[#85f8c4] font-bold border border-[#85f8c4]/30">
+                  ${lowestTariff.toFixed(2)}/kWh
+                </span>
+              ) : selectedCriteria === 'fastest' ? (
+                <span className="px-2.5 py-0.5 rounded-full bg-[#006948]/70 text-[#85f8c4] font-bold border border-[#85f8c4]/30">
+                  {maxPowerKw} kW DC
+                </span>
+              ) : (
+                <span className="px-2.5 py-0.5 rounded-full bg-[#006948]/70 text-[#85f8c4] font-bold border border-[#85f8c4]/30">
+                  {activeStation.availableBays} bays free
+                </span>
+              )}
+
+              {selectedCriteria !== 'nearest' && (
+                <span className="px-2.5 py-0.5 rounded-full bg-white/10 text-slate-200 font-medium">
+                  {activeStation.availableBays} bays free
+                </span>
+              )}
             </div>
           ) : (
             <p className="text-xs text-slate-300 mt-2 mb-3.5">
@@ -79,7 +217,7 @@ export const UrgencyLaunchScreen: React.FC<UrgencyLaunchScreenProps> = ({
           {/* Action Button: TAKE ME THERE NOW!! */}
           <button
             type="button"
-            onClick={onFindNow}
+            onClick={handleTakeMeNow}
             className="group relative w-full py-3 sm:py-3.5 px-4 rounded-2xl bg-[#006948] hover:bg-[#00855d] active:scale-[0.98] transition-all duration-200 text-white font-black shadow-[0_8px_24px_rgba(0,105,72,0.5)] border border-[#85f8c4]/50 cursor-pointer overflow-hidden flex items-center justify-center gap-2 shrink-0"
           >
             <div className="absolute inset-0 -translate-x-full group-hover:translate-x-full bg-gradient-to-r from-transparent via-white/25 to-transparent transition-transform duration-1000" />

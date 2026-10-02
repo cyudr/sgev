@@ -70,9 +70,19 @@ export const InteractiveMap: React.FC<InteractiveMapProps> = ({
   isLocating,
 }) => {
   const [searchQuery, setSearchQuery] = useState('');
-  const [activeFilter, setActiveFilterState] = useState<string>(() =>
-    getCookie(COOKIE_KEYS.FILTER_PREF, 'all')
-  );
+  
+  // Multi-filter selection with AND logic
+  const [selectedFilters, setSelectedFilters] = useState<string[]>(() => {
+    const saved = getCookie(COOKIE_KEYS.FILTER_PREF, '');
+    if (!saved || saved === 'all') return [];
+    try {
+      const parsed = JSON.parse(saved);
+      return Array.isArray(parsed) ? parsed : [saved];
+    } catch {
+      return [saved];
+    }
+  });
+
   const [mapType, setMapTypeState] = useState<'roadmap' | 'satellite'>(() =>
     (getCookie(COOKIE_KEYS.MAP_TYPE, 'roadmap') as 'roadmap' | 'satellite')
   );
@@ -96,9 +106,28 @@ export const InteractiveMap: React.FC<InteractiveMapProps> = ({
 
   const preferredPlug = userPrefs?.connectorPreference || 'CCS2';
 
-  const setActiveFilter = (filter: string) => {
-    setActiveFilterState(filter);
-    setCookie(COOKIE_KEYS.FILTER_PREF, filter);
+  const toggleFilter = (filterKey: string) => {
+    if (filterKey === 'all') {
+      setSelectedFilters([]);
+      setCookie(COOKIE_KEYS.FILTER_PREF, 'all');
+      return;
+    }
+
+    setSelectedFilters((prev) => {
+      let updated: string[];
+      if (prev.includes(filterKey)) {
+        updated = prev.filter((f) => f !== filterKey);
+      } else {
+        updated = [...prev, filterKey];
+      }
+      setCookie(COOKIE_KEYS.FILTER_PREF, JSON.stringify(updated));
+      return updated;
+    });
+  };
+
+  const isFilterActive = (filterKey: string) => {
+    if (filterKey === 'all') return selectedFilters.length === 0;
+    return selectedFilters.includes(filterKey);
   };
 
   const setMapType = (typeOrFn: 'roadmap' | 'satellite' | ((prev: 'roadmap' | 'satellite') => 'roadmap' | 'satellite')) => {
@@ -118,6 +147,20 @@ export const InteractiveMap: React.FC<InteractiveMapProps> = ({
   const markersLayerGroupRef = useRef<L.LayerGroup | null>(null);
   const userMarkerRef = useRef<L.LayerGroup | null>(null);
   const radarCircleRef = useRef<L.Circle | null>(null);
+  const touchStartYRef = useRef<number | null>(null);
+
+  const handleCardTouchStart = (e: React.TouchEvent) => {
+    touchStartYRef.current = e.touches[0].clientY;
+  };
+
+  const handleCardTouchEnd = (e: React.TouchEvent, station: Station) => {
+    if (touchStartYRef.current === null) return;
+    const deltaY = touchStartYRef.current - e.changedTouches[0].clientY;
+    if (deltaY > 35) {
+      onOpenStationDetails(station);
+    }
+    touchStartYRef.current = null;
+  };
 
   // Helper to check if a station has a specific connector standard
   const stationHasPlug = useCallback((station: Station, plug: string): boolean => {
@@ -129,7 +172,7 @@ export const InteractiveMap: React.FC<InteractiveMapProps> = ({
     });
   }, []);
 
-  // Filter stations based on search query, plug type, and active filter
+  // Filter stations based on search query and multiple filters with AND logic
   const filteredStations = useMemo(() => {
     return stations.filter((station) => {
       const query = searchQuery.trim().toLowerCase();
@@ -142,33 +185,56 @@ export const InteractiveMap: React.FC<InteractiveMapProps> = ({
 
       if (!matchesSearch) return false;
 
-      // 1. Preferred filter: Takes user's saved preference as filter input
-      if (activeFilter === 'preferred') {
-        return stationHasPlug(station, preferredPlug);
+      // Multiple filter selection using strict AND logic
+      if (selectedFilters.length > 0) {
+        for (const filter of selectedFilters) {
+          if (filter === 'available' && !(station.availableBays > 0)) {
+            return false;
+          }
+          if (filter === 'preferred' && !stationHasPlug(station, preferredPlug)) {
+            return false;
+          }
+          if (filter === 'cheapest') {
+            const dcRate = station.tariffs.dcPrice || station.tariffs.nominalDcPrice || 0.6;
+            const acRate = station.tariffs.acPrice || station.tariffs.nominalAcPrice || 0.6;
+            const minRate = Math.min(dcRate, acRate);
+            if (minRate > 0.58) return false;
+          }
+          if (filter === 'fastest') {
+            const maxPower = Math.max(...station.bays.map((b) => b.powerKw), 0);
+            if (maxPower < 50) return false;
+          }
+          if (filter === 'ccs2' && !stationHasPlug(station, 'CCS2')) {
+            return false;
+          }
+          if (filter === 'type2' && !stationHasPlug(station, 'Type 2')) {
+            return false;
+          }
+          if (filter === 'chademo' && !stationHasPlug(station, 'CHAdeMO')) {
+            return false;
+          }
+          if (
+            filter === 'sp' &&
+            !(station.provider.toLowerCase().includes('sp') || station.name.toLowerCase().includes('sp '))
+          ) {
+            return false;
+          }
+          if (
+            filter === 'cdg' &&
+            !(
+              station.provider.toLowerCase().includes('cdg') ||
+              station.provider.toLowerCase().includes('engie') ||
+              station.name.toLowerCase().includes('comfortdelgro')
+            )
+          ) {
+            return false;
+          }
+        }
       }
-      // 2. Explicit plug type filters
-      if (activeFilter === 'ccs2') {
-        return stationHasPlug(station, 'CCS2');
-      }
-      if (activeFilter === 'type2') {
-        return stationHasPlug(station, 'Type 2');
-      }
-      if (activeFilter === 'chademo') {
-        return stationHasPlug(station, 'CHAdeMO');
-      }
-      // 3. Status and provider filters
-      if (activeFilter === 'available') {
-        return station.availableBays > 0;
-      }
-      if (activeFilter === 'sp') {
-        return station.provider.toLowerCase().includes('sp');
-      }
-      if (activeFilter === 'cdg') {
-        return station.provider.toLowerCase().includes('cdg');
-      }
+
       return true;
     });
-  }, [stations, searchQuery, activeFilter, preferredPlug, stationHasPlug]);
+  }, [stations, searchQuery, selectedFilters, preferredPlug, stationHasPlug]);
 
   // Compute nearest available station for the floating navigation button in viewing area
   const nearestNavTarget = useMemo(() => {
@@ -571,142 +637,174 @@ export const InteractiveMap: React.FC<InteractiveMapProps> = ({
       {/* Real Google Maps Tile Engine */}
       <div ref={mapContainerRef} className="absolute inset-0 w-full h-full z-0" />
 
-      {/* Top Floating Search & Quick Filters (Clean, Uncluttered Strip) */}
-      <div className="relative z-10 p-2 sm:p-3.5 flex flex-col gap-1.5 max-w-lg sm:max-w-xl lg:max-w-2xl mx-auto w-full pointer-events-none">
-        {/* Search Bar */}
-        <div className="h-10 sm:h-11 bg-white/95 backdrop-blur-md rounded-full shadow-md px-3.5 flex items-center justify-between gap-2 border border-slate-200 pointer-events-auto">
-          <span className="material-symbols-outlined text-[#006948] text-[20px] shrink-0">
-            search
-          </span>
-          <input
-            type="text"
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            placeholder="Search postal code, mall, street..."
-            className="w-full bg-transparent text-xs text-[#0d1c2f] placeholder-slate-400 focus:outline-none font-medium"
-          />
-          {searchQuery && (
+      {/* Top Floating Search & Quick Filters with 30% Opacity Backdrop Container */}
+      <div className="relative z-10 p-2 sm:p-3.5 max-w-lg sm:max-w-xl lg:max-w-2xl mx-auto w-full pointer-events-none">
+        <div className="bg-slate-900/30 backdrop-blur-md rounded-2xl sm:rounded-3xl p-2 sm:p-2.5 shadow-xl border border-white/20 flex flex-col gap-1.5 pointer-events-auto">
+          {/* Search Bar */}
+          <div className="h-10 sm:h-11 bg-white/95 backdrop-blur-md rounded-full shadow-md px-3.5 flex items-center justify-between gap-2 border border-slate-200">
+            <span className="material-symbols-outlined text-[#006948] text-[20px] shrink-0">
+              search
+            </span>
+            <input
+              type="text"
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              placeholder="Search postal code, mall, street..."
+              className="w-full bg-transparent text-xs text-[#0d1c2f] placeholder-slate-400 focus:outline-none font-medium"
+            />
+            {searchQuery && (
+              <button
+                type="button"
+                onClick={() => setSearchQuery('')}
+                className="w-5 h-5 rounded-full flex items-center justify-center text-slate-400 hover:text-slate-600 cursor-pointer"
+              >
+                <span className="material-symbols-outlined text-[15px]">close</span>
+              </button>
+            )}
+          </div>
+
+          {/* Quick Filter Chips (Horizontal compact scroll with multiple AND selection) */}
+          <div className="flex items-center gap-1.5 overflow-x-auto no-scrollbar py-0.5">
+            {/* All Stations */}
             <button
               type="button"
-              onClick={() => setSearchQuery('')}
-              className="w-5 h-5 rounded-full flex items-center justify-center text-slate-400 hover:text-slate-600 cursor-pointer"
+              onClick={() => toggleFilter('all')}
+              className={`px-2.5 py-0.5 rounded-full text-[11px] font-semibold whitespace-nowrap transition-all shadow-xs cursor-pointer ${
+                isFilterActive('all')
+                  ? 'bg-[#006948] text-white ring-1 ring-[#85f8c4]/50'
+                  : 'bg-white/95 text-slate-700 hover:bg-slate-50 border border-slate-200'
+              }`}
             >
-              <span className="material-symbols-outlined text-[15px]">close</span>
+              All ({stations.length})
             </button>
-          )}
-        </div>
 
-        {/* Quick Filter Chips (Horizontal compact scroll, no cluttered status HUD) */}
-        <div className="flex items-center gap-1.5 overflow-x-auto no-scrollbar py-0.5 pointer-events-auto">
-          {/* All Stations */}
-          <button
-            type="button"
-            onClick={() => setActiveFilter('all')}
-            className={`px-2.5 py-0.5 rounded-full text-[11px] font-semibold whitespace-nowrap transition-all shadow-xs cursor-pointer ${
-              activeFilter === 'all'
-                ? 'bg-[#006948] text-white'
-                : 'bg-white/95 text-slate-700 hover:bg-slate-50 border border-slate-200'
-            }`}
-          >
-            All ({stations.length})
-          </button>
+            {/* Available Now */}
+            <button
+              type="button"
+              onClick={() => toggleFilter('available')}
+              className={`px-2.5 py-0.5 rounded-full text-[11px] font-semibold whitespace-nowrap transition-all shadow-xs cursor-pointer flex items-center gap-1 ${
+                isFilterActive('available')
+                  ? 'bg-[#006948] text-white ring-1 ring-[#85f8c4]/50'
+                  : 'bg-white/95 text-slate-700 hover:bg-slate-50 border border-slate-200'
+              }`}
+            >
+              <span className="w-1.5 h-1.5 rounded-full bg-[#00a86b]" />
+              <span>Available Now</span>
+            </button>
 
-          {/* Available Now (Beside All) */}
-          <button
-            type="button"
-            onClick={() => setActiveFilter('available')}
-            className={`px-2.5 py-0.5 rounded-full text-[11px] font-semibold whitespace-nowrap transition-all shadow-xs cursor-pointer flex items-center gap-1 ${
-              activeFilter === 'available'
-                ? 'bg-[#006948] text-white'
-                : 'bg-white/95 text-slate-700 hover:bg-slate-50 border border-slate-200'
-            }`}
-          >
-            <span className="w-1.5 h-1.5 rounded-full bg-[#00a86b]" />
-            <span>Available Now</span>
-          </button>
+            {/* Preferred Filter */}
+            <button
+              type="button"
+              onClick={() => toggleFilter('preferred')}
+              className={`px-2.5 py-0.5 rounded-full text-[11px] font-bold whitespace-nowrap transition-all shadow-xs cursor-pointer flex items-center gap-1 ${
+                isFilterActive('preferred')
+                  ? 'bg-[#006948] text-white ring-2 ring-[#85f8c4]/70'
+                  : 'bg-white/95 text-emerald-800 hover:bg-emerald-50 border border-emerald-300'
+              }`}
+              title={`Filtered by your saved preference: ${preferredPlug}`}
+            >
+              <span className="material-symbols-outlined text-[13px] text-[#85f8c4]">star</span>
+              <span>Preferred ({preferredPlug})</span>
+            </button>
 
-          {/* Preferred Filter: uses user saved preference */}
-          <button
-            type="button"
-            onClick={() => setActiveFilter('preferred')}
-            className={`px-2.5 py-0.5 rounded-full text-[11px] font-bold whitespace-nowrap transition-all shadow-xs cursor-pointer flex items-center gap-1 ${
-              activeFilter === 'preferred'
-                ? 'bg-[#006948] text-white ring-2 ring-[#85f8c4]/60'
-                : 'bg-white/95 text-emerald-800 hover:bg-emerald-50 border border-emerald-300'
-            }`}
-            title={`Filtered by your saved preference: ${preferredPlug}`}
-          >
-            <span className="material-symbols-outlined text-[13px] text-[#85f8c4]">star</span>
-            <span>Preferred ({preferredPlug})</span>
-          </button>
+            {/* Cheapest Filter */}
+            <button
+              type="button"
+              onClick={() => toggleFilter('cheapest')}
+              className={`px-2.5 py-0.5 rounded-full text-[11px] font-semibold whitespace-nowrap transition-all shadow-xs cursor-pointer flex items-center gap-1 ${
+                isFilterActive('cheapest')
+                  ? 'bg-[#006948] text-white ring-1 ring-[#85f8c4]/50'
+                  : 'bg-white/95 text-slate-700 hover:bg-slate-50 border border-slate-200'
+              }`}
+              title="Filter by lowest tariff rates (<= $0.58/kWh)"
+            >
+              <span className="material-symbols-outlined text-[13px] text-amber-500">payments</span>
+              <span>Cheapest</span>
+            </button>
 
-          {/* Plug Type: CCS2 */}
-          <button
-            type="button"
-            onClick={() => setActiveFilter('ccs2')}
-            className={`px-2.5 py-0.5 rounded-full text-[11px] font-semibold whitespace-nowrap transition-all shadow-xs cursor-pointer flex items-center gap-1 ${
-              activeFilter === 'ccs2'
-                ? 'bg-[#006948] text-white'
-                : 'bg-white/95 text-slate-700 hover:bg-slate-50 border border-slate-200'
-            }`}
-          >
-            <span className="material-symbols-outlined text-[13px]">power</span>
-            <span>CCS2 (DC)</span>
-          </button>
+            {/* Fastest Filter */}
+            <button
+              type="button"
+              onClick={() => toggleFilter('fastest')}
+              className={`px-2.5 py-0.5 rounded-full text-[11px] font-semibold whitespace-nowrap transition-all shadow-xs cursor-pointer flex items-center gap-1 ${
+                isFilterActive('fastest')
+                  ? 'bg-[#006948] text-white ring-1 ring-[#85f8c4]/50'
+                  : 'bg-white/95 text-slate-700 hover:bg-slate-50 border border-slate-200'
+              }`}
+              title="Filter by high power charging (>= 50kW DC)"
+            >
+              <span className="material-symbols-outlined text-[13px] text-yellow-400">bolt</span>
+              <span>Fastest</span>
+            </button>
 
-          {/* Plug Type: Type 2 */}
-          <button
-            type="button"
-            onClick={() => setActiveFilter('type2')}
-            className={`px-2.5 py-0.5 rounded-full text-[11px] font-semibold whitespace-nowrap transition-all shadow-xs cursor-pointer flex items-center gap-1 ${
-              activeFilter === 'type2'
-                ? 'bg-[#006948] text-white'
-                : 'bg-white/95 text-slate-700 hover:bg-slate-50 border border-slate-200'
-            }`}
-          >
-            <span className="material-symbols-outlined text-[13px]">power</span>
-            <span>Type 2 (AC)</span>
-          </button>
+            {/* Plug Type: CCS2 */}
+            <button
+              type="button"
+              onClick={() => toggleFilter('ccs2')}
+              className={`px-2.5 py-0.5 rounded-full text-[11px] font-semibold whitespace-nowrap transition-all shadow-xs cursor-pointer flex items-center gap-1 ${
+                isFilterActive('ccs2')
+                  ? 'bg-[#006948] text-white'
+                  : 'bg-white/95 text-slate-700 hover:bg-slate-50 border border-slate-200'
+              }`}
+            >
+              <span className="material-symbols-outlined text-[13px]">power</span>
+              <span>CCS2 (DC)</span>
+            </button>
 
-          {/* Plug Type: CHAdeMO */}
-          <button
-            type="button"
-            onClick={() => setActiveFilter('chademo')}
-            className={`px-2.5 py-0.5 rounded-full text-[11px] font-semibold whitespace-nowrap transition-all shadow-xs cursor-pointer flex items-center gap-1 ${
-              activeFilter === 'chademo'
-                ? 'bg-[#006948] text-white'
-                : 'bg-white/95 text-slate-700 hover:bg-slate-50 border border-slate-200'
-            }`}
-          >
-            <span className="material-symbols-outlined text-[13px]">power</span>
-            <span>CHAdeMO</span>
-          </button>
+            {/* Plug Type: Type 2 */}
+            <button
+              type="button"
+              onClick={() => toggleFilter('type2')}
+              className={`px-2.5 py-0.5 rounded-full text-[11px] font-semibold whitespace-nowrap transition-all shadow-xs cursor-pointer flex items-center gap-1 ${
+                isFilterActive('type2')
+                  ? 'bg-[#006948] text-white'
+                  : 'bg-white/95 text-slate-700 hover:bg-slate-50 border border-slate-200'
+              }`}
+            >
+              <span className="material-symbols-outlined text-[13px]">power</span>
+              <span>Type 2 (AC)</span>
+            </button>
 
-          {/* SP Mobility */}
-          <button
-            type="button"
-            onClick={() => setActiveFilter('sp')}
-            className={`px-2.5 py-0.5 rounded-full text-[11px] font-semibold whitespace-nowrap transition-all shadow-xs cursor-pointer ${
-              activeFilter === 'sp'
-                ? 'bg-[#006948] text-white'
-                : 'bg-white/95 text-slate-700 hover:bg-slate-50 border border-slate-200'
-            }`}
-          >
-            SP Mobility
-          </button>
+            {/* Plug Type: CHAdeMO */}
+            <button
+              type="button"
+              onClick={() => toggleFilter('chademo')}
+              className={`px-2.5 py-0.5 rounded-full text-[11px] font-semibold whitespace-nowrap transition-all shadow-xs cursor-pointer flex items-center gap-1 ${
+                isFilterActive('chademo')
+                  ? 'bg-[#006948] text-white'
+                  : 'bg-white/95 text-slate-700 hover:bg-slate-50 border border-slate-200'
+              }`}
+            >
+              <span className="material-symbols-outlined text-[13px]">power</span>
+              <span>CHAdeMO</span>
+            </button>
 
-          {/* CDG ENGIE */}
-          <button
-            type="button"
-            onClick={() => setActiveFilter('cdg')}
-            className={`px-2.5 py-0.5 rounded-full text-[11px] font-semibold whitespace-nowrap transition-all shadow-xs cursor-pointer ${
-              activeFilter === 'cdg'
-                ? 'bg-[#006948] text-white'
-                : 'bg-white/95 text-slate-700 hover:bg-slate-50 border border-slate-200'
-            }`}
-          >
-            CDG ENGIE
-          </button>
+            {/* SP Mobility */}
+            <button
+              type="button"
+              onClick={() => toggleFilter('sp')}
+              className={`px-2.5 py-0.5 rounded-full text-[11px] font-semibold whitespace-nowrap transition-all shadow-xs cursor-pointer ${
+                isFilterActive('sp')
+                  ? 'bg-[#006948] text-white'
+                  : 'bg-white/95 text-slate-700 hover:bg-slate-50 border border-slate-200'
+              }`}
+            >
+              SP Mobility
+            </button>
+
+            {/* CDG ENGIE */}
+            <button
+              type="button"
+              onClick={() => toggleFilter('cdg')}
+              className={`px-2.5 py-0.5 rounded-full text-[11px] font-semibold whitespace-nowrap transition-all shadow-xs cursor-pointer ${
+                isFilterActive('cdg')
+                  ? 'bg-[#006948] text-white'
+                  : 'bg-white/95 text-slate-700 hover:bg-slate-50 border border-slate-200'
+              }`}
+            >
+              CDG ENGIE
+            </button>
+          </div>
         </div>
       </div>
 
@@ -795,7 +893,24 @@ export const InteractiveMap: React.FC<InteractiveMapProps> = ({
         if (!activeCardStation) return null;
         return (
           <div className="relative z-20 mb-16 sm:mb-20 px-2.5 sm:px-4 max-w-lg sm:max-w-xl lg:max-w-2xl mx-auto w-full pointer-events-auto">
-            <div className="bg-white/95 backdrop-blur-md rounded-2xl p-3 shadow-xl border border-slate-200 flex flex-col gap-2">
+            <div
+              onTouchStart={handleCardTouchStart}
+              onTouchEnd={(e) => handleCardTouchEnd(e, activeCardStation)}
+              className="bg-white/95 backdrop-blur-md rounded-2xl p-3 shadow-xl border border-slate-200 flex flex-col gap-2 transition-transform active:scale-[0.995]"
+            >
+              {/* Swipe-up pull handle indicator */}
+              <div
+                onClick={() => onOpenStationDetails(activeCardStation)}
+                className="w-full flex flex-col items-center justify-center cursor-pointer group py-0.5"
+                title="Swipe up or tap to explore details, restaurants & amenities"
+              >
+                <div className="w-10 h-1 bg-slate-300 group-hover:bg-[#006948] rounded-full transition-colors mb-0.5" />
+                <div className="flex items-center gap-1 text-[10px] text-slate-500 font-semibold">
+                  <span className="material-symbols-outlined text-[13px] text-[#006948] animate-bounce">expand_less</span>
+                  <span>Swipe up for details, restaurants & amenities</span>
+                </div>
+              </div>
+
               <div className="flex items-start justify-between gap-1.5">
                 <div className="min-w-0 flex-1">
                   <div className="flex items-center gap-1.5">
