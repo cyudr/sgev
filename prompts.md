@@ -305,6 +305,26 @@ This document collates all user prompts, architectural specifications, iterative
 
 ---
 
+### Prompt 20: "nearest!" CTA in Explore, Flag Icon Cleanup & Top Bar Optimization
+
+> **User Prompt**:
+> 1. in explore, change take me there to "nearest!", remove the "SG" in the flag icon; 2. optimize and declutter the top bar
+
+#### Implementation Details:
+1. **"nearest!" Action Button (`Header.tsx`)**:
+   - Changed the prominent urgent button in Explore from "TAKE ME THERE NOW!!" / "Take Me There" to punchy, bold **"nearest!"** with a pulsing lightning bolt glyph.
+   - Styled with high-contrast urgent badge styling (`bg-[#ffdad6] dark:bg-[#3b1219] text-[#ba1a1a] dark:text-[#ffb4ab] border border-[#ba1a1a]/25`) ensuring instant visual clarity.
+2. **Flag Icon Cleanup (`ChargeSGLogo.tsx`)**:
+   - Removed the redundant "SG" text next to the flag emoji.
+   - Now renders the clean Singapore flag `🇸🇬` alongside the ChargeSG wordmark across all views and modals.
+3. **Top Bar Decluttering & Optimization (`Header.tsx`)**:
+   - Removed redundant duplicate profile "EV" avatar button (Profile is already directly accessible from the bottom navigation dock).
+   - Removed dummy static notifications bell icon and popover toast.
+   - Removed manual refresh API button from the top header to maximize screen space for mobile viewports.
+   - Kept the top bar ultra-clean, balanced, and responsive with just the `ChargeSGLogo` (left) and the `nearest!` button plus install trigger (right).
+
+---
+
 ## Architecture Summary
 
 | Component | Responsibility |

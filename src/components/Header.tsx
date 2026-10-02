@@ -1,7 +1,6 @@
-import React, { useState, useEffect } from 'react';
+import React, { useEffect } from 'react';
 import { PWAInstallButton } from './PWAInstallButton';
 import { ChargeSGLogo } from './ChargeSGLogo';
-import { useGreenTheme } from '../context/ThemeContext';
 
 interface HeaderProps {
   currentScreen: 'map' | 'details' | 'saved' | 'activity' | 'profile';
@@ -27,8 +26,6 @@ export const Header: React.FC<HeaderProps> = ({
   onRefreshApi,
   isLoadingApi,
 }) => {
-  const [showNotificationToast, setShowNotificationToast] = useState(false);
-
   useEffect(() => {
     async function showHealth() {
       const chip = document.getElementById("api-status");
@@ -70,8 +67,6 @@ export const Header: React.FC<HeaderProps> = ({
     }
   };
 
-  const { toggleTheme, isDark } = useGreenTheme();
-
   return (
     <header className="sticky top-0 z-30 w-full bg-[#f8f9ff]/90 dark:bg-[#071711]/95 backdrop-blur-md border-b border-[#dde9ff] dark:border-[#1b4434] shrink-0 transition-colors">
       <div className="w-full max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 py-2 sm:py-2.5 flex items-center justify-between">
@@ -96,77 +91,25 @@ export const Header: React.FC<HeaderProps> = ({
           />
         </div>
 
-        {/* Right: Actions (Theme toggle removed on explore, save, activity, profile) */}
-        <div className="flex items-center gap-1 sm:gap-2 shrink-0">
+        {/* Right: Optimized & Decluttered Actions */}
+        <div className="flex items-center gap-2 shrink-0">
           {/* One-Click Install Button (Auto-hides if installed) */}
           <PWAInstallButton variant="header" />
 
-          {/* Low Battery Urgent Icon linked to FIND NEAREST NOW!! */}
+          {/* High-priority "nearest!" urgent button */}
           <button
             type="button"
             onClick={handleLowBatteryClick}
-            title="TAKE ME THERE NOW!!"
-            className="px-2 py-1 rounded-full bg-[#ffdad6] text-[#ba1a1a] hover:bg-[#ffb4ab] active:scale-95 transition-all text-[10px] font-black flex items-center gap-1 cursor-pointer border border-[#ba1a1a]/20 shadow-sm"
+            title="Find and navigate to nearest available charger"
+            className="px-3 py-1.5 rounded-full bg-[#ffdad6] dark:bg-[#3b1219] text-[#ba1a1a] dark:text-[#ffb4ab] hover:bg-[#ffb4ab] dark:hover:bg-[#4d1620] active:scale-95 transition-all text-xs font-black flex items-center gap-1.5 cursor-pointer border border-[#ba1a1a]/25 dark:border-[#ffb4ab]/30 shadow-xs"
           >
-            <span className="material-symbols-outlined text-[15px] animate-pulse">battery_alert</span>
-            <span className="hidden xs:inline">TAKE ME THERE NOW!!</span>
-            <span className="xs:hidden">Take Me There</span>
+            <span className="material-symbols-outlined text-[15px] animate-pulse text-[#ba1a1a] dark:text-[#ff897d]">
+              bolt
+            </span>
+            <span className="font-extrabold tracking-tight">nearest!</span>
           </button>
-
-          {/* Refresh Live API */}
-          {onRefreshApi && (
-            <button
-              type="button"
-              onClick={onRefreshApi}
-              disabled={isLoadingApi}
-              title="Refresh live data from LTA DataMall"
-              className="w-7 h-7 sm:w-8 sm:h-8 rounded-full flex items-center justify-center text-[#3d4a42] hover:bg-[#eff4ff] active:scale-95 transition-all disabled:opacity-50 cursor-pointer"
-            >
-              <span
-                className={`material-symbols-outlined text-[17px] sm:text-[19px] ${isLoadingApi ? 'animate-spin text-[#006948]' : ''}`}
-              >
-                refresh
-              </span>
-            </button>
-          )}
-
-          {/* Notifications */}
-          <button
-            type="button"
-            onClick={() => {
-              if (onOpenNotifications) {
-                onOpenNotifications();
-              } else {
-                setShowNotificationToast(true);
-                setTimeout(() => setShowNotificationToast(false), 2500);
-              }
-            }}
-            className="w-7 h-7 sm:w-8 sm:h-8 rounded-full flex items-center justify-center text-[#3d4a42] hover:bg-[#eff4ff] active:scale-95 transition-all relative cursor-pointer"
-            title="Notifications"
-          >
-            <span className="material-symbols-outlined text-[17px] sm:text-[19px]">notifications</span>
-            <span className="absolute top-1 right-1 w-1.5 h-1.5 rounded-full bg-[#006948]" />
-          </button>
-
-          {/* Profile */}
-          {onOpenProfile && (
-            <button
-              type="button"
-              onClick={onOpenProfile}
-              className="w-7 h-7 sm:w-8 sm:h-8 rounded-full bg-[#006948] text-white flex items-center justify-center font-bold text-[10px] sm:text-xs hover:bg-[#00855d] active:scale-95 transition-all cursor-pointer shadow-sm"
-              title="Vehicle Profile & Settings"
-            >
-              EV
-            </button>
-          )}
         </div>
       </div>
-
-      {showNotificationToast && (
-        <div className="fixed top-14 right-4 z-50 bg-[#0d1c2f] text-white text-[11px] p-2.5 rounded-xl shadow-xl border border-white/10 animate-in fade-in">
-          All Singapore EV charging systems operational · LTA Live Feed Active
-        </div>
-      )}
     </header>
   );
 };

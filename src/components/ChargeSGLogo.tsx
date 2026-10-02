@@ -58,8 +58,8 @@ export const ChargeSGLogo: React.FC<ChargeSGLogoProps> = ({
       )}
 
       {showBadge && (
-        <span className="text-[9px] font-bold px-1.5 py-0.5 rounded-full bg-[#e6f8ef] text-[#006948] border border-[#85f8c4]/40 shrink-0 leading-none">
-          SG 🇸🇬
+        <span className="text-xs sm:text-sm shrink-0 leading-none select-none inline-flex items-center" title="Singapore">
+          🇸🇬
         </span>
       )}
     </div>
