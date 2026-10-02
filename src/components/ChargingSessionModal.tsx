@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { ActiveChargingSession } from '../types/charging';
+import { ChargeSGLogo } from './ChargeSGLogo';
 
 interface ChargingSessionModalProps {
   session: ActiveChargingSession;
@@ -49,9 +50,10 @@ export const ChargingSessionModal: React.FC<ChargingSessionModalProps> = ({
         {/* Header */}
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
-            <span className="w-3 h-3 rounded-full bg-[#006948] animate-ping" />
+            <ChargeSGLogo size="xs" showBadge={false} />
+            <span className="w-1.5 h-1.5 rounded-full bg-[#006948] animate-ping" />
             <span className="text-xs font-bold uppercase tracking-wider text-[#006948]">
-              Live Charging Session
+              Live Charge
             </span>
           </div>
           <button

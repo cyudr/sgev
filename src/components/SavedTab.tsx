@@ -1,5 +1,6 @@
 import React from 'react';
 import { Station } from '../types/charging';
+import { ChargeSGLogo } from './ChargeSGLogo';
 
 interface SavedTabProps {
   stations: Station[];
@@ -19,22 +20,25 @@ export const SavedTab: React.FC<SavedTabProps> = ({
   const savedStations = stations.filter((s) => savedStationIds.includes(s.id));
 
   return (
-    <div className="flex flex-col w-full pb-32 sm:pb-36 max-w-lg sm:max-w-2xl lg:max-w-4xl mx-auto p-4 sm:p-6 lg:p-8 gap-4 sm:gap-6">
+    <div className="flex flex-col w-full pb-32 sm:pb-36 max-w-lg sm:max-w-2xl lg:max-w-4xl mx-auto p-4 sm:p-6 lg:p-8 gap-4 sm:gap-6 select-none">
       <div className="flex items-center justify-between">
         <div>
-          <h2 className="text-xl font-extrabold text-[#0d1c2f]">Saved Stations</h2>
-          <p className="text-xs text-[#3d4a42]">Quick access to your favourite charging hubs in Singapore</p>
+          <div className="flex items-center gap-2 mb-1">
+            <ChargeSGLogo size="xs" showBadge={false} />
+            <h2 className="text-xl font-extrabold text-[#0d1c2f] dark:text-[#f0fbf6]">Saved Stations</h2>
+          </div>
+          <p className="text-xs text-[#3d4a42] dark:text-[#a5d8c3]">Quick access to your favourite charging hubs in Singapore</p>
         </div>
-        <span className="px-2.5 py-1 rounded-full bg-[#e6eeff] text-[#0d1c2f] font-bold text-xs">
+        <span className="px-2.5 py-1 rounded-full bg-[#e6eeff] dark:bg-[#143b2c] text-[#0d1c2f] dark:text-[#f0fbf6] font-bold text-xs border border-transparent dark:border-[#1b4434]">
           {savedStations.length} Saved
         </span>
       </div>
 
       {savedStations.length === 0 ? (
-        <div className="p-8 rounded-3xl bg-white border border-[#dde9ff] flex flex-col items-center text-center gap-3">
-          <span className="material-symbols-outlined text-[#6d7a72] text-[48px]">bookmark_border</span>
-          <h3 className="text-base font-bold text-[#0d1c2f]">No saved stations yet</h3>
-          <p className="text-xs text-[#3d4a42] max-w-xs">
+        <div className="p-8 rounded-3xl bg-white dark:bg-[#0e291f] border border-[#dde9ff] dark:border-[#1b4434] flex flex-col items-center text-center gap-3 transition-colors">
+          <span className="material-symbols-outlined text-[#6d7a72] dark:text-[#a5d8c3] text-[48px]">bookmark_border</span>
+          <h3 className="text-base font-bold text-[#0d1c2f] dark:text-[#f0fbf6]">No saved stations yet</h3>
+          <p className="text-xs text-[#3d4a42] dark:text-[#a5d8c3] max-w-xs">
             Tap the bookmark icon on any station on the map to save it here for instant availability monitoring.
           </p>
         </div>
@@ -43,7 +47,7 @@ export const SavedTab: React.FC<SavedTabProps> = ({
           {savedStations.map((station) => (
             <div
               key={station.id}
-              className="p-4 rounded-3xl bg-white shadow-sm border border-[#dde9ff] flex flex-col gap-3 hover:border-[#006948] transition-all"
+              className="p-4 rounded-3xl bg-white dark:bg-[#0e291f] shadow-sm border border-[#dde9ff] dark:border-[#1b4434] flex flex-col gap-3 hover:border-[#006948] dark:hover:border-[#85f8c4] transition-all"
             >
               <div className="flex items-start justify-between">
                 <div>

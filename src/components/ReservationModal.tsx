@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Station } from '../types/charging';
+import { ChargeSGLogo } from './ChargeSGLogo';
 
 interface ReservationModalProps {
   station: Station;
@@ -39,8 +40,9 @@ export const ReservationModal: React.FC<ReservationModalProps> = ({
       <div className="w-full max-w-md bg-white rounded-t-3xl sm:rounded-3xl shadow-2xl p-6 flex flex-col gap-4 border border-[#dde9ff]">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
-            <span className="material-symbols-outlined text-[#006398] text-[24px]">lock_clock</span>
-            <h3 className="text-lg font-bold text-[#0d1c2f]">Reserve Charging Bay</h3>
+            <ChargeSGLogo size="xs" showBadge={false} />
+            <span className="material-symbols-outlined text-[#006398] text-[20px]">lock_clock</span>
+            <h3 className="text-base font-bold text-[#0d1c2f]">Reserve Charging Bay</h3>
           </div>
           <button
             type="button"

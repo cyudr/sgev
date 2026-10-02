@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { PWAInstallButton } from './PWAInstallButton';
+import { ChargeSGLogo } from './ChargeSGLogo';
+import { useGreenTheme } from '../context/ThemeContext';
 
 interface HeaderProps {
   currentScreen: 'map' | 'details' | 'saved' | 'activity' | 'profile';
@@ -68,46 +70,47 @@ export const Header: React.FC<HeaderProps> = ({
     }
   };
 
+  const { toggleTheme, isDark } = useGreenTheme();
+
   return (
-    <header className="sticky top-0 z-30 w-full bg-[#f8f9ff]/90 backdrop-blur-md border-b border-[#dde9ff] shrink-0">
+    <header className="sticky top-0 z-30 w-full bg-[#f8f9ff]/90 dark:bg-[#071711]/95 backdrop-blur-md border-b border-[#dde9ff] dark:border-[#1b4434] shrink-0 transition-colors">
       <div className="w-full max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 py-2 sm:py-2.5 flex items-center justify-between">
         {/* Left: Brand logo & name linked to launch page */}
-        <div className="flex items-center gap-1.5 sm:gap-2 min-w-0">
-          {currentScreen !== 'map' && onBackToMap ? (
+        <div className="flex items-center gap-1.5 sm:gap-2.5 min-w-0">
+          {currentScreen !== 'map' && onBackToMap && (
             <button
               type="button"
               onClick={onBackToMap}
-              className="w-7 h-7 sm:w-8 sm:h-8 rounded-full flex items-center justify-center text-[#0d1c2f] hover:bg-[#eff4ff] active:scale-95 transition-all shrink-0 cursor-pointer"
+              className="w-7 h-7 sm:w-8 sm:h-8 rounded-full flex items-center justify-center text-[#0d1c2f] dark:text-[#f0fbf6] hover:bg-[#eff4ff] dark:hover:bg-[#143b2c] active:scale-95 transition-all shrink-0 cursor-pointer"
               title="Back to Map"
             >
               <span className="material-symbols-outlined text-[18px] sm:text-[22px]">arrow_back</span>
             </button>
-          ) : (
-            <button
-              type="button"
-              onClick={handleLogoClick}
-              className="w-5.5 h-5.5 sm:w-6 sm:h-6 rounded-lg bg-gradient-to-tr from-[#006948] to-[#00a86b] flex items-center justify-center text-white shadow-xs shadow-[#006948]/20 shrink-0 cursor-pointer hover:scale-105 active:scale-95 transition-all"
-              title="Return to Launch Page"
-            >
-              <span className="material-symbols-outlined text-[13px] sm:text-[15px]">bolt</span>
-            </button>
           )}
 
-          {/* ChargeSG Text linked to Launch Page */}
-          <button
-            type="button"
+          {/* ChargeSG Brand Mark propagated across all pages */}
+          <ChargeSGLogo
+            size="md"
+            textColor="text-[#0d1c2f] dark:text-[#f0fbf6] group-hover:text-[#006948]"
             onClick={handleLogoClick}
-            className="min-w-0 text-left cursor-pointer group active:opacity-80"
-            title="ChargeSG - Tap to return to Launch Page"
-          >
-            <h1 className="font-extrabold text-sm sm:text-base tracking-tight text-[#0d1c2f] group-hover:text-[#006948] leading-none transition-colors">
-              ChargeSG
-            </h1>
-          </button>
+          />
         </div>
 
         {/* Right: Actions */}
         <div className="flex items-center gap-1 sm:gap-2 shrink-0">
+          {/* Quick Green Theme Toggle: Light vs Dark */}
+          <button
+            type="button"
+            onClick={toggleTheme}
+            title={isDark ? "Switch to Light Green theme" : "Switch to Dark Emerald theme"}
+            aria-label="Toggle Green Theme"
+            className="w-7 h-7 sm:w-8 sm:h-8 rounded-full flex items-center justify-center text-[#3d4a42] dark:text-[#a5d8c3] hover:bg-[#eff4ff] dark:hover:bg-[#143b2c] active:scale-95 transition-all cursor-pointer"
+          >
+            <span className="material-symbols-outlined text-[18px] sm:text-[20px] text-[#006948] dark:text-[#85f8c4]">
+              {isDark ? 'light_mode' : 'dark_mode'}
+            </span>
+          </button>
+
           {/* One-Click Install Button (Auto-hides if installed) */}
           <PWAInstallButton variant="header" />
 

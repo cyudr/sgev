@@ -1,5 +1,6 @@
 import React from 'react';
 import { Station, ChargingBay } from '../types/charging';
+import { ChargeSGLogo } from './ChargeSGLogo';
 
 interface PortSelectorModalProps {
   station: Station;
@@ -17,8 +18,9 @@ export const PortSelectorModal: React.FC<PortSelectorModalProps> = ({
       <div className="w-full max-w-md bg-white rounded-t-3xl sm:rounded-3xl shadow-2xl p-6 flex flex-col gap-4 border border-[#dde9ff] max-h-[85vh] overflow-y-auto no-scrollbar">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
-            <span className="material-symbols-outlined text-[#006948] text-[24px]">tune</span>
-            <h3 className="text-lg font-bold text-[#0d1c2f]">Select Charger Port</h3>
+            <ChargeSGLogo size="xs" showBadge={false} />
+            <span className="material-symbols-outlined text-[#006948] text-[20px]">tune</span>
+            <h3 className="text-base font-bold text-[#0d1c2f]">Select Charger Port</h3>
           </div>
           <button
             type="button"

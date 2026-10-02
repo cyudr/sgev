@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { Station } from '../types/charging';
 import { fetchDrivingRoute, RouteStep } from '../utils/routeNavigation';
 import { speakNavigationInstruction, stopSpeaking } from '../utils/voiceNavigation';
+import { ChargeSGLogo } from './ChargeSGLogo';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 
@@ -317,7 +318,7 @@ export const NearestRoutingPage: React.FC<NearestRoutingPageProps> = ({
           </div>
         </div>
       ) : (
-        /* Standard Header */
+        /* Standard Header with ChargeSG Logo */
         <div className="flex items-center justify-between pt-1 pb-2 border-b border-white/10 shrink-0">
           <button
             type="button"
@@ -328,11 +329,9 @@ export const NearestRoutingPage: React.FC<NearestRoutingPageProps> = ({
             <span>Back</span>
           </button>
 
-          <div className="text-center">
-            <span className="text-[9px] uppercase font-bold tracking-widest text-[#85f8c4] block leading-tight">
-              Route Time Estimate: ~{minsRemaining} mins
-            </span>
-            <h2 className="text-xs font-bold text-white leading-tight">Nearest EV Station</h2>
+          <div className="flex items-center gap-2">
+            <ChargeSGLogo size="xs" textColor="text-white" showBadge={false} />
+            <span className="text-[10px] text-slate-300 font-semibold">• ~{minsRemaining} mins</span>
           </div>
 
           <button

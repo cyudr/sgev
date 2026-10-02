@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { Station, ChargingBay } from '../types/charging';
+import { ChargeSGLogo } from './ChargeSGLogo';
 
 interface StationDetailsProps {
   station: Station;
@@ -129,8 +130,11 @@ export const StationDetails: React.FC<StationDetailsProps> = ({
           className="inline-flex items-center gap-1.5 text-[#3d4a42] hover:text-[#006948] transition-colors py-1 cursor-pointer"
         >
           <span className="material-symbols-outlined text-[20px]">arrow_back</span>
-          <span className="font-semibold text-sm">Back to Map</span>
+          <span className="font-semibold text-sm">Back</span>
         </button>
+
+        {/* Brand Mark in Station Details */}
+        <ChargeSGLogo size="sm" showBadge={false} />
 
         <div className="flex items-center gap-1.5">
           <button

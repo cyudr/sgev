@@ -1,5 +1,6 @@
 import { createRoot } from 'react-dom/client';
 import App from './App.tsx';
+import { ThemeProvider } from './context/ThemeContext.tsx';
 import './index.css';
 
 // In the AI Studio iframe preview environment, HMR WebSockets are disabled.
@@ -185,6 +186,10 @@ if (isHealthRoute && typeof document !== 'undefined') {
 } else {
   const rootEl = document.getElementById('root');
   if (rootEl) {
-    createRoot(rootEl).render(<App />);
+    createRoot(rootEl).render(
+      <ThemeProvider>
+        <App />
+      </ThemeProvider>
+    );
   }
 }

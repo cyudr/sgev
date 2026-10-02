@@ -1,6 +1,8 @@
 import React, { useState, useMemo } from 'react';
 import { Station } from '../types/charging';
 import { PWAInstallButton } from './PWAInstallButton';
+import { ChargeSGLogo } from './ChargeSGLogo';
+import { useGreenTheme } from '../context/ThemeContext';
 import heroHighwayImg from '../assets/images/ev_highway_hero_1790913547161.jpg';
 
 export type FrontPageCriteria = 'nearest' | 'cheapest' | 'fastest';
@@ -18,6 +20,7 @@ export const UrgencyLaunchScreen: React.FC<UrgencyLaunchScreenProps> = ({
   onNavigateToTarget,
   onShowMeAround,
 }) => {
+  const { toggleTheme, isDark } = useGreenTheme();
   const [selectedCriteria, setSelectedCriteria] = useState<FrontPageCriteria>('nearest');
 
   // Compute Cheapest Station
@@ -80,135 +83,189 @@ export const UrgencyLaunchScreen: React.FC<UrgencyLaunchScreenProps> = ({
     }
   };
 
+  // Dynamic Theme Colors for Nearest (Emerald), Cheapest (Amber), Fastest (Sky/Blue)
+  const theme = useMemo(() => {
+    switch (selectedCriteria) {
+      case 'cheapest':
+        return {
+          bgGradient: 'from-[#d97706] to-[#b45309]',
+          shadow: 'shadow-[#d97706]/25',
+          border: 'border-amber-400/50',
+          badgeBg: 'bg-amber-100 text-amber-800',
+          textAccent: 'text-amber-700',
+          iconBox: 'bg-amber-100 text-amber-700',
+          pinBg: 'from-[#d97706] to-[#92400e]',
+          pinDot: 'bg-amber-300 shadow-amber-300',
+        };
+      case 'fastest':
+        return {
+          bgGradient: 'from-[#0284c7] to-[#0369a1]',
+          shadow: 'shadow-[#0284c7]/25',
+          border: 'border-sky-400/50',
+          badgeBg: 'bg-sky-100 text-sky-800',
+          textAccent: 'text-sky-700',
+          iconBox: 'bg-sky-100 text-sky-700',
+          pinBg: 'from-[#0284c7] to-[#075985]',
+          pinDot: 'bg-sky-300 shadow-sky-300',
+        };
+      case 'nearest':
+      default:
+        return {
+          bgGradient: 'from-[#006948] to-[#00855d]',
+          shadow: 'shadow-[#006948]/25',
+          border: 'border-[#85f8c4]/50',
+          badgeBg: 'bg-[#e6f8ef] text-[#006948]',
+          textAccent: 'text-[#006948]',
+          iconBox: 'bg-[#e6f8ef] text-[#006948]',
+          pinBg: 'from-[#006948] to-[#004f35]',
+          pinDot: 'bg-[#85f8c4] shadow-[#85f8c4]',
+        };
+    }
+  }, [selectedCriteria]);
+
   return (
-    <div className="w-full h-[100dvh] max-h-[100dvh] overflow-y-auto bg-gradient-to-b from-white via-[#f8fcfa] to-[#eef9f4] text-[#0d1c2f] flex flex-col justify-between selection:bg-[#85f8c4] selection:text-[#002114] relative select-none pb-24 sm:pb-28">
-      {/* Background Soft Ambient Light Blurs (Keeping our Singapore Emerald & Mint Colors) */}
-      <div className="absolute top-12 right-0 w-72 sm:w-96 h-72 sm:h-96 bg-gradient-to-bl from-[#85f8c4]/35 via-[#006948]/15 to-transparent rounded-full blur-3xl pointer-events-none" />
-      <div className="absolute bottom-1/3 -left-12 w-64 h-64 bg-[#006948]/10 rounded-full blur-2xl pointer-events-none" />
+    <div
+      className={`w-full h-[100dvh] max-h-[100dvh] overflow-hidden overscroll-none touch-none select-none flex flex-col justify-between px-3 sm:px-5 pt-2 pb-16 sm:pb-20 transition-colors duration-300 ${
+        isDark
+          ? 'bg-gradient-to-b from-[#06150f] via-[#0c231a] to-[#040e0a] text-white'
+          : 'bg-gradient-to-b from-white via-[#f4faf7] to-[#eaf5ef] text-[#0d1c2f]'
+      }`}
+    >
+      {/* Background Soft Ambient Light Glows */}
+      <div
+        className={`absolute top-8 right-0 w-64 h-64 rounded-full blur-3xl pointer-events-none transition-colors ${
+          isDark
+            ? 'bg-gradient-to-bl from-[#85f8c4]/20 via-[#006948]/20 to-transparent'
+            : 'bg-gradient-to-bl from-[#85f8c4]/30 via-[#006948]/10 to-transparent'
+        }`}
+      />
+      <div
+        className={`absolute bottom-1/4 -left-10 w-56 h-56 rounded-full blur-2xl pointer-events-none ${
+          isDark ? 'bg-[#006948]/20' : 'bg-[#006948]/10'
+        }`}
+      />
 
-      {/* Top Header: Logo, Tagline & Burger Action (Reference UI Style) */}
-      <header className="relative z-20 w-full max-w-lg sm:max-w-xl lg:max-w-2xl mx-auto px-4 sm:px-6 pt-3 sm:pt-4 flex items-center justify-between shrink-0">
-        <div className="flex items-center gap-2.5">
-          <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-2xl bg-gradient-to-br from-[#006948] to-[#004f35] flex items-center justify-center text-white shadow-md shadow-[#006948]/25 shrink-0">
-            <span className="material-symbols-outlined text-[22px] sm:text-[24px] text-[#85f8c4]">bolt</span>
-          </div>
-          <div>
-            <div className="flex items-center gap-1.5">
-              <h1 className="text-base sm:text-lg font-black tracking-tight text-[#0d1c2f] leading-none">
-                ChargeSG
-              </h1>
-              <span className="text-[9px] font-bold px-1.5 py-0.2 rounded-full bg-[#e6f8ef] text-[#006948] border border-[#85f8c4]/50">
-                SG 🇸🇬
-              </span>
-            </div>
-            <p className="text-[10px] text-slate-500 font-medium tracking-tight mt-0.5">
-              any EV, anywhere, anytime
-            </p>
-          </div>
-        </div>
+      {/* Top Header: Brand, Theme Toggle & Install Button (Menu removed) */}
+      <header className="relative z-20 w-full max-w-sm sm:max-w-md mx-auto flex items-center justify-between shrink-0 py-1">
+        <ChargeSGLogo
+          size="md"
+          textColor={isDark ? 'text-white group-hover:text-[#85f8c4]' : 'text-[#0d1c2f] group-hover:text-[#006948]'}
+        />
 
-        {/* Top Right: One-Click Install & Hamburger Pill Action (Matching Reference Header) */}
-        <div className="flex items-center gap-2 shrink-0">
-          <PWAInstallButton variant="launch" />
+        {/* Top Right: Theme Toggle & One-Click Install Button */}
+        <div className="flex items-center gap-1.5 shrink-0">
           <button
             type="button"
-            onClick={onShowMeAround}
-            aria-label="Explore Menu"
-            title="Explore Singapore EV Charging Network"
-            className="w-9 h-9 rounded-2xl bg-gradient-to-br from-[#006948] to-[#005238] hover:opacity-90 active:scale-95 text-white flex items-center justify-center shadow-md shadow-[#006948]/25 transition-all cursor-pointer"
+            onClick={toggleTheme}
+            title={isDark ? "Switch to Light Green theme" : "Switch to Dark Emerald theme"}
+            aria-label="Toggle Green Theme"
+            className={`w-8 h-8 rounded-full flex items-center justify-center active:scale-95 transition-all cursor-pointer ${
+              isDark
+                ? 'text-[#85f8c4] bg-[#0e291f] hover:bg-[#143b2c] border border-[#1b4434]'
+                : 'text-[#006948] bg-white hover:bg-slate-50 border border-slate-200 shadow-xs'
+            }`}
           >
-            <span className="material-symbols-outlined text-[20px]">menu</span>
+            <span className="material-symbols-outlined text-[17px]">
+              {isDark ? 'light_mode' : 'dark_mode'}
+            </span>
           </button>
+          <PWAInstallButton variant="launch" />
         </div>
       </header>
 
-      {/* Main Hero Container */}
-      <main className="relative z-10 w-full max-w-lg sm:max-w-xl lg:max-w-2xl mx-auto px-4 sm:px-6 flex-1 flex flex-col justify-center py-2 sm:py-4">
-        {/* Curved Organic Hero Image Container (Direct Reference UI Architecture) */}
-        <div className="relative w-full max-w-xs sm:max-w-sm mx-auto mb-3 sm:mb-4">
-          {/* Ambient Glow behind image */}
-          <div className="absolute inset-0 bg-gradient-to-tr from-[#006948]/20 to-[#85f8c4]/30 rounded-[3rem] blur-xl transform scale-105" />
+      {/* Main Content Area - Fully contained, zero scrolling */}
+      <main className="relative z-10 w-full max-w-sm sm:max-w-md mx-auto flex-1 flex flex-col justify-evenly py-1 min-h-0">
+        {/* Curved Organic Hero Image Container */}
+        <div className="relative w-full max-w-[260px] sm:max-w-[290px] mx-auto shrink-0">
+          <div className="absolute inset-0 bg-gradient-to-tr from-[#006948]/15 to-[#85f8c4]/25 rounded-[2.5rem] blur-lg transform scale-105" />
 
-          {/* Curved Cut Graphic Container */}
-          <div className="relative w-full aspect-[4/3] rounded-[2.5rem] rounded-tr-[5rem] rounded-bl-[1.5rem] overflow-hidden shadow-2xl border-4 border-white bg-slate-100">
+          <div
+            className={`relative w-full aspect-[16/10] rounded-[2rem] rounded-tr-[4.5rem] rounded-bl-[1.2rem] overflow-hidden shadow-xl border-2 transition-colors ${
+              isDark ? 'border-[#1b4434] bg-[#071711]' : 'border-white bg-slate-100'
+            }`}
+          >
             <img
               src={heroHighwayImg}
-              alt="Singapore expressway with electric vehicles and light trails"
-              className="w-full h-full object-cover transform scale-105 hover:scale-110 transition-transform duration-700 ease-out"
+              alt="Singapore EV Expressway"
+              className="w-full h-full object-cover transform scale-105"
             />
-            {/* Subtle Gradient Shade on bottom edge */}
-            <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent pointer-events-none" />
+            <div className="absolute inset-0 bg-gradient-to-t from-black/35 via-transparent to-transparent pointer-events-none" />
           </div>
 
-          {/* Floating Teardrop Location Marker Pin (Matching Reference UI's Purple Pin) */}
-          <div className="absolute -top-3 -left-2 z-20 flex flex-col items-center">
-            <div className="w-10 h-10 sm:w-11 sm:h-11 rounded-full rounded-br-none -rotate-45 bg-gradient-to-br from-[#006948] to-[#004f35] flex items-center justify-center shadow-xl shadow-[#006948]/40 border-2 border-white">
-              <span className="w-3.5 h-3.5 rounded-full bg-[#85f8c4] animate-pulse rotate-45 shadow-sm shadow-[#85f8c4]" />
+          {/* Floating Teardrop Pin Marker with dynamic theme color */}
+          <div className="absolute -top-2.5 -left-1.5 z-20 flex flex-col items-center">
+            <div
+              className={`w-9 h-9 rounded-full rounded-br-none -rotate-45 bg-gradient-to-br ${theme.pinBg} flex items-center justify-center shadow-lg border-2 border-white transition-colors duration-300`}
+            >
+              <span
+                className={`w-3 h-3 rounded-full ${theme.pinDot} animate-pulse rotate-45 shadow-sm transition-colors duration-300`}
+              />
             </div>
-            {/* Soft shadow under pin */}
-            <div className="w-5 h-1.5 bg-black/20 rounded-full blur-[2px] mt-0.5" />
-          </div>
-
-          {/* Live Available Pill Overlay on bottom right of the photo */}
-          <div className="absolute bottom-2.5 right-2.5 px-2.5 py-1 rounded-full bg-[#0d1c2f]/80 backdrop-blur-md text-white text-[10px] font-bold flex items-center gap-1.5 border border-white/20 shadow-md">
-            <span className="w-2 h-2 rounded-full bg-[#85f8c4] animate-ping" />
-            <span>Live LTA DataMall</span>
+            <div className="w-4 h-1 bg-black/20 rounded-full blur-[1px] mt-0.5" />
           </div>
         </div>
 
-        {/* Text Content Block (Matching Reference Typography & Structure) */}
-        <div className="text-left w-full">
-          {/* Eyebrow / Overline */}
-          <span className="text-[11px] sm:text-xs font-black tracking-widest text-[#006948] uppercase block mb-1">
-            Singapore EV Charging Services
-          </span>
-
-          {/* Primary Headline */}
-          <h2 className="text-2xl sm:text-3xl lg:text-4xl font-black text-[#0d1c2f] leading-[1.15] tracking-tight">
-            Charge anything, anywhere, anytime
+        {/* Minimalist Question: Asking for Urgency */}
+        <div className="text-center w-full px-1">
+          <h2
+            className={`text-xl sm:text-2xl font-black tracking-tight leading-tight transition-colors ${
+              isDark ? 'text-white' : 'text-[#0d1c2f]'
+            }`}
+          >
+            How urgent is your charge?
           </h2>
-
-          {/* Subtext */}
-          <p className="text-xs sm:text-sm text-slate-600 font-medium leading-relaxed mt-1 sm:mt-1.5 max-w-md">
-            When every kilowatt counts, trust us to find live available chargers, lowest tariffs, and fastest routes instantly.
-          </p>
         </div>
 
-        {/* Criteria Option Selector: Nearest | Cheapest | Fastest */}
-        <div className="mt-3 sm:mt-4 p-1 rounded-2xl bg-white/80 backdrop-blur-md border border-[#dde9ff] shadow-sm flex items-center gap-1 w-full">
+        {/* Distinct Colored Option Selector: Nearest (Emerald) | Cheapest (Amber) | Fastest (Sky Blue) */}
+        <div
+          className={`w-full p-1 rounded-2xl backdrop-blur-md shadow-sm flex items-center gap-1 shrink-0 transition-colors ${
+            isDark
+              ? 'bg-[#0a2118]/90 border border-[#1b4434]'
+              : 'bg-white/90 border border-slate-200'
+          }`}
+        >
+          {/* Nearest Button (Emerald Green) */}
           <button
             type="button"
             onClick={() => setSelectedCriteria('nearest')}
-            className={`flex-1 py-1.5 px-2 rounded-xl text-xs font-black transition-all flex items-center justify-center gap-1 cursor-pointer ${
+            className={`flex-1 py-1.5 px-1.5 rounded-xl text-xs font-black transition-all flex items-center justify-center gap-1 cursor-pointer ${
               selectedCriteria === 'nearest'
                 ? 'bg-[#006948] text-white shadow-md'
-                : 'text-slate-600 hover:text-[#006948] hover:bg-slate-50'
+                : isDark
+                ? 'text-[#85f8c4] bg-[#0c261c] hover:bg-[#113326] border border-[#164232]'
+                : 'text-emerald-800 bg-emerald-50/60 hover:bg-emerald-100/70 border border-emerald-200/50'
             }`}
           >
             <span className="material-symbols-outlined text-[15px]">near_me</span>
             <span>Nearest</span>
           </button>
 
+          {/* Cheapest Button (Amber Gold) */}
           <button
             type="button"
             onClick={() => setSelectedCriteria('cheapest')}
-            className={`flex-1 py-1.5 px-2 rounded-xl text-xs font-black transition-all flex items-center justify-center gap-1 cursor-pointer ${
+            className={`flex-1 py-1.5 px-1.5 rounded-xl text-xs font-black transition-all flex items-center justify-center gap-1 cursor-pointer ${
               selectedCriteria === 'cheapest'
-                ? 'bg-[#006948] text-white shadow-md'
-                : 'text-slate-600 hover:text-[#006948] hover:bg-slate-50'
+                ? 'bg-[#d97706] text-white shadow-md'
+                : isDark
+                ? 'text-amber-300 bg-[#241705] hover:bg-[#332107] border border-[#4d320b]'
+                : 'text-amber-800 bg-amber-50/60 hover:bg-amber-100/70 border border-amber-200/50'
             }`}
           >
             <span className="material-symbols-outlined text-[15px]">payments</span>
             <span>Cheapest</span>
           </button>
 
+          {/* Fastest Button (Electric Blue / Sky) */}
           <button
             type="button"
             onClick={() => setSelectedCriteria('fastest')}
-            className={`flex-1 py-1.5 px-2 rounded-xl text-xs font-black transition-all flex items-center justify-center gap-1 cursor-pointer ${
+            className={`flex-1 py-1.5 px-1.5 rounded-xl text-xs font-black transition-all flex items-center justify-center gap-1 cursor-pointer ${
               selectedCriteria === 'fastest'
-                ? 'bg-[#006948] text-white shadow-md'
-                : 'text-slate-600 hover:text-[#006948] hover:bg-slate-50'
+                ? 'bg-[#0284c7] text-white shadow-md'
+                : isDark
+                ? 'text-sky-300 bg-[#071c2c] hover:bg-[#0a263c] border border-[#0d3654]'
+                : 'text-sky-800 bg-sky-50/60 hover:bg-sky-100/70 border border-sky-200/50'
             }`}
           >
             <span className="material-symbols-outlined text-[15px]">bolt</span>
@@ -216,30 +273,62 @@ export const UrgencyLaunchScreen: React.FC<UrgencyLaunchScreenProps> = ({
           </button>
         </div>
 
-        {/* Dynamic Station Recommendation Preview Card */}
-        <div className="mt-2.5 p-3 rounded-2xl bg-white/95 backdrop-blur-md border border-[#dde9ff] shadow-md flex items-center justify-between gap-3 text-left">
+        {/* Minimal Station Recommendation Card */}
+        <div
+          className={`w-full p-2.5 sm:p-3 rounded-2xl backdrop-blur-md shadow-md flex items-center justify-between gap-2.5 text-left shrink-0 transition-colors ${
+            isDark
+              ? 'bg-[#0e291f]/95 border border-[#1b4434]'
+              : 'bg-white/95 border border-slate-200/80'
+          }`}
+        >
           <div className="min-w-0 flex-1">
             <div className="flex items-center gap-1.5 mb-0.5">
-              <span className="px-2 py-0.5 rounded-full bg-[#e6f8ef] text-[#006948] text-[9px] font-bold uppercase tracking-wider">
+              <span
+                className={`px-2 py-0.5 rounded-full text-[9px] font-bold uppercase tracking-wider transition-colors duration-300 ${
+                  isDark
+                    ? selectedCriteria === 'nearest'
+                      ? 'bg-[#004f35] text-[#85f8c4] border border-[#006948]'
+                      : selectedCriteria === 'cheapest'
+                      ? 'bg-[#3b2302] text-amber-300 border border-[#d97706]/40'
+                      : 'bg-[#062c47] text-sky-300 border border-[#0284c7]/40'
+                    : theme.badgeBg
+                }`}
+              >
                 {selectedCriteria === 'nearest'
-                  ? 'Nearest Ready Point'
+                  ? 'Nearest'
                   : selectedCriteria === 'cheapest'
-                  ? 'Cheapest Ready Point'
-                  : 'Fastest DC Charger'}
+                  ? 'Cheapest'
+                  : 'Fastest'}
               </span>
-              <span className="text-[10px] text-slate-500 font-medium">
+              <span className={`text-[10px] font-medium ${isDark ? 'text-slate-400' : 'text-slate-500'}`}>
                 {activeStation ? `${activeStation.distanceKm} km · ~${activeStation.driveTimeMins} mins` : '...'}
               </span>
             </div>
-            <h3 className="text-xs sm:text-sm font-bold text-[#0d1c2f] truncate">
-              {activeStation ? activeStation.name : 'Scanning Singapore EV network...'}
+
+            <h3
+              className={`text-xs sm:text-sm font-bold truncate transition-colors ${
+                isDark ? 'text-white' : 'text-[#0d1c2f]'
+              }`}
+            >
+              {activeStation ? activeStation.name : 'Scanning EV network...'}
             </h3>
-            <div className="flex items-center gap-2 mt-0.5 text-[11px] text-slate-600">
-              <span className="font-bold text-[#006948]">
-                {activeStation ? `${activeStation.availableBays} bays free` : 'Checking...'}
+
+            <div className={`flex items-center gap-2 mt-0.5 text-[11px] ${isDark ? 'text-slate-300' : 'text-slate-600'}`}>
+              <span
+                className={`font-bold ${
+                  isDark
+                    ? selectedCriteria === 'nearest'
+                      ? 'text-[#85f8c4]'
+                      : selectedCriteria === 'cheapest'
+                      ? 'text-amber-400'
+                      : 'text-sky-400'
+                    : theme.textAccent
+                }`}
+              >
+                {activeStation ? `${activeStation.availableBays} bays free` : '...'}
               </span>
               <span>•</span>
-              <span className="font-semibold text-slate-700">
+              <span className={`font-semibold ${isDark ? 'text-slate-200' : 'text-slate-700'}`}>
                 {selectedCriteria === 'cheapest'
                   ? `$${lowestTariff.toFixed(2)}/kWh`
                   : `${maxPowerKw} kW DC`}
@@ -247,10 +336,20 @@ export const UrgencyLaunchScreen: React.FC<UrgencyLaunchScreenProps> = ({
             </div>
           </div>
 
-          <div className="w-10 h-10 rounded-2xl bg-[#e6f8ef] text-[#006948] flex items-center justify-center shrink-0">
-            <span className="material-symbols-outlined text-[20px]">
+          <div
+            className={`w-9 h-9 rounded-xl flex items-center justify-center shrink-0 transition-colors duration-300 ${
+              isDark
+                ? selectedCriteria === 'nearest'
+                  ? 'bg-[#004f35] text-[#85f8c4]'
+                  : selectedCriteria === 'cheapest'
+                  ? 'bg-[#3b2302] text-amber-300'
+                  : 'bg-[#062c47] text-sky-300'
+                : theme.iconBox
+            }`}
+          >
+            <span className="material-symbols-outlined text-[19px]">
               {selectedCriteria === 'nearest'
-                ? 'directions_car'
+                ? 'near_me'
                 : selectedCriteria === 'cheapest'
                 ? 'savings'
                 : 'speed'}
@@ -258,42 +357,33 @@ export const UrgencyLaunchScreen: React.FC<UrgencyLaunchScreenProps> = ({
           </div>
         </div>
 
-        {/* Dual Stacked Action Buttons (Direct Reference UI Layout) */}
-        <div className="mt-3.5 sm:mt-4 flex flex-col gap-2 w-full">
-          {/* Top Primary Button: Filled Pill (Matching "Talk to an expert" in Reference) */}
+        {/* Minimal Action Buttons */}
+        <div className="w-full flex flex-col gap-1.5 sm:gap-2 shrink-0">
+          {/* Primary Action Button with Dynamic Gradient */}
           <button
             type="button"
             onClick={handleTakeMeNow}
-            className="group relative w-full py-3 sm:py-3.5 px-6 rounded-full bg-gradient-to-r from-[#006948] to-[#00855d] hover:from-[#00593d] hover:to-[#007452] active:scale-[0.98] transition-all text-white font-black text-xs sm:text-sm shadow-lg shadow-[#006948]/25 cursor-pointer flex items-center justify-center gap-2 border border-[#85f8c4]/40"
+            className={`group w-full py-2.5 sm:py-3 px-5 rounded-full bg-gradient-to-r ${theme.bgGradient} active:scale-[0.98] transition-all text-white font-black text-xs sm:text-sm shadow-md ${theme.shadow} cursor-pointer flex items-center justify-center gap-2 border ${theme.border}`}
           >
-            <span className="material-symbols-outlined text-[20px] text-[#85f8c4] group-hover:scale-110 transition-transform">
-              bolt
-            </span>
-            <span className="tracking-wide">
-              TAKE ME THERE NOW!!
-            </span>
+            <span className="material-symbols-outlined text-[18px]">bolt</span>
+            <span className="tracking-wide">TAKE ME THERE NOW!!</span>
           </button>
 
-          {/* Bottom Secondary Button: Outlined Pill (Matching "Platform login" in Reference) */}
+          {/* Secondary Action: Minimal Outlined Button */}
           <button
             type="button"
             onClick={onShowMeAround}
-            className="w-full py-2.5 sm:py-3 px-6 rounded-full bg-white hover:bg-slate-50 active:scale-[0.98] transition-all text-slate-800 font-bold text-xs sm:text-sm border border-slate-300 hover:border-[#006948] shadow-xs cursor-pointer flex items-center justify-center gap-2"
+            className={`w-full py-2 px-5 rounded-full active:scale-[0.98] transition-all font-bold text-xs shadow-xs cursor-pointer flex items-center justify-center gap-1.5 ${
+              isDark
+                ? 'bg-[#0e291f] hover:bg-[#143b2c] text-[#f0fbf6] border border-[#1b4434]'
+                : 'bg-white hover:bg-slate-50 text-slate-700 border border-slate-300'
+            }`}
           >
-            <span className="material-symbols-outlined text-[18px] text-slate-500">
-              tune
-            </span>
-            <span>
-              Show me around (Explore)
-            </span>
+            <span className="material-symbols-outlined text-[16px] text-slate-400">map</span>
+            <span>Explore map</span>
           </button>
         </div>
       </main>
-
-      {/* Bottom Subtle Network Note */}
-      <footer className="relative z-10 w-full max-w-lg mx-auto pb-1 text-center text-[10px] text-slate-400 font-medium shrink-0">
-        <span>Singapore Land Transport Authority (LTA) Live Network</span>
-      </footer>
     </div>
   );
 };

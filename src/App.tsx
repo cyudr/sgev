@@ -295,7 +295,7 @@ export default function App() {
   // Launch screen
   if (appFlowMode === 'launch') {
     return (
-      <div className="relative w-full h-[100dvh] max-h-[100dvh] overflow-hidden">
+      <div className="relative w-full h-[100dvh] max-h-[100dvh] overflow-hidden overscroll-none touch-none select-none">
         {toastMessage && (
           <div className="fixed top-4 inset-x-4 z-[200] max-w-sm mx-auto bg-[#0d1c2f] text-white p-3 rounded-2xl shadow-xl flex items-center gap-2.5 text-xs font-semibold animate-in fade-in">
             <span className="material-symbols-outlined text-[18px] text-[#85f8c4]">check_circle</span>
@@ -311,7 +311,7 @@ export default function App() {
         />
 
         {/* Bottom Strip matching clean white and Singapore emerald theme */}
-        <nav className="fixed bottom-0 inset-x-0 z-30 bg-white/95 backdrop-blur-md border-t border-slate-200/80 shadow-[0_-4px_20px_rgba(0,0,0,0.05)] w-full select-none">
+        <nav className="fixed bottom-0 inset-x-0 z-30 bg-white/95 dark:bg-[#071711]/95 backdrop-blur-md border-t border-slate-200/80 dark:border-[#1b4434] shadow-[0_-4px_20px_rgba(0,0,0,0.05)] w-full select-none transition-colors">
           <div className="flex items-center justify-around py-2 sm:py-2.5 px-3 sm:px-6 max-w-lg sm:max-w-xl lg:max-w-2xl mx-auto">
             <button
               type="button"
@@ -319,7 +319,7 @@ export default function App() {
                 setAppFlowMode('explore');
                 setCurrentTab('map');
               }}
-              className="flex flex-col items-center gap-0.5 py-1 px-3 rounded-xl transition-all cursor-pointer text-slate-600 hover:text-[#006948] active:scale-95"
+              className="flex flex-col items-center gap-0.5 py-1 px-3 rounded-xl transition-all cursor-pointer text-slate-600 dark:text-[#a5d8c3] hover:text-[#006948] dark:hover:text-[#85f8c4] active:scale-95"
             >
               <span className="material-symbols-outlined text-[24px]">map</span>
               <span className="text-[11px] font-semibold">Explore</span>
@@ -331,7 +331,7 @@ export default function App() {
                 setAppFlowMode('explore');
                 setCurrentTab('saved');
               }}
-              className="flex flex-col items-center gap-0.5 py-1 px-3 rounded-xl transition-all cursor-pointer text-slate-600 hover:text-[#006948] active:scale-95"
+              className="flex flex-col items-center gap-0.5 py-1 px-3 rounded-xl transition-all cursor-pointer text-slate-600 dark:text-[#a5d8c3] hover:text-[#006948] dark:hover:text-[#85f8c4] active:scale-95"
             >
               <span className="material-symbols-outlined text-[24px]">bookmark</span>
               <span className="text-[11px] font-semibold">Saved</span>
@@ -343,12 +343,12 @@ export default function App() {
                 setAppFlowMode('explore');
                 setCurrentTab('activity');
               }}
-              className="flex flex-col items-center gap-0.5 py-1 px-3 rounded-xl transition-all cursor-pointer text-slate-600 hover:text-[#006948] active:scale-95 relative"
+              className="flex flex-col items-center gap-0.5 py-1 px-3 rounded-xl transition-all cursor-pointer text-slate-600 dark:text-[#a5d8c3] hover:text-[#006948] dark:hover:text-[#85f8c4] active:scale-95 relative"
             >
               <span className="material-symbols-outlined text-[24px]">history</span>
               <span className="text-[11px] font-semibold">Activity</span>
               {activeSession && (
-                <span className="absolute top-1 right-2 w-2 h-2 rounded-full bg-[#006948] animate-ping" />
+                <span className="absolute top-1 right-2 w-2 h-2 rounded-full bg-[#006948] dark:bg-[#85f8c4] animate-ping" />
               )}
             </button>
 
@@ -358,7 +358,7 @@ export default function App() {
                 setAppFlowMode('explore');
                 setCurrentTab('profile');
               }}
-              className="flex flex-col items-center gap-0.5 py-1 px-3 rounded-xl transition-all cursor-pointer text-slate-600 hover:text-[#006948] active:scale-95"
+              className="flex flex-col items-center gap-0.5 py-1 px-3 rounded-xl transition-all cursor-pointer text-slate-600 dark:text-[#a5d8c3] hover:text-[#006948] dark:hover:text-[#85f8c4] active:scale-95"
             >
               <span className="material-symbols-outlined text-[24px]">person</span>
               <span className="text-[11px] font-semibold">Profile</span>
@@ -579,7 +579,7 @@ export default function App() {
 
       {/* Bottom Floating Navigation Dock */}
       {!isDetailsView && (
-        <nav className="fixed bottom-0 inset-x-0 z-30 bg-[#f8f9ff]/90 backdrop-blur-md border-t border-[#dde9ff] w-full">
+        <nav className="fixed bottom-0 inset-x-0 z-30 bg-[#f8f9ff]/90 dark:bg-[#071711]/95 backdrop-blur-md border-t border-[#dde9ff] dark:border-[#1b4434] w-full transition-colors">
           <div className="flex items-center justify-around py-2 sm:py-2.5 px-3 sm:px-6 max-w-lg sm:max-w-xl lg:max-w-2xl mx-auto">
             <button
               type="button"
@@ -589,8 +589,8 @@ export default function App() {
               }}
               className={`flex flex-col items-center gap-0.5 py-1 px-3 rounded-xl transition-all cursor-pointer ${
                 currentTab === 'map'
-                  ? 'text-[#006948] font-bold'
-                  : 'text-[#3d4a42] hover:text-[#0d1c2f]'
+                  ? 'text-[#006948] dark:text-[#85f8c4] font-bold'
+                  : 'text-[#3d4a42] dark:text-[#a5d8c3] hover:text-[#0d1c2f] dark:hover:text-white'
               }`}
             >
               <span
@@ -610,8 +610,8 @@ export default function App() {
               }}
               className={`flex flex-col items-center gap-0.5 py-1 px-3 rounded-xl transition-all cursor-pointer ${
                 currentTab === 'saved'
-                  ? 'text-[#006948] font-bold'
-                  : 'text-[#3d4a42] hover:text-[#0d1c2f]'
+                  ? 'text-[#006948] dark:text-[#85f8c4] font-bold'
+                  : 'text-[#3d4a42] dark:text-[#a5d8c3] hover:text-[#0d1c2f] dark:hover:text-white'
               }`}
             >
               <span
@@ -631,8 +631,8 @@ export default function App() {
               }}
               className={`flex flex-col items-center gap-0.5 py-1 px-3 rounded-xl transition-all cursor-pointer relative ${
                 currentTab === 'activity'
-                  ? 'text-[#006948] font-bold'
-                  : 'text-[#3d4a42] hover:text-[#0d1c2f]'
+                  ? 'text-[#006948] dark:text-[#85f8c4] font-bold'
+                  : 'text-[#3d4a42] dark:text-[#a5d8c3] hover:text-[#0d1c2f] dark:hover:text-white'
               }`}
             >
               <span
@@ -643,7 +643,7 @@ export default function App() {
               </span>
               <span className="text-[11px]">Activity</span>
               {activeSession && (
-                <span className="absolute top-1 right-2 w-2 h-2 rounded-full bg-[#006948] animate-ping" />
+                <span className="absolute top-1 right-2 w-2 h-2 rounded-full bg-[#006948] dark:bg-[#85f8c4] animate-ping" />
               )}
             </button>
 
@@ -655,8 +655,8 @@ export default function App() {
               }}
               className={`flex flex-col items-center gap-0.5 py-1 px-3 rounded-xl transition-all cursor-pointer ${
                 currentTab === 'profile'
-                  ? 'text-[#006948] font-bold'
-                  : 'text-[#3d4a42] hover:text-[#0d1c2f]'
+                  ? 'text-[#006948] dark:text-[#85f8c4] font-bold'
+                  : 'text-[#3d4a42] dark:text-[#a5d8c3] hover:text-[#0d1c2f] dark:hover:text-white'
               }`}
             >
               <span

@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Station } from '../types/charging';
+import { ChargeSGLogo } from './ChargeSGLogo';
 
 interface QRScannerModalProps {
   station: Station;
@@ -128,9 +129,10 @@ export const QRScannerModal: React.FC<QRScannerModalProps> = ({
           <span className="material-symbols-outlined text-[22px]">close</span>
         </button>
 
-        <div className="text-center px-2 min-w-0">
-          <h3 className="font-extrabold text-base leading-tight">Scan QR to Charge</h3>
-          <p className="text-xs text-slate-300 truncate max-w-[200px] sm:max-w-xs">{station.name}</p>
+        <div className="flex flex-col items-center px-2 min-w-0">
+          <ChargeSGLogo size="xs" textColor="text-white" showBadge={false} />
+          <h3 className="font-extrabold text-sm leading-tight mt-0.5">Scan QR to Charge</h3>
+          <p className="text-[11px] text-slate-300 truncate max-w-[180px] sm:max-w-xs">{station.name}</p>
         </div>
 
         <button

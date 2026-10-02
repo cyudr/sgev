@@ -214,6 +214,76 @@ This document collates all user prompts, architectural specifications, iterative
 
 ---
 
+### Prompt 16: Minimalist Urgency Redesign & Mobile Viewport Locking
+
+> **User Prompt**:
+> 1. make the launch page more minimalistic, remove all the descriptive words in launch page, have it with just asking for urgency; 2. lock scrolling for launch page and explore page; 3. change opacity for search container in explore to 50%; 4. remove the "menu" option at the top right of the launch page; 5. in the launch page, give nearest, cheapest and fastest different colors; push when done
+
+#### Implementation Details:
+1. **Minimalist Launch Page (`UrgencyLaunchScreen.tsx`)**:
+   - Removed all secondary descriptive text, subtitles, and decorative blurbs from the launch screen.
+   - Refocused the screen exclusively onto the core urgency prompt: **"How urgent is your charge?"**.
+   - Removed the top-right "menu" button, retaining only the clean one-click PWA install action.
+2. **Distinct Color Identity for Criteria Selectors**:
+   - **Nearest**: Emerald Green (`bg-[#006948]` active / soft emerald tint inactive, matching proximity and route efficiency).
+   - **Cheapest**: Amber Gold (`bg-[#d97706]` active / soft amber tint inactive, matching price savings).
+   - **Fastest**: Electric Sky Blue (`bg-[#0284c7]` active / soft sky tint inactive, matching high-power DC charging).
+   - Dynamically synchronized the primary CTA "TAKE ME THERE NOW!!", the floating teardrop pin, and the active station recommendation card to the selected criteria's theme color.
+3. **Viewport Scroll Locking**:
+   - Locked all scrolling on both the Launch screen and Explore map (`overscroll-none touch-none overflow-hidden max-h-[100dvh] select-none`).
+4. **Explore Search Bar 50% Opacity**:
+   - Updated the top floating search container in `InteractiveMap.tsx` from `bg-white/30` to `bg-white/50 backdrop-blur-md rounded-2xl sm:rounded-3xl border border-white/60 shadow-lg`.
+
+---
+
+### Prompt 17: Ubiquitous ChargeSG Brand Icon Propagation
+
+> **User Prompt**:
+> 1. propagate the ChargeSG icon in all pages
+
+#### Implementation Details:
+1. **Centralized Brand Component (`ChargeSGLogo.tsx`)**:
+   - Created a modular `ChargeSGLogo` component featuring the signature squircle emerald gradient tile (`#006948` to `#004f35`), neon mint bolt glyph (`#85f8c4`), bold typography, and optional `SG 🇸🇬` country badge.
+2. **Propagated Brand Presence Across All Views & Modals**:
+   - **Global Header (`Header.tsx`)**: Displays `ChargeSGLogo` on every screen, retaining the back arrow seamlessly when navigating deeper views.
+   - **Launch Screen (`UrgencyLaunchScreen.tsx`)**: Prominently features `ChargeSGLogo` in the minimal top bar.
+   - **Emergency Routing View (`NearestRoutingPage.tsx`)**: Embedded in the turn-by-turn header.
+   - **Station Details View (`StationDetails.tsx`)**: Embedded in the top context bar.
+   - **Live Charging Session Modal (`ChargingSessionModal.tsx`)**: Embedded in the live charging header.
+   - **QR Scanner Modal (`QRScannerModal.tsx`)**: Embedded above the camera viewfinder.
+   - **Bay Reservation Modal (`ReservationModal.tsx`)**: Embedded in the reservation header.
+   - **Port Selector Modal (`PortSelectorModal.tsx`)**: Embedded in the connector chooser header.
+   - **Saved & Activity Tabs (`SavedTab.tsx`, `ActivityTab.tsx`)**: Displayed proudly alongside tab headings.
+
+---
+
+### Prompt 18: Custom Green Color Themes (Light Mint vs Dark Emerald)
+
+> **User Prompt**:
+> 1. allow user preference in color theme, have light and dark (but all different shades of green), default is light
+
+#### Implementation Details:
+1. **Theme Architecture (`ThemeContext.tsx`)**:
+   - Built a custom `ThemeProvider` and `useGreenTheme` hook supporting `'light'` and `'dark'` themes.
+   - Persisted user preference to `localStorage` under `chargesg_color_theme` with instant fallback to **Light mode as default**.
+   - Dynamically syncs the `data-theme` attribute and `dark` class to `document.documentElement`.
+2. **All Shades of Green Color Palette**:
+   - **Light Mint (Default)**:
+     - Backgrounds: Pristine sage white (`#f4faf7`, `#eaf5ef`).
+     - Surfaces: Pure white with soft mint borders (`#d8efe4`).
+     - Accents: Singapore Emerald (`#006948`), deep pine (`#004f35`), and mint (`#85f8c4`).
+     - Typography: High-contrast pine forest (`#0d1c2f` / `#0a291e`).
+   - **Dark Emerald**:
+     - Backgrounds: Deep midnight evergreen (`#06150f`, `#0c231a`, `#040e0a`).
+     - Surfaces: Layered forest greens (`#0a2118`, `#0e291f`, `#143b2c`) with emerald borders (`#1b4434`).
+     - Accents: Luminous electric charging mint (`#85f8c4`) and neon emerald (`#00a86b`).
+     - Typography: Crisp ice mint (`#f0fbf6`) and soft sage (`#a5d8c3`).
+3. **Dual Access Points for Theme Switching**:
+   - **One-Click Quick Toggle**: Added in the top navigation bar (`Header.tsx` & `UrgencyLaunchScreen.tsx`) for instant toggling anywhere in the app.
+   - **Profile Settings Card (`ProfileTab.tsx`)**: Added a dedicated "Color Theme Preference" section with selectable cards for "Light Mint (Default)" and "Dark Emerald".
+
+---
+
 ## Architecture Summary
 
 | Component | Responsibility |

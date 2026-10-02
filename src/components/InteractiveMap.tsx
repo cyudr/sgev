@@ -633,13 +633,13 @@ export const InteractiveMap: React.FC<InteractiveMapProps> = ({
   };
 
   return (
-    <div className="relative w-full flex-1 min-h-0 overflow-hidden bg-[#e5e3df] select-none flex flex-col justify-between">
+    <div className="relative w-full h-full max-h-full flex-1 min-h-0 overflow-hidden overscroll-none touch-none bg-[#e5e3df] select-none flex flex-col justify-between">
       {/* Real Google Maps Tile Engine */}
       <div ref={mapContainerRef} className="absolute inset-0 w-full h-full z-0" />
 
-      {/* Top Floating Search & Quick Filters with 30% Opacity White-Based Backdrop Container */}
+      {/* Top Floating Search & Quick Filters with 50% Opacity White-Based Backdrop Container */}
       <div className="relative z-10 p-2 sm:p-3.5 max-w-lg sm:max-w-xl lg:max-w-2xl mx-auto w-full pointer-events-none">
-        <div className="bg-white/30 backdrop-blur-md rounded-2xl sm:rounded-3xl p-2 sm:p-2.5 shadow-lg border border-white/40 flex flex-col gap-1.5 pointer-events-auto">
+        <div className="bg-white/50 backdrop-blur-md rounded-2xl sm:rounded-3xl p-2 sm:p-2.5 shadow-lg border border-white/60 flex flex-col gap-1.5 pointer-events-auto">
           {/* Search Bar */}
           <div className="h-10 sm:h-11 bg-white/95 backdrop-blur-md rounded-full shadow-md px-3.5 flex items-center justify-between gap-2 border border-slate-200">
             <span className="material-symbols-outlined text-[#006948] text-[20px] shrink-0">
