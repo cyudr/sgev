@@ -611,6 +611,20 @@ export const InteractiveMap: React.FC<InteractiveMapProps> = ({
             All ({stations.length})
           </button>
 
+          {/* Available Now (Beside All) */}
+          <button
+            type="button"
+            onClick={() => setActiveFilter('available')}
+            className={`px-2.5 py-0.5 rounded-full text-[11px] font-semibold whitespace-nowrap transition-all shadow-xs cursor-pointer flex items-center gap-1 ${
+              activeFilter === 'available'
+                ? 'bg-[#006948] text-white'
+                : 'bg-white/95 text-slate-700 hover:bg-slate-50 border border-slate-200'
+            }`}
+          >
+            <span className="w-1.5 h-1.5 rounded-full bg-[#00a86b]" />
+            <span>Available Now</span>
+          </button>
+
           {/* Preferred Filter: uses user saved preference */}
           <button
             type="button"
@@ -666,19 +680,6 @@ export const InteractiveMap: React.FC<InteractiveMapProps> = ({
           >
             <span className="material-symbols-outlined text-[13px]">power</span>
             <span>CHAdeMO</span>
-          </button>
-
-          {/* Available Now */}
-          <button
-            type="button"
-            onClick={() => setActiveFilter('available')}
-            className={`px-2.5 py-0.5 rounded-full text-[11px] font-semibold whitespace-nowrap transition-all shadow-xs cursor-pointer ${
-              activeFilter === 'available'
-                ? 'bg-[#006948] text-white'
-                : 'bg-white/95 text-slate-700 hover:bg-slate-50 border border-slate-200'
-            }`}
-          >
-            Available Now
           </button>
 
           {/* SP Mobility */}

@@ -509,27 +509,35 @@ export default function App() {
             )}
 
             {currentTab === 'saved' && (
-              <SavedTab
-                stations={stationsWithRealDistance}
-                savedStationIds={savedStationIds}
-                onSelectStation={(st) => {
-                  setSelectedStation(st);
-                  setCurrentTab('map');
-                }}
-                onOpenDetails={handleOpenStationDetails}
-                onToggleSave={handleToggleSaveStation}
-              />
+              <div className="flex-1 min-h-0 w-full overflow-y-auto overscroll-contain">
+                <SavedTab
+                  stations={stationsWithRealDistance}
+                  savedStationIds={savedStationIds}
+                  onSelectStation={(st) => {
+                    setSelectedStation(st);
+                    setCurrentTab('map');
+                  }}
+                  onOpenDetails={handleOpenStationDetails}
+                  onToggleSave={handleToggleSaveStation}
+                />
+              </div>
             )}
 
             {currentTab === 'activity' && (
-              <ActivityTab
-                activeSession={activeSession}
-                pastSessions={pastSessions}
-                onOpenActiveSessionModal={() => setShowChargingModal(true)}
-              />
+              <div className="flex-1 min-h-0 w-full overflow-y-auto overscroll-contain">
+                <ActivityTab
+                  activeSession={activeSession}
+                  pastSessions={pastSessions}
+                  onOpenActiveSessionModal={() => setShowChargingModal(true)}
+                />
+              </div>
             )}
 
-            {currentTab === 'profile' && <ProfileTab />}
+            {currentTab === 'profile' && (
+              <div className="flex-1 min-h-0 w-full overflow-y-auto overscroll-contain">
+                <ProfileTab />
+              </div>
+            )}
           </>
         )}
       </main>

@@ -19,7 +19,7 @@ export const SavedTab: React.FC<SavedTabProps> = ({
   const savedStations = stations.filter((s) => savedStationIds.includes(s.id));
 
   return (
-    <div className="flex flex-col w-full pb-24 max-w-lg sm:max-w-2xl lg:max-w-4xl mx-auto p-4 sm:p-6 lg:p-8 gap-4 sm:gap-6">
+    <div className="flex flex-col w-full pb-32 sm:pb-36 max-w-lg sm:max-w-2xl lg:max-w-4xl mx-auto p-4 sm:p-6 lg:p-8 gap-4 sm:gap-6">
       <div className="flex items-center justify-between">
         <div>
           <h2 className="text-xl font-extrabold text-[#0d1c2f]">Saved Stations</h2>

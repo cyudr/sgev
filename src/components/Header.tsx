@@ -103,9 +103,6 @@ export const Header: React.FC<HeaderProps> = ({
             <h1 className="font-extrabold text-sm sm:text-base tracking-tight text-[#0d1c2f] group-hover:text-[#006948] leading-none transition-colors">
               ChargeSG
             </h1>
-            <p className="text-[10px] font-medium text-[#3d4a42] leading-tight mt-0.5">
-              Singapore EV Charging
-            </p>
           </button>
         </div>
 
