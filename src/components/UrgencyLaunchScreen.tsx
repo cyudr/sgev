@@ -54,21 +54,123 @@ interface UrgencyLaunchScreenProps {
   nearestStation: Station | null;
   onNavigateToTarget: (station: Station) => void;
   onShowMeAround?: () => void;
+  onRefresh?: () => Promise<void> | void;
+  isRefreshing?: boolean;
 }
 
 export const UrgencyLaunchScreen: React.FC<UrgencyLaunchScreenProps> = ({
   stations,
   nearestStation,
   onNavigateToTarget,
+  onRefresh,
+  isRefreshing,
 }) => {
   const { toggleTheme, isDark } = useGreenTheme();
   const [selectedCriteria, setSelectedCriteria] = useState<FrontPageCriteria>('nearest');
   const [currentSlideIdx, setCurrentSlideIdx] = useState<number>(0);
   const [swipeOffset, setSwipeOffset] = useState<number>(0);
 
+  // Pull-down-to-refresh state
+  const [pullY, setPullY] = useState<number>(0);
+  const [isPullRefreshing, setIsPullRefreshing] = useState<boolean>(false);
+  const [refreshSuccess, setRefreshSuccess] = useState<boolean>(false);
+
+  const pullStartYRef = React.useRef<number | null>(null);
+  const pullStartXRef = React.useRef<number | null>(null);
+  const isPullingRef = React.useRef<boolean>(false);
+
   const touchStartXRef = React.useRef<number | null>(null);
   const touchStartYRef = React.useRef<number | null>(null);
   const isDraggingRef = React.useRef<boolean>(false);
+
+  // Execute Refresh Function
+  const executeRefresh = async () => {
+    setIsPullRefreshing(true);
+    setPullY(54);
+    try {
+      if (onRefresh) {
+        await onRefresh();
+      } else {
+        await new Promise((resolve) => setTimeout(resolve, 900));
+      }
+      setRefreshSuccess(true);
+      setTimeout(() => {
+        setRefreshSuccess(false);
+        setIsPullRefreshing(false);
+        setPullY(0);
+      }, 1100);
+    } catch {
+      setIsPullRefreshing(false);
+      setPullY(0);
+    }
+  };
+
+  // Pull-down-to-refresh Touch Gesture Handlers
+  const handlePageTouchStart = (e: React.TouchEvent) => {
+    if (e.touches.length > 0) {
+      pullStartYRef.current = e.touches[0].clientY;
+      pullStartXRef.current = e.touches[0].clientX;
+      isPullingRef.current = false;
+    }
+  };
+
+  const handlePageTouchMove = (e: React.TouchEvent) => {
+    if (pullStartYRef.current === null || isPullRefreshing) return;
+    const currentY = e.touches[0].clientY;
+    const currentX = e.touches[0].clientX;
+    const deltaY = currentY - pullStartYRef.current;
+    const deltaX = currentX - (pullStartXRef.current || 0);
+
+    // Only engage if pulling strictly downwards
+    if (deltaY > 6 && deltaY > Math.abs(deltaX) * 1.1) {
+      isPullingRef.current = true;
+      const damped = Math.min(85, deltaY * 0.45);
+      setPullY(damped);
+    }
+  };
+
+  const handlePageTouchEnd = () => {
+    if (pullY >= 48 && !isPullRefreshing) {
+      executeRefresh();
+    } else {
+      setPullY(0);
+    }
+    pullStartYRef.current = null;
+    pullStartXRef.current = null;
+    isPullingRef.current = false;
+  };
+
+  // Mouse Drag support for pull-down refresh
+  const handlePageMouseDown = (e: React.MouseEvent) => {
+    if (e.clientY < window.innerHeight * 0.4) {
+      pullStartYRef.current = e.clientY;
+      pullStartXRef.current = e.clientX;
+      isPullingRef.current = true;
+    }
+  };
+
+  const handlePageMouseMove = (e: React.MouseEvent) => {
+    if (!isPullingRef.current || pullStartYRef.current === null || isPullRefreshing) return;
+    const deltaY = e.clientY - pullStartYRef.current;
+    const deltaX = e.clientX - (pullStartXRef.current || 0);
+    if (deltaY > 6 && deltaY > Math.abs(deltaX)) {
+      const damped = Math.min(85, deltaY * 0.45);
+      setPullY(damped);
+    }
+  };
+
+  const handlePageMouseUp = () => {
+    if (isPullingRef.current) {
+      if (pullY >= 48 && !isPullRefreshing) {
+        executeRefresh();
+      } else {
+        setPullY(0);
+      }
+    }
+    pullStartYRef.current = null;
+    pullStartXRef.current = null;
+    isPullingRef.current = false;
+  };
 
   // Auto-advance dynamic EV scenes every 6 seconds
   useEffect(() => {
@@ -278,12 +380,65 @@ export const UrgencyLaunchScreen: React.FC<UrgencyLaunchScreenProps> = ({
 
   return (
     <div
-      className={`w-full h-[100dvh] max-h-[100dvh] overflow-hidden overscroll-none touch-none select-none flex flex-col justify-between px-3 sm:px-5 pt-2 pb-16 sm:pb-20 transition-colors duration-300 ${
+      onTouchStart={handlePageTouchStart}
+      onTouchMove={handlePageTouchMove}
+      onTouchEnd={handlePageTouchEnd}
+      onMouseDown={handlePageMouseDown}
+      onMouseMove={handlePageMouseMove}
+      onMouseUp={handlePageMouseUp}
+      className={`relative w-full h-[100dvh] max-h-[100dvh] overflow-hidden overscroll-none select-none flex flex-col justify-between px-3.5 sm:px-5 pt-2 pb-24 sm:pb-28 md:pb-32 transition-colors duration-300 ${
         isDark
           ? 'bg-gradient-to-b from-[#06150f] via-[#0c231a] to-[#040e0a] text-white'
           : 'bg-gradient-to-b from-white via-[#f4faf7] to-[#eaf5ef] text-[#0d1c2f]'
       }`}
     >
+      {/* Pull Down to Refresh Floating Visual Feedback Pill */}
+      <div
+        className={`fixed top-3 inset-x-0 z-50 flex items-center justify-center pointer-events-none transition-all duration-300 ${
+          pullY > 0 || isPullRefreshing || refreshSuccess
+            ? 'opacity-100'
+            : 'opacity-0 -translate-y-8 pointer-events-none'
+        }`}
+        style={{
+          transform: pullY > 0 ? `translateY(${Math.min(pullY, 70)}px)` : undefined,
+        }}
+      >
+        <div
+          className={`px-4 py-1.5 rounded-full shadow-2xl backdrop-blur-md flex items-center gap-2 border transition-all text-xs font-bold ${
+            isDark
+              ? 'bg-[#0a2419]/95 border-[#1b4434] text-[#85f8c4] shadow-black/60'
+              : 'bg-white/95 border-emerald-200 text-[#006948] shadow-emerald-900/15'
+          }`}
+        >
+          {refreshSuccess ? (
+            <>
+              <span className="material-symbols-outlined text-[17px] text-emerald-400">check_circle</span>
+              <span>EV Network & GPS Synced!</span>
+            </>
+          ) : isPullRefreshing || isRefreshing ? (
+            <>
+              <span className="material-symbols-outlined text-[17px] animate-spin text-[#85f8c4]">sync</span>
+              <span>Refreshing Live Stations...</span>
+            </>
+          ) : pullY >= 48 ? (
+            <>
+              <span className="material-symbols-outlined text-[17px] animate-bounce text-[#85f8c4]">arrow_downward</span>
+              <span>Release to refresh EV network</span>
+            </>
+          ) : (
+            <>
+              <span
+                className="material-symbols-outlined text-[17px] transition-transform"
+                style={{ transform: `rotate(${pullY * 6}deg)` }}
+              >
+                sync
+              </span>
+              <span>Pull down to refresh</span>
+            </>
+          )}
+        </div>
+      </div>
+
       {/* Background Soft Ambient Light Glows */}
       <div
         className={`absolute top-8 right-0 w-64 h-64 rounded-full blur-3xl pointer-events-none transition-colors ${
@@ -326,10 +481,16 @@ export const UrgencyLaunchScreen: React.FC<UrgencyLaunchScreenProps> = ({
         </div>
       </header>
 
-      {/* Main Content Area - Fully contained, zero scrolling */}
-      <main className="relative z-10 w-full max-w-sm sm:max-w-md md:max-w-lg lg:max-w-xl mx-auto flex-1 flex flex-col justify-between py-1 sm:py-2 min-h-0 gap-1.5 sm:gap-2.5">
+      {/* Main Content Area - Fully contained, zero scrolling with spring pull-refresh feedback */}
+      <main
+        className="relative z-10 w-full max-w-sm sm:max-w-md md:max-w-lg lg:max-w-xl mx-auto flex-1 flex flex-col justify-between py-1 sm:py-2 min-h-0 gap-1.5 sm:gap-2.5 transition-transform"
+        style={{
+          transform: pullY > 0 ? `translateY(${pullY * 0.35}px)` : undefined,
+          transition: pullY === 0 ? 'transform 0.3s ease-out' : 'none',
+        }}
+      >
         {/* Dynamic Responsive Centerpiece EV Showcase - Scales dynamically with viewport */}
-        <div className="relative w-full flex-1 min-h-[160px] max-h-[36vh] sm:max-h-[42vh] md:max-h-[46vh] lg:max-h-[48vh] flex items-center justify-center select-none py-0.5 sm:py-1">
+        <div className="relative w-full flex-1 min-h-[140px] max-h-[30vh] sm:max-h-[35vh] md:max-h-[38vh] lg:max-h-[40vh] flex items-center justify-center select-none py-0.5 sm:py-1">
           <div className="relative w-full h-full max-w-[340px] sm:max-w-[440px] md:max-w-[500px] lg:max-w-[560px] flex items-center justify-center">
             {/* Ambient Glow Aura */}
             <div className="absolute inset-0 bg-gradient-to-tr from-[#006948]/20 to-[#85f8c4]/30 rounded-[2.5rem] blur-xl transform scale-105 pointer-events-none" />
@@ -580,15 +741,15 @@ export const UrgencyLaunchScreen: React.FC<UrgencyLaunchScreenProps> = ({
           </div>
         </div>
 
-        {/* Minimal Action Buttons */}
-        <div className="w-full shrink-0">
+        {/* Action Button Container - Elevated with ample clearance from the bottom navigation bar */}
+        <div className="w-full shrink-0 mb-3 sm:mb-5">
           {/* Primary Action Button with Dynamic Gradient */}
           <button
             type="button"
             onClick={handleTakeMeNow}
-            className={`group w-full py-2.5 sm:py-3.5 px-5 rounded-full bg-gradient-to-r ${theme.bgGradient} active:scale-[0.98] transition-all text-white font-black text-xs sm:text-sm shadow-md ${theme.shadow} cursor-pointer flex items-center justify-center gap-2 border ${theme.border}`}
+            className={`group w-full py-3 sm:py-3.5 px-5 rounded-full bg-gradient-to-r ${theme.bgGradient} active:scale-[0.98] transition-all text-white font-black text-xs sm:text-sm shadow-xl ${theme.shadow} cursor-pointer flex items-center justify-center gap-2 border ${theme.border}`}
           >
-            <span className="material-symbols-outlined text-[18px]">bolt</span>
+            <span className="material-symbols-outlined text-[19px]">bolt</span>
             <span className="tracking-wide">TAKE ME THERE NOW!!</span>
           </button>
         </div>

@@ -425,6 +425,24 @@ This document collates all user prompts, architectural specifications, iterative
 
 ---
 
+### Prompt 26: Elevate Action Button & Enable Pull-Down-to-Refresh on Launch Page
+
+> **User Prompt**:
+> 1. Move the take me there now in launch page up, it is too near the bottom; 2. Enable pull down to refresh gesture in launch page
+
+#### Implementation Details:
+1. **Elevate "TAKE ME THERE NOW!!" Above Bottom Nav**:
+   - Increased root container bottom padding from `pb-16 sm:pb-20` to `pb-24 sm:pb-28 md:pb-32`.
+   - Added `mb-3 sm:mb-5` on the primary action button container with enhanced elevation shadows and responsive padding.
+   - Gracefully fine-tuned the centerpiece image constraints (`max-h-[30vh] sm:max-h-[35vh] md:max-h-[38vh]`) so the entire layout comfortably fits without scrolling on both compact mobile screens and desktop monitors.
+2. **Pull-Down-to-Refresh Gesture**:
+   - Implemented vertical touch gesture tracking (`onTouchStart`, `onTouchMove`, `onTouchEnd`) and desktop mouse drag (`onMouseDown`, `onMouseMove`, `onMouseUp`) on the launch page.
+   - **Floating Visual Feedback Pill**: As the user drags downward, a floating pill appears at the top displaying rotation-responsive sync icons ("Pull down to refresh", "Release to refresh EV network", "Refreshing Live Stations...").
+   - **Rubber-Band Spring Physics**: Applied smooth resistance and dynamic `translateY` transform to the main content during pull.
+   - **Live Data Re-sync**: Connected to `requestUserLocation()` and `refreshApi()` to re-fetch real-time station availability and GPS positioning, completing with a checkmark badge ("EV Network & GPS Synced!").
+
+---
+
 ## Architecture Summary
 
 | Component | Responsibility |

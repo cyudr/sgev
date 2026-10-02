@@ -295,7 +295,7 @@ export default function App() {
   // Launch screen
   if (appFlowMode === 'launch') {
     return (
-      <div className="relative w-full h-[100dvh] max-h-[100dvh] overflow-hidden overscroll-none touch-none select-none">
+      <div className="relative w-full h-[100dvh] max-h-[100dvh] overflow-hidden overscroll-none select-none">
         {toastMessage && (
           <div className="fixed top-4 inset-x-4 z-[200] max-w-sm mx-auto bg-[#0d1c2f] text-white p-3 rounded-2xl shadow-xl flex items-center gap-2.5 text-xs font-semibold animate-in fade-in">
             <span className="material-symbols-outlined text-[18px] text-[#85f8c4]">check_circle</span>
@@ -308,6 +308,11 @@ export default function App() {
           nearestStation={nearestStation}
           onNavigateToTarget={handleNavigateToTarget}
           onShowMeAround={handleShowMeAround}
+          onRefresh={async () => {
+            requestUserLocation();
+            await refreshApi();
+          }}
+          isRefreshing={apiLoading}
         />
 
         {/* Bottom Strip matching clean white and Singapore emerald theme */}
