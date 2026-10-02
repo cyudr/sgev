@@ -61,6 +61,7 @@ export const ProfileTab: React.FC = () => {
       vehicleModel,
       carPlate,
       connectorPreference: preferredPlug,
+      hasSavedPreference: true,
     };
     setPrefs(updated);
     setJsonCookie(COOKIE_KEYS.VEHICLE_PREFS, updated);
@@ -78,6 +79,7 @@ export const ProfileTab: React.FC = () => {
       vehicleModel,
       carPlate,
       connectorPreference: plug,
+      hasSavedPreference: true,
     };
     setPrefs(updated);
     setJsonCookie(COOKIE_KEYS.VEHICLE_PREFS, updated);
@@ -164,6 +166,7 @@ export const ProfileTab: React.FC = () => {
       vehicleModel: detectedData.vehicleModel,
       carPlate: detectedData.carPlate,
       connectorPreference: detectedData.plugPreference,
+      hasSavedPreference: true,
     };
     setPrefs(updated);
     setJsonCookie(COOKIE_KEYS.VEHICLE_PREFS, updated);

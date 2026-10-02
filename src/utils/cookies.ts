@@ -82,10 +82,12 @@ export interface UserVehiclePreferences {
   vehicleModel: string;
   connectorPreference: 'all' | 'CCS2' | 'Type 2' | 'CHAdeMO';
   minPowerKw: number;
+  hasSavedPreference?: boolean;
 }
 
 export const DEFAULT_VEHICLE_PREFS: UserVehiclePreferences = {
   vehicleModel: 'Tesla Model Y / BYD Atto 3',
   connectorPreference: 'CCS2',
   minPowerKw: 50,
+  hasSavedPreference: false,
 };

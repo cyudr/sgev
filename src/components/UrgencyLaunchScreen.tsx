@@ -53,29 +53,115 @@ interface UrgencyLaunchScreenProps {
   stations: Station[];
   nearestStation: Station | null;
   onNavigateToTarget: (station: Station) => void;
-  onShowMeAround: () => void;
+  onShowMeAround?: () => void;
 }
 
 export const UrgencyLaunchScreen: React.FC<UrgencyLaunchScreenProps> = ({
   stations,
   nearestStation,
   onNavigateToTarget,
-  onShowMeAround,
 }) => {
   const { toggleTheme, isDark } = useGreenTheme();
   const [selectedCriteria, setSelectedCriteria] = useState<FrontPageCriteria>('nearest');
   const [currentSlideIdx, setCurrentSlideIdx] = useState<number>(0);
+  const [swipeOffset, setSwipeOffset] = useState<number>(0);
 
-  // Auto-advance dynamic EV scenes every 5.5 seconds
+  const touchStartXRef = React.useRef<number | null>(null);
+  const touchStartYRef = React.useRef<number | null>(null);
+  const isDraggingRef = React.useRef<boolean>(false);
+
+  // Auto-advance dynamic EV scenes every 6 seconds
   useEffect(() => {
     const timer = setInterval(() => {
       setCurrentSlideIdx((prev) => (prev + 1) % EV_SLIDES.length);
-    }, 5500);
+    }, 6000);
     return () => clearInterval(timer);
   }, []);
 
   const handleNextSlide = () => {
     setCurrentSlideIdx((prev) => (prev + 1) % EV_SLIDES.length);
+  };
+
+  const handlePrevSlide = () => {
+    setCurrentSlideIdx((prev) => (prev - 1 + EV_SLIDES.length) % EV_SLIDES.length);
+  };
+
+  // Touch Swipe Gesture Handlers
+  const handleTouchStart = (e: React.TouchEvent) => {
+    if (e.touches.length > 0) {
+      touchStartXRef.current = e.touches[0].clientX;
+      touchStartYRef.current = e.touches[0].clientY;
+      setSwipeOffset(0);
+    }
+  };
+
+  const handleTouchMove = (e: React.TouchEvent) => {
+    if (touchStartXRef.current === null) return;
+    const currentX = e.touches[0].clientX;
+    const currentY = e.touches[0].clientY;
+    const diffX = currentX - touchStartXRef.current;
+    const diffY = currentY - (touchStartYRef.current || 0);
+
+    // Filter predominantly horizontal gestures
+    if (Math.abs(diffX) > Math.abs(diffY)) {
+      setSwipeOffset(Math.max(-80, Math.min(80, diffX)));
+    }
+  };
+
+  const handleTouchEnd = (e: React.TouchEvent) => {
+    if (touchStartXRef.current !== null) {
+      const touchEndX = e.changedTouches[0].clientX;
+      const diffX = touchEndX - touchStartXRef.current;
+      const threshold = 35; // Swipe sensitivity threshold
+
+      if (diffX < -threshold) {
+        // Swiped Left -> Next slide
+        handleNextSlide();
+      } else if (diffX > threshold) {
+        // Swiped Right -> Previous slide
+        handlePrevSlide();
+      }
+    }
+    touchStartXRef.current = null;
+    touchStartYRef.current = null;
+    setSwipeOffset(0);
+  };
+
+  // Mouse Drag Gesture Handlers (for trackpad & desktop dragging)
+  const handleMouseDown = (e: React.MouseEvent) => {
+    touchStartXRef.current = e.clientX;
+    isDraggingRef.current = true;
+    setSwipeOffset(0);
+  };
+
+  const handleMouseMove = (e: React.MouseEvent) => {
+    if (!isDraggingRef.current || touchStartXRef.current === null) return;
+    const diffX = e.clientX - touchStartXRef.current;
+    setSwipeOffset(Math.max(-80, Math.min(80, diffX)));
+  };
+
+  const handleMouseUp = (e: React.MouseEvent) => {
+    if (isDraggingRef.current && touchStartXRef.current !== null) {
+      const diffX = e.clientX - touchStartXRef.current;
+      const threshold = 35;
+      if (diffX < -threshold) {
+        handleNextSlide();
+      } else if (diffX > threshold) {
+        handlePrevSlide();
+      } else if (Math.abs(diffX) < 5) {
+        // Direct tap without dragging -> advance to next
+        handleNextSlide();
+      }
+    }
+    isDraggingRef.current = false;
+    touchStartXRef.current = null;
+    setSwipeOffset(0);
+  };
+
+  const handleMouseLeave = () => {
+    isDraggingRef.current = false;
+    touchStartXRef.current = null;
+    setSwipeOffset(0);
   };
 
   const handleSelectCriteria = (crit: FrontPageCriteria) => {
@@ -249,11 +335,22 @@ export const UrgencyLaunchScreen: React.FC<UrgencyLaunchScreenProps> = ({
             <div className="absolute inset-0 bg-gradient-to-tr from-[#006948]/20 to-[#85f8c4]/30 rounded-[2.5rem] blur-xl transform scale-105 pointer-events-none" />
 
             <div
-              onClick={handleNextSlide}
-              className={`relative w-full h-full aspect-[16/10] max-h-[36vh] sm:max-h-[42vh] md:max-h-[46vh] lg:max-h-[48vh] rounded-[2rem] rounded-tr-[4.5rem] rounded-bl-[1.5rem] overflow-hidden shadow-2xl border-2 transition-all cursor-pointer group select-none ${
+              onTouchStart={handleTouchStart}
+              onTouchMove={handleTouchMove}
+              onTouchEnd={handleTouchEnd}
+              onMouseDown={handleMouseDown}
+              onMouseMove={handleMouseMove}
+              onMouseUp={handleMouseUp}
+              onMouseLeave={handleMouseLeave}
+              className={`relative w-full h-full aspect-[16/10] max-h-[36vh] sm:max-h-[42vh] md:max-h-[46vh] lg:max-h-[48vh] rounded-[2rem] rounded-tr-[4.5rem] rounded-bl-[1.5rem] overflow-hidden shadow-2xl border-2 transition-all cursor-grab active:cursor-grabbing group select-none ${
                 isDark ? 'border-[#1b4434] bg-[#071711]' : 'border-white bg-slate-100'
               }`}
-              title="Tap or click to explore next Singapore EV charging scenario"
+              style={{
+                touchAction: 'pan-y',
+                transform: swipeOffset !== 0 ? `translateX(${swipeOffset * 0.45}px)` : undefined,
+                transition: swipeOffset === 0 ? 'transform 0.3s ease-out' : 'none',
+              }}
+              title="Swipe left or right, or click to explore Singapore EV charging scenarios"
             >
               {EV_SLIDES.map((slide, idx) => (
                 <div
@@ -266,7 +363,7 @@ export const UrgencyLaunchScreen: React.FC<UrgencyLaunchScreenProps> = ({
                     src={slide.img}
                     alt={slide.title}
                     referrerPolicy="no-referrer"
-                    className="w-full h-full object-cover transform scale-102 group-hover:scale-105 transition-transform duration-700"
+                    className="w-full h-full object-cover transform scale-102 group-hover:scale-105 transition-transform duration-700 pointer-events-none"
                   />
                   <div className="absolute inset-0 bg-gradient-to-t from-black/75 via-black/15 to-transparent pointer-events-none" />
 
@@ -303,6 +400,30 @@ export const UrgencyLaunchScreen: React.FC<UrgencyLaunchScreenProps> = ({
                   </div>
                 </div>
               ))}
+
+              {/* Desktop Chevron Navigation Buttons */}
+              <button
+                type="button"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  handlePrevSlide();
+                }}
+                aria-label="Previous EV scene"
+                className="absolute left-2.5 top-1/2 -translate-y-1/2 z-20 w-7 h-7 sm:w-8 sm:h-8 rounded-full bg-black/40 hover:bg-black/70 backdrop-blur-md text-white flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity active:scale-95 cursor-pointer pointer-events-auto"
+              >
+                <span className="material-symbols-outlined text-[18px]">chevron_left</span>
+              </button>
+              <button
+                type="button"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  handleNextSlide();
+                }}
+                aria-label="Next EV scene"
+                className="absolute right-2.5 top-1/2 -translate-y-1/2 z-20 w-7 h-7 sm:w-8 sm:h-8 rounded-full bg-black/40 hover:bg-black/70 backdrop-blur-md text-white flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity active:scale-95 cursor-pointer pointer-events-auto"
+              >
+                <span className="material-symbols-outlined text-[18px]">chevron_right</span>
+              </button>
             </div>
           </div>
         </div>
@@ -460,29 +581,15 @@ export const UrgencyLaunchScreen: React.FC<UrgencyLaunchScreenProps> = ({
         </div>
 
         {/* Minimal Action Buttons */}
-        <div className="w-full flex flex-col gap-1.5 sm:gap-2 shrink-0">
+        <div className="w-full shrink-0">
           {/* Primary Action Button with Dynamic Gradient */}
           <button
             type="button"
             onClick={handleTakeMeNow}
-            className={`group w-full py-2.5 sm:py-3 px-5 rounded-full bg-gradient-to-r ${theme.bgGradient} active:scale-[0.98] transition-all text-white font-black text-xs sm:text-sm shadow-md ${theme.shadow} cursor-pointer flex items-center justify-center gap-2 border ${theme.border}`}
+            className={`group w-full py-2.5 sm:py-3.5 px-5 rounded-full bg-gradient-to-r ${theme.bgGradient} active:scale-[0.98] transition-all text-white font-black text-xs sm:text-sm shadow-md ${theme.shadow} cursor-pointer flex items-center justify-center gap-2 border ${theme.border}`}
           >
             <span className="material-symbols-outlined text-[18px]">bolt</span>
             <span className="tracking-wide">TAKE ME THERE NOW!!</span>
-          </button>
-
-          {/* Secondary Action: Minimal Outlined Button */}
-          <button
-            type="button"
-            onClick={onShowMeAround}
-            className={`w-full py-2 px-5 rounded-full active:scale-[0.98] transition-all font-bold text-xs shadow-xs cursor-pointer flex items-center justify-center gap-1.5 ${
-              isDark
-                ? 'bg-[#0e291f] hover:bg-[#143b2c] text-[#f0fbf6] border border-[#1b4434]'
-                : 'bg-white hover:bg-slate-50 text-slate-700 border border-slate-300'
-            }`}
-          >
-            <span className="material-symbols-outlined text-[16px] text-slate-400">map</span>
-            <span>Explore map</span>
           </button>
         </div>
       </main>

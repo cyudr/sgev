@@ -92,12 +92,36 @@ export const InteractiveMap: React.FC<InteractiveMapProps> = ({
     getJsonCookie<UserVehiclePreferences>(COOKIE_KEYS.VEHICLE_PREFS, DEFAULT_VEHICLE_PREFS)
   );
 
+  const [hasSavedPreference, setHasSavedPreference] = useState<boolean>(() => {
+    const raw = getCookie(COOKIE_KEYS.VEHICLE_PREFS, '');
+    if (!raw) return false;
+    try {
+      const parsed = JSON.parse(raw);
+      return Boolean(parsed && parsed.hasSavedPreference === true);
+    } catch {
+      return false;
+    }
+  });
+
   useEffect(() => {
     const handlePrefsUpdated = (e: any) => {
       if (e?.detail) {
         setUserPrefs(e.detail);
+        setHasSavedPreference(e.detail.hasSavedPreference === true);
       } else {
-        setUserPrefs(getJsonCookie<UserVehiclePreferences>(COOKIE_KEYS.VEHICLE_PREFS, DEFAULT_VEHICLE_PREFS));
+        const current = getJsonCookie<UserVehiclePreferences>(COOKIE_KEYS.VEHICLE_PREFS, DEFAULT_VEHICLE_PREFS);
+        setUserPrefs(current);
+        const raw = getCookie(COOKIE_KEYS.VEHICLE_PREFS, '');
+        if (!raw) {
+          setHasSavedPreference(false);
+        } else {
+          try {
+            const parsed = JSON.parse(raw);
+            setHasSavedPreference(parsed?.hasSavedPreference === true);
+          } catch {
+            setHasSavedPreference(false);
+          }
+        }
       }
     };
     window.addEventListener('sgev-prefs-updated', handlePrefsUpdated);
@@ -191,8 +215,11 @@ export const InteractiveMap: React.FC<InteractiveMapProps> = ({
           if (filter === 'available' && !(station.availableBays > 0)) {
             return false;
           }
-          if (filter === 'preferred' && !stationHasPlug(station, preferredPlug)) {
-            return false;
+          if (filter === 'preferred') {
+            if (!hasSavedPreference) continue;
+            if (!stationHasPlug(station, preferredPlug)) {
+              return false;
+            }
           }
           if (filter === 'cheapest') {
             const dcRate = station.tariffs.dcPrice || station.tariffs.nominalDcPrice || 0.6;
@@ -692,20 +719,22 @@ export const InteractiveMap: React.FC<InteractiveMapProps> = ({
               <span>Available Now</span>
             </button>
 
-            {/* Preferred Filter */}
-            <button
-              type="button"
-              onClick={() => toggleFilter('preferred')}
-              className={`px-2.5 py-0.5 rounded-full text-[11px] font-bold whitespace-nowrap transition-all shadow-xs cursor-pointer flex items-center gap-1 ${
-                isFilterActive('preferred')
-                  ? 'bg-[#006948] text-white ring-2 ring-[#85f8c4]/70'
-                  : 'bg-white/95 dark:bg-[#0e291f] text-emerald-800 dark:text-[#85f8c4] hover:bg-emerald-50 dark:hover:bg-[#143b2c] border border-emerald-300 dark:border-[#1b4434]'
-              }`}
-              title={`Filtered by your saved preference: ${preferredPlug}`}
-            >
-              <span className="material-symbols-outlined text-[13px] text-[#85f8c4]">star</span>
-              <span>Preferred ({preferredPlug})</span>
-            </button>
+            {/* Preferred Filter - Only rendered if user has explicitly saved a preference */}
+            {hasSavedPreference && (
+              <button
+                type="button"
+                onClick={() => toggleFilter('preferred')}
+                className={`px-2.5 py-0.5 rounded-full text-[11px] font-bold whitespace-nowrap transition-all shadow-xs cursor-pointer flex items-center gap-1 ${
+                  isFilterActive('preferred')
+                    ? 'bg-[#006948] text-white ring-2 ring-[#85f8c4]/70'
+                    : 'bg-white/95 dark:bg-[#0e291f] text-emerald-800 dark:text-[#85f8c4] hover:bg-emerald-50 dark:hover:bg-[#143b2c] border border-emerald-300 dark:border-[#1b4434]'
+                }`}
+                title={`Filtered by your saved preference: ${preferredPlug}`}
+              >
+                <span className="material-symbols-outlined text-[13px] text-[#85f8c4]">star</span>
+                <span>Preferred ({preferredPlug})</span>
+              </button>
+            )}
 
             {/* Cheapest Filter */}
             <button

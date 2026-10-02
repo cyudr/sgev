@@ -407,6 +407,24 @@ This document collates all user prompts, architectural specifications, iterative
 
 ---
 
+### Prompt 25: Gesture Swipe, Removal of Secondary Button, & Conditional Preferred Filter
+
+> **User Prompt**:
+> 1. remove the "explore map" option below "take me there now!!!"; 2. enable gesture swipe for the center picture; 3. if no preferred setting is saved, do not show "preferred" option in the search filter
+
+#### Implementation Details:
+1. **Clean Minimalist Urgency Action Area**:
+   - Removed the secondary "Explore map" button directly below "TAKE ME THERE NOW!!", simplifying the layout and providing more vertical canvas space for the scaled EV centerpiece. Users already retain the persistent bottom tab navigation with "Explore".
+2. **Interactive Gesture Swipe**:
+   - Implemented touch gesture recognizers (`onTouchStart`, `onTouchMove`, `onTouchEnd`) and drag support (`onMouseDown`, `onMouseMove`, `onMouseUp`) for the EV centerpiece.
+   - Users can swipe left to advance to the next EV scenario or swipe right to return to the previous scenario, complete with subtle drag translation physics and responsive indicator dots.
+   - Added subtle desktop hover navigation buttons (`chevron_left` / `chevron_right`).
+3. **Conditional "Preferred" Filter Chip**:
+   - In `InteractiveMap.tsx`, the `Preferred (<plug>)` filter button is now rendered **only** if the user has explicitly configured and saved vehicle/connector preferences in `ProfileTab.tsx` (`hasSavedPreference === true`).
+   - If no preference has been saved yet, the "Preferred" filter chip is hidden from the search filter bar and does not filter stations out.
+
+---
+
 ## Architecture Summary
 
 | Component | Responsibility |
