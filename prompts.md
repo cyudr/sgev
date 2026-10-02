@@ -367,6 +367,24 @@ This document collates all user prompts, architectural specifications, iterative
 
 ---
 
+### Prompt 23: Default Day/Night Theme Automation (Light Theme for Daytime, Dark Theme for Nighttime)
+
+> **User Prompt**:
+> default them should be light theme for day time and dark theme for night time
+
+#### Implementation Details:
+1. **Instantaneous Day/Night Bootstrap (`index.html`)**:
+   - Added an inline script in `<head>` that evaluates device local time before DOM render:
+     - **07:00 – 18:59 (7:00 AM to 6:59 PM)**: Defaults to **Light Mint Theme** (`light`).
+     - **19:00 – 06:59 (7:00 PM to 6:59 AM)**: Defaults to **Dark Emerald Theme** (`dark`).
+   - Automatically removes legacy stuck preference keys from `localStorage` to avoid stale lock-in.
+2. **Context Default State (`ThemeContext.tsx`)**:
+   - `themeMode` is set to `'auto'` by default.
+   - Initial `theme` resolves directly via `getTimeBasedTheme()`, guaranteeing that daytime visits open in Light theme and nighttime visits open in Dark theme.
+   - Quick header toggle allows instant in-session switching, while users can still explicitly choose "Always Light", "Always Dark", or "Auto (Time-based)" in `ProfileTab.tsx`.
+
+---
+
 ## Architecture Summary
 
 | Component | Responsibility |

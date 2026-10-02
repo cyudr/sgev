@@ -14,7 +14,8 @@ interface ThemeContextType {
   timeDescription: string;
 }
 
-const THEME_MODE_STORAGE_KEY = 'chargesg_theme_mode_pref';
+const THEME_MODE_STORAGE_KEY = 'chargesg_theme_mode_v2';
+const THEME_SESSION_KEY = 'chargesg_theme_session_override';
 
 /**
  * Computes whether it is currently daytime or nighttime.
@@ -27,10 +28,18 @@ export function getTimeBasedTheme(): GreenTheme {
 }
 
 export function getTimeDescription(): string {
-  const currentHour = new Date().getHours();
+  const now = new Date();
+  const currentHour = now.getHours();
   const isDay = currentHour >= 7 && currentHour < 19;
-  const timeFormatted = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+  const timeFormatted = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
   return `${timeFormatted} (${isDay ? 'Daytime · Light' : 'Nighttime · Dark'})`;
+}
+
+// Clean up legacy stuck key on module load
+try {
+  localStorage.removeItem('chargesg_theme_mode_pref');
+} catch {
+  // Ignore
 }
 
 const ThemeContext = createContext<ThemeContextType>({
@@ -55,36 +64,45 @@ export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     } catch {
       // Fallback
     }
-    return 'auto'; // Default is auto time-based
+    return 'auto'; // Default is always auto time-based
   });
 
-  // Current effective theme
+  // Current effective theme: defaults to getTimeBasedTheme()
   const [theme, setThemeState] = useState<GreenTheme>(() => {
     try {
-      const stored = localStorage.getItem(THEME_MODE_STORAGE_KEY);
-      if (stored === 'light' || stored === 'dark') {
-        return stored;
+      const storedMode = localStorage.getItem(THEME_MODE_STORAGE_KEY);
+      if (storedMode === 'light' || storedMode === 'dark') {
+        return storedMode;
+      }
+      const sessionOverride = sessionStorage.getItem(THEME_SESSION_KEY);
+      if (sessionOverride === 'light' || sessionOverride === 'dark') {
+        return sessionOverride as GreenTheme;
       }
     } catch {
       // Fallback
     }
+    // Default: light for daytime (7am to 7pm), dark for nighttime
     return getTimeBasedTheme();
   });
 
   const [timeDescription, setTimeDescription] = useState<string>(getTimeDescription);
 
-  // Periodically detect time and auto-toggle theme
+  // Periodically detect time and auto-toggle theme when in 'auto' mode
   useEffect(() => {
     const checkTimeAndAutoToggle = () => {
       setTimeDescription(getTimeDescription());
       if (themeMode === 'auto') {
-        const timeTheme = getTimeBasedTheme();
-        setThemeState((prev) => {
-          if (prev !== timeTheme) {
-            return timeTheme;
+        // If no active session override exists, follow clock
+        try {
+          const hasSessionOverride = !!sessionStorage.getItem(THEME_SESSION_KEY);
+          if (!hasSessionOverride) {
+            const timeTheme = getTimeBasedTheme();
+            setThemeState(timeTheme);
           }
-          return prev;
-        });
+        } catch {
+          const timeTheme = getTimeBasedTheme();
+          setThemeState(timeTheme);
+        }
       }
     };
 
@@ -100,6 +118,7 @@ export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     setThemeModeState(mode);
     try {
       localStorage.setItem(THEME_MODE_STORAGE_KEY, mode);
+      sessionStorage.removeItem(THEME_SESSION_KEY);
     } catch {
       // Ignore
     }
@@ -111,7 +130,12 @@ export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({ childre
   };
 
   const setTheme = (newTheme: GreenTheme) => {
-    setThemeMode(newTheme);
+    setThemeState(newTheme);
+    try {
+      sessionStorage.setItem(THEME_SESSION_KEY, newTheme);
+    } catch {
+      // Ignore
+    }
   };
 
   const toggleTheme = () => {
