@@ -341,6 +341,32 @@ This document collates all user prompts, architectural specifications, iterative
 
 ---
 
+### Prompt 22: Universal Dark Mode Synchronization Across Explore, Saved, Activity & Profile
+
+> **User Prompt**:
+> 1. the theme change button does not change the them of explore, saved, activity and profile page, fix it
+
+#### Root Cause Analysis:
+- In Tailwind CSS v4 (`@import "tailwindcss";`), class-based dark mode (`.dark` and `[data-theme="dark"]`) is not active by default unless explicitly configured via `@custom-variant dark`. Without this, Tailwind's `dark:` classes only listened to the OS-level `@media (prefers-color-scheme: dark)` media query.
+- Several core views (`InteractiveMap.tsx`, `SavedTab.tsx`, `ActivityTab.tsx`, `ProfileTab.tsx`, and `App.tsx` main container) lacked dark-variant classes on containers, search elements, filter chips, cards, and modal receipts.
+
+#### Implementation Details:
+1. **Configured Tailwind CSS v4 Class-Based Dark Mode (`src/index.css`)**:
+   - Added `@custom-variant dark (&:where([data-theme="dark"], [data-theme="dark"] *, .dark, .dark *));` to ensure all `dark:*` utility classes instantaneously trigger when `data-theme="dark"` or `.dark` is applied to `<html>` or `<body>`.
+   - Added Google Maps leaflet tile inversion filter `.dark .leaflet-tile-pane { filter: invert(100%) hue-rotate(180deg) brightness(85%) contrast(92%); }` so the street map automatically converts into a dark nighttime emerald map.
+2. **HTML & Body Dynamic Sync (`index.html` & `ThemeContext.tsx`)**:
+   - Configured `ThemeContext.tsx` to automatically toggle `.dark` on both `document.documentElement` and `document.body`.
+   - Added `dark:bg-[#06150f] dark:text-[#f0fbf6]` on `body` and the root layout container in `App.tsx`.
+3. **Explore Page Overhaul (`InteractiveMap.tsx`)**:
+   - Upgraded search bar, filter bar backdrop, and all filter chips (All, Available, Preferred, Cheapest, Fastest, Plug types, Operators) with dark emerald surfaces (`dark:bg-[#0e291f] dark:border-[#1b4434] dark:text-[#a5d8c3]`).
+   - Upgraded floating zoom & recenter controls and bottom station place card with dark emerald styling.
+4. **Saved, Activity, & Profile Pages Upgrades (`SavedTab.tsx`, `ActivityTab.tsx`, `ProfileTab.tsx`)**:
+   - **Saved Tab**: Full dark card containers, text labels, and action buttons.
+   - **Activity Tab**: Dark Green Impact summary cards, charging history session rows, and modal receipt preview.
+   - **Profile Tab**: Dark vehicle configuration inputs, plug selection buttons, and LTA DataMall connection status indicators.
+
+---
+
 ## Architecture Summary
 
 | Component | Responsibility |

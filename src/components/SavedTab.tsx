@@ -56,17 +56,17 @@ export const SavedTab: React.FC<SavedTabProps> = ({
                   </span>
                   <h3
                     onClick={() => onOpenDetails(station)}
-                    className="text-base font-bold text-[#0d1c2f] mt-1 cursor-pointer hover:text-[#006948]"
+                    className="text-base font-bold text-[#0d1c2f] dark:text-[#f0fbf6] mt-1 cursor-pointer hover:text-[#006948] dark:hover:text-[#85f8c4]"
                   >
                     {station.name}
                   </h3>
-                  <p className="text-xs text-[#3d4a42]">{station.zone}</p>
+                  <p className="text-xs text-[#3d4a42] dark:text-[#a5d8c3]">{station.zone}</p>
                 </div>
 
                 <button
                   type="button"
                   onClick={() => onToggleSave(station.id)}
-                  className="w-8 h-8 rounded-full flex items-center justify-center text-[#ba1a1a] hover:bg-[#ffdad6]"
+                  className="w-8 h-8 rounded-full flex items-center justify-center text-[#ba1a1a] hover:bg-[#ffdad6] dark:hover:bg-[#3b1219]"
                 >
                   <span
                     className="material-symbols-outlined text-[20px]"
@@ -78,15 +78,15 @@ export const SavedTab: React.FC<SavedTabProps> = ({
               </div>
 
               <div className="grid grid-cols-2 gap-2 text-xs">
-                <div className="p-2.5 rounded-xl bg-[#eff4ff] flex flex-col">
-                  <span className="text-[10px] text-[#3d4a42] font-semibold">Available Bays</span>
-                  <span className="text-sm font-bold text-[#006948] mt-0.5">
+                <div className="p-2.5 rounded-xl bg-[#eff4ff] dark:bg-[#143b2c] flex flex-col">
+                  <span className="text-[10px] text-[#3d4a42] dark:text-[#a5d8c3] font-semibold">Available Bays</span>
+                  <span className="text-sm font-bold text-[#006948] dark:text-[#85f8c4] mt-0.5">
                     {station.availableBays} / {station.totalBays} Open
                   </span>
                 </div>
-                <div className="p-2.5 rounded-xl bg-[#eff4ff] flex flex-col">
-                  <span className="text-[10px] text-[#3d4a42] font-semibold">Distance</span>
-                  <span className="text-sm font-bold text-[#0d1c2f] mt-0.5">
+                <div className="p-2.5 rounded-xl bg-[#eff4ff] dark:bg-[#143b2c] flex flex-col">
+                  <span className="text-[10px] text-[#3d4a42] dark:text-[#a5d8c3] font-semibold">Distance</span>
+                  <span className="text-sm font-bold text-[#0d1c2f] dark:text-[#f0fbf6] mt-0.5">
                     {station.distanceKm} km ({station.driveTimeMins} mins)
                   </span>
                 </div>
@@ -96,7 +96,7 @@ export const SavedTab: React.FC<SavedTabProps> = ({
                 <button
                   type="button"
                   onClick={() => onOpenDetails(station)}
-                  className="flex-1 py-2.5 rounded-xl bg-[#dde9ff] text-[#0d1c2f] text-xs font-bold hover:bg-[#d5e3fd] transition-colors cursor-pointer"
+                  className="flex-1 py-2.5 rounded-xl bg-[#dde9ff] dark:bg-[#143b2c] text-[#0d1c2f] dark:text-[#f0fbf6] text-xs font-bold hover:bg-[#d5e3fd] dark:hover:bg-[#1b4434] transition-colors cursor-pointer"
                 >
                   View Details
                 </button>

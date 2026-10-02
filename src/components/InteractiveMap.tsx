@@ -639,10 +639,10 @@ export const InteractiveMap: React.FC<InteractiveMapProps> = ({
 
       {/* Top Floating Search & Quick Filters with 50% Opacity White-Based Backdrop Container */}
       <div className="relative z-10 p-2 sm:p-3.5 max-w-lg sm:max-w-xl lg:max-w-2xl mx-auto w-full pointer-events-none">
-        <div className="bg-white/50 backdrop-blur-md rounded-2xl sm:rounded-3xl p-2 sm:p-2.5 shadow-lg border border-white/60 flex flex-col gap-1.5 pointer-events-auto">
+        <div className="bg-white/70 dark:bg-[#071711]/90 backdrop-blur-md rounded-2xl sm:rounded-3xl p-2 sm:p-2.5 shadow-lg border border-white/60 dark:border-[#1b4434] flex flex-col gap-1.5 pointer-events-auto transition-colors">
           {/* Search Bar */}
-          <div className="h-10 sm:h-11 bg-white/95 backdrop-blur-md rounded-full shadow-md px-3.5 flex items-center justify-between gap-2 border border-slate-200">
-            <span className="material-symbols-outlined text-[#006948] text-[20px] shrink-0">
+          <div className="h-10 sm:h-11 bg-white/95 dark:bg-[#0e291f]/95 backdrop-blur-md rounded-full shadow-md px-3.5 flex items-center justify-between gap-2 border border-slate-200 dark:border-[#1b4434] transition-colors">
+            <span className="material-symbols-outlined text-[#006948] dark:text-[#85f8c4] text-[20px] shrink-0">
               search
             </span>
             <input
@@ -650,13 +650,13 @@ export const InteractiveMap: React.FC<InteractiveMapProps> = ({
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               placeholder="Search postal code, mall, street..."
-              className="w-full bg-transparent text-xs text-[#0d1c2f] placeholder-slate-400 focus:outline-none font-medium"
+              className="w-full bg-transparent text-xs text-[#0d1c2f] dark:text-[#f0fbf6] placeholder-slate-400 dark:placeholder-[#a5d8c3]/60 focus:outline-none font-medium"
             />
             {searchQuery && (
               <button
                 type="button"
                 onClick={() => setSearchQuery('')}
-                className="w-5 h-5 rounded-full flex items-center justify-center text-slate-400 hover:text-slate-600 cursor-pointer"
+                className="w-5 h-5 rounded-full flex items-center justify-center text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 cursor-pointer"
               >
                 <span className="material-symbols-outlined text-[15px]">close</span>
               </button>
@@ -672,7 +672,7 @@ export const InteractiveMap: React.FC<InteractiveMapProps> = ({
               className={`px-2.5 py-0.5 rounded-full text-[11px] font-semibold whitespace-nowrap transition-all shadow-xs cursor-pointer ${
                 isFilterActive('all')
                   ? 'bg-[#006948] text-white ring-1 ring-[#85f8c4]/50'
-                  : 'bg-white/95 text-slate-700 hover:bg-slate-50 border border-slate-200'
+                  : 'bg-white/95 dark:bg-[#0e291f] text-slate-700 dark:text-[#a5d8c3] hover:bg-slate-50 dark:hover:bg-[#143b2c] border border-slate-200 dark:border-[#1b4434]'
               }`}
             >
               All ({stations.length})
@@ -685,7 +685,7 @@ export const InteractiveMap: React.FC<InteractiveMapProps> = ({
               className={`px-2.5 py-0.5 rounded-full text-[11px] font-semibold whitespace-nowrap transition-all shadow-xs cursor-pointer flex items-center gap-1 ${
                 isFilterActive('available')
                   ? 'bg-[#006948] text-white ring-1 ring-[#85f8c4]/50'
-                  : 'bg-white/95 text-slate-700 hover:bg-slate-50 border border-slate-200'
+                  : 'bg-white/95 dark:bg-[#0e291f] text-slate-700 dark:text-[#a5d8c3] hover:bg-slate-50 dark:hover:bg-[#143b2c] border border-slate-200 dark:border-[#1b4434]'
               }`}
             >
               <span className="w-1.5 h-1.5 rounded-full bg-[#00a86b]" />
@@ -699,7 +699,7 @@ export const InteractiveMap: React.FC<InteractiveMapProps> = ({
               className={`px-2.5 py-0.5 rounded-full text-[11px] font-bold whitespace-nowrap transition-all shadow-xs cursor-pointer flex items-center gap-1 ${
                 isFilterActive('preferred')
                   ? 'bg-[#006948] text-white ring-2 ring-[#85f8c4]/70'
-                  : 'bg-white/95 text-emerald-800 hover:bg-emerald-50 border border-emerald-300'
+                  : 'bg-white/95 dark:bg-[#0e291f] text-emerald-800 dark:text-[#85f8c4] hover:bg-emerald-50 dark:hover:bg-[#143b2c] border border-emerald-300 dark:border-[#1b4434]'
               }`}
               title={`Filtered by your saved preference: ${preferredPlug}`}
             >
@@ -714,7 +714,7 @@ export const InteractiveMap: React.FC<InteractiveMapProps> = ({
               className={`px-2.5 py-0.5 rounded-full text-[11px] font-semibold whitespace-nowrap transition-all shadow-xs cursor-pointer flex items-center gap-1 ${
                 isFilterActive('cheapest')
                   ? 'bg-[#006948] text-white ring-1 ring-[#85f8c4]/50'
-                  : 'bg-white/95 text-slate-700 hover:bg-slate-50 border border-slate-200'
+                  : 'bg-white/95 dark:bg-[#0e291f] text-slate-700 dark:text-[#a5d8c3] hover:bg-slate-50 dark:hover:bg-[#143b2c] border border-slate-200 dark:border-[#1b4434]'
               }`}
               title="Filter by lowest tariff rates (<= $0.58/kWh)"
             >
@@ -729,7 +729,7 @@ export const InteractiveMap: React.FC<InteractiveMapProps> = ({
               className={`px-2.5 py-0.5 rounded-full text-[11px] font-semibold whitespace-nowrap transition-all shadow-xs cursor-pointer flex items-center gap-1 ${
                 isFilterActive('fastest')
                   ? 'bg-[#006948] text-white ring-1 ring-[#85f8c4]/50'
-                  : 'bg-white/95 text-slate-700 hover:bg-slate-50 border border-slate-200'
+                  : 'bg-white/95 dark:bg-[#0e291f] text-slate-700 dark:text-[#a5d8c3] hover:bg-slate-50 dark:hover:bg-[#143b2c] border border-slate-200 dark:border-[#1b4434]'
               }`}
               title="Filter by high power charging (>= 50kW DC)"
             >
@@ -744,7 +744,7 @@ export const InteractiveMap: React.FC<InteractiveMapProps> = ({
               className={`px-2.5 py-0.5 rounded-full text-[11px] font-semibold whitespace-nowrap transition-all shadow-xs cursor-pointer flex items-center gap-1 ${
                 isFilterActive('ccs2')
                   ? 'bg-[#006948] text-white'
-                  : 'bg-white/95 text-slate-700 hover:bg-slate-50 border border-slate-200'
+                  : 'bg-white/95 dark:bg-[#0e291f] text-slate-700 dark:text-[#a5d8c3] hover:bg-slate-50 dark:hover:bg-[#143b2c] border border-slate-200 dark:border-[#1b4434]'
               }`}
             >
               <span className="material-symbols-outlined text-[13px]">power</span>
@@ -758,7 +758,7 @@ export const InteractiveMap: React.FC<InteractiveMapProps> = ({
               className={`px-2.5 py-0.5 rounded-full text-[11px] font-semibold whitespace-nowrap transition-all shadow-xs cursor-pointer flex items-center gap-1 ${
                 isFilterActive('type2')
                   ? 'bg-[#006948] text-white'
-                  : 'bg-white/95 text-slate-700 hover:bg-slate-50 border border-slate-200'
+                  : 'bg-white/95 dark:bg-[#0e291f] text-slate-700 dark:text-[#a5d8c3] hover:bg-slate-50 dark:hover:bg-[#143b2c] border border-slate-200 dark:border-[#1b4434]'
               }`}
             >
               <span className="material-symbols-outlined text-[13px]">power</span>
@@ -772,7 +772,7 @@ export const InteractiveMap: React.FC<InteractiveMapProps> = ({
               className={`px-2.5 py-0.5 rounded-full text-[11px] font-semibold whitespace-nowrap transition-all shadow-xs cursor-pointer flex items-center gap-1 ${
                 isFilterActive('chademo')
                   ? 'bg-[#006948] text-white'
-                  : 'bg-white/95 text-slate-700 hover:bg-slate-50 border border-slate-200'
+                  : 'bg-white/95 dark:bg-[#0e291f] text-slate-700 dark:text-[#a5d8c3] hover:bg-slate-50 dark:hover:bg-[#143b2c] border border-slate-200 dark:border-[#1b4434]'
               }`}
             >
               <span className="material-symbols-outlined text-[13px]">power</span>
@@ -786,7 +786,7 @@ export const InteractiveMap: React.FC<InteractiveMapProps> = ({
               className={`px-2.5 py-0.5 rounded-full text-[11px] font-semibold whitespace-nowrap transition-all shadow-xs cursor-pointer ${
                 isFilterActive('sp')
                   ? 'bg-[#006948] text-white'
-                  : 'bg-white/95 text-slate-700 hover:bg-slate-50 border border-slate-200'
+                  : 'bg-white/95 dark:bg-[#0e291f] text-slate-700 dark:text-[#a5d8c3] hover:bg-slate-50 dark:hover:bg-[#143b2c] border border-slate-200 dark:border-[#1b4434]'
               }`}
             >
               SP Mobility
@@ -799,7 +799,7 @@ export const InteractiveMap: React.FC<InteractiveMapProps> = ({
               className={`px-2.5 py-0.5 rounded-full text-[11px] font-semibold whitespace-nowrap transition-all shadow-xs cursor-pointer ${
                 isFilterActive('cdg')
                   ? 'bg-[#006948] text-white'
-                  : 'bg-white/95 text-slate-700 hover:bg-slate-50 border border-slate-200'
+                  : 'bg-white/95 dark:bg-[#0e291f] text-slate-700 dark:text-[#a5d8c3] hover:bg-slate-50 dark:hover:bg-[#143b2c] border border-slate-200 dark:border-[#1b4434]'
               }`}
             >
               CDG ENGIE
@@ -824,7 +824,7 @@ export const InteractiveMap: React.FC<InteractiveMapProps> = ({
           onClick={handleRecenter2km}
           aria-label="Snap to 2km"
           title="Recenter & Snap to 2km Street View"
-          className="w-9 h-9 rounded-full bg-white shadow-md flex items-center justify-center text-[#4285f4] hover:bg-blue-50 active:scale-95 transition-all border border-slate-200 cursor-pointer"
+          className="w-9 h-9 rounded-full bg-white dark:bg-[#0e291f] shadow-md flex items-center justify-center text-[#4285f4] dark:text-[#85f8c4] hover:bg-blue-50 dark:hover:bg-[#143b2c] active:scale-95 transition-all border border-slate-200 dark:border-[#1b4434] cursor-pointer"
         >
           <span className={`material-symbols-outlined text-[18px] ${isLocating ? 'animate-spin' : ''}`}>
             my_location
@@ -837,7 +837,7 @@ export const InteractiveMap: React.FC<InteractiveMapProps> = ({
           onClick={() => setMapType((prev) => (prev === 'roadmap' ? 'satellite' : 'roadmap'))}
           aria-label="Toggle Satellite"
           title="Toggle Google Maps Satellite"
-          className="w-9 h-9 rounded-full bg-white shadow-md flex items-center justify-center text-[#0d1c2f] hover:bg-slate-50 active:scale-95 transition-all border border-slate-200 cursor-pointer"
+          className="w-9 h-9 rounded-full bg-white dark:bg-[#0e291f] shadow-md flex items-center justify-center text-[#0d1c2f] dark:text-[#f0fbf6] hover:bg-slate-50 dark:hover:bg-[#143b2c] active:scale-95 transition-all border border-slate-200 dark:border-[#1b4434] cursor-pointer"
         >
           <span className="material-symbols-outlined text-[17px]">
             {mapType === 'roadmap' ? 'satellite_alt' : 'map'}
@@ -845,13 +845,13 @@ export const InteractiveMap: React.FC<InteractiveMapProps> = ({
         </button>
 
         {/* Zoom Controls with 2km and 1x Presets */}
-        <div className="bg-white rounded-xl shadow-md border border-slate-200 flex flex-col overflow-hidden">
+        <div className="bg-white dark:bg-[#0e291f] rounded-xl shadow-md border border-slate-200 dark:border-[#1b4434] flex flex-col overflow-hidden transition-colors">
           <button
             type="button"
             onClick={() => mapInstanceRef.current?.zoomIn()}
             aria-label="Zoom in"
             title="Zoom In (+)"
-            className="w-9 h-8 flex items-center justify-center text-[#0d1c2f] hover:bg-slate-50 active:scale-95 transition-all border-b border-slate-100 cursor-pointer"
+            className="w-9 h-8 flex items-center justify-center text-[#0d1c2f] dark:text-[#f0fbf6] hover:bg-slate-50 dark:hover:bg-[#143b2c] active:scale-95 transition-all border-b border-slate-100 dark:border-[#1b4434] cursor-pointer"
           >
             <span className="material-symbols-outlined text-[18px]">add</span>
           </button>
@@ -860,7 +860,7 @@ export const InteractiveMap: React.FC<InteractiveMapProps> = ({
             onClick={() => mapInstanceRef.current?.zoomOut()}
             aria-label="Zoom out"
             title="Zoom Out (-)"
-            className="w-9 h-8 flex items-center justify-center text-[#0d1c2f] hover:bg-slate-50 active:scale-95 transition-all cursor-pointer"
+            className="w-9 h-8 flex items-center justify-center text-[#0d1c2f] dark:text-[#f0fbf6] hover:bg-slate-50 dark:hover:bg-[#143b2c] active:scale-95 transition-all cursor-pointer"
           >
             <span className="material-symbols-outlined text-[18px]">remove</span>
           </button>
@@ -870,7 +870,7 @@ export const InteractiveMap: React.FC<InteractiveMapProps> = ({
             onClick={handleRecenter2km}
             aria-label="2km Radius View"
             title="Snap to 2km Street View"
-            className="w-9 h-7 flex items-center justify-center text-[#006948] hover:bg-emerald-50 active:scale-95 transition-all text-[9.5px] font-black border-t border-slate-100 cursor-pointer"
+            className="w-9 h-7 flex items-center justify-center text-[#006948] dark:text-[#85f8c4] hover:bg-emerald-50 dark:hover:bg-[#143b2c] active:scale-95 transition-all text-[9.5px] font-black border-t border-slate-100 dark:border-[#1b4434] cursor-pointer"
           >
             2km
           </button>
@@ -880,7 +880,7 @@ export const InteractiveMap: React.FC<InteractiveMapProps> = ({
             onClick={handleResetSingapore}
             aria-label="Reset Zoom"
             title="Fit Whole Singapore Island"
-            className="w-9 h-7 flex items-center justify-center text-slate-600 hover:bg-slate-50 active:scale-95 transition-all text-[10px] font-bold border-t border-slate-100 cursor-pointer"
+            className="w-9 h-7 flex items-center justify-center text-slate-600 dark:text-[#a5d8c3] hover:bg-slate-50 dark:hover:bg-[#143b2c] active:scale-95 transition-all text-[10px] font-bold border-t border-slate-100 dark:border-[#1b4434] cursor-pointer"
           >
             1x
           </button>
@@ -896,7 +896,7 @@ export const InteractiveMap: React.FC<InteractiveMapProps> = ({
             <div
               onTouchStart={handleCardTouchStart}
               onTouchEnd={(e) => handleCardTouchEnd(e, activeCardStation)}
-              className="bg-white/95 backdrop-blur-md rounded-2xl p-3 shadow-xl border border-slate-200 flex flex-col gap-2 transition-transform active:scale-[0.995]"
+              className="bg-white/95 dark:bg-[#071711]/95 backdrop-blur-md rounded-2xl p-3 shadow-xl border border-slate-200 dark:border-[#1b4434] flex flex-col gap-2 transition-all active:scale-[0.995]"
             >
               {/* Swipe-up pull handle indicator */}
               <div
@@ -904,9 +904,9 @@ export const InteractiveMap: React.FC<InteractiveMapProps> = ({
                 className="w-full flex flex-col items-center justify-center cursor-pointer group py-0.5"
                 title="Swipe up or tap to explore details, restaurants & amenities"
               >
-                <div className="w-10 h-1 bg-slate-300 group-hover:bg-[#006948] rounded-full transition-colors mb-0.5" />
-                <div className="flex items-center gap-1 text-[10px] text-slate-500 font-semibold">
-                  <span className="material-symbols-outlined text-[13px] text-[#006948] animate-bounce">expand_less</span>
+                <div className="w-10 h-1 bg-slate-300 dark:bg-[#1b4434] group-hover:bg-[#006948] rounded-full transition-colors mb-0.5" />
+                <div className="flex items-center gap-1 text-[10px] text-slate-500 dark:text-[#a5d8c3] font-semibold">
+                  <span className="material-symbols-outlined text-[13px] text-[#006948] dark:text-[#85f8c4] animate-bounce">expand_less</span>
                   <span>Swipe up for details, restaurants & amenities</span>
                 </div>
               </div>
@@ -917,20 +917,20 @@ export const InteractiveMap: React.FC<InteractiveMapProps> = ({
                     <span className="px-1.5 py-0.5 rounded-full bg-[#85f8c4] text-[#002114] text-[9px] font-bold">
                       {activeCardStation.provider}
                     </span>
-                    <span className="text-[10px] text-slate-500 font-medium">
+                    <span className="text-[10px] text-slate-500 dark:text-[#a5d8c3] font-medium">
                       {activeCardStation.distanceKm} km away • ~{activeCardStation.driveTimeMins} mins drive
                     </span>
                   </div>
-                  <h3 className="text-xs sm:text-sm font-bold text-[#0d1c2f] mt-0.5 truncate" title={activeCardStation.name}>
+                  <h3 className="text-xs sm:text-sm font-bold text-[#0d1c2f] dark:text-[#f0fbf6] mt-0.5 truncate" title={activeCardStation.name}>
                     {activeCardStation.name}
                   </h3>
-                  <p className="text-[10px] text-slate-500 truncate" title={activeCardStation.address}>{activeCardStation.address}</p>
+                  <p className="text-[10px] text-slate-500 dark:text-[#a5d8c3] truncate" title={activeCardStation.address}>{activeCardStation.address}</p>
                 </div>
 
                 <button
                   type="button"
                   onClick={() => onToggleSaveStation(activeCardStation.id)}
-                  className="w-7 h-7 rounded-full flex items-center justify-center text-slate-400 hover:text-red-500 active:scale-95 cursor-pointer shrink-0"
+                  className="w-7 h-7 rounded-full flex items-center justify-center text-slate-400 dark:text-slate-300 hover:text-red-500 active:scale-95 cursor-pointer shrink-0"
                 >
                   <span
                     className="material-symbols-outlined text-[18px]"
@@ -946,15 +946,15 @@ export const InteractiveMap: React.FC<InteractiveMapProps> = ({
 
               {/* Availability & Charger Info */}
               <div className="grid grid-cols-2 gap-1.5 text-xs">
-                <div className="p-1.5 rounded-lg bg-slate-50 flex items-center justify-between">
-                  <span className="text-[10px] text-slate-500 font-medium">Bays</span>
-                  <span className="font-bold text-[#006948] text-[11px]">
+                <div className="p-1.5 rounded-lg bg-slate-50 dark:bg-[#0e291f] border border-transparent dark:border-[#1b4434] flex items-center justify-between">
+                  <span className="text-[10px] text-slate-500 dark:text-[#a5d8c3] font-medium">Bays</span>
+                  <span className="font-bold text-[#006948] dark:text-[#85f8c4] text-[11px]">
                     {activeCardStation.availableBays} / {activeCardStation.totalBays} Free
                   </span>
                 </div>
-                <div className="p-1.5 rounded-lg bg-slate-50 flex items-center justify-between">
-                  <span className="text-[10px] text-slate-500 font-medium">Max Speed</span>
-                  <span className="font-bold text-[#0d1c2f] text-[11px]">
+                <div className="p-1.5 rounded-lg bg-slate-50 dark:bg-[#0e291f] border border-transparent dark:border-[#1b4434] flex items-center justify-between">
+                  <span className="text-[10px] text-slate-500 dark:text-[#a5d8c3] font-medium">Max Speed</span>
+                  <span className="font-bold text-[#0d1c2f] dark:text-[#f0fbf6] text-[11px]">
                     {activeCardStation.connectors[0]?.powerKw || 22} kW
                   </span>
                 </div>
@@ -965,7 +965,7 @@ export const InteractiveMap: React.FC<InteractiveMapProps> = ({
                 <button
                   type="button"
                   onClick={() => onOpenStationDetails(activeCardStation)}
-                  className="py-2.5 px-3 rounded-xl bg-slate-100 hover:bg-slate-200 text-[#0d1c2f] text-[11px] font-bold transition-colors cursor-pointer"
+                  className="py-2.5 px-3 rounded-xl bg-slate-100 dark:bg-[#143b2c] hover:bg-slate-200 dark:hover:bg-[#1b4434] text-[#0d1c2f] dark:text-[#f0fbf6] text-[11px] font-bold transition-colors cursor-pointer"
                 >
                   Details
                 </button>

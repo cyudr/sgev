@@ -429,7 +429,7 @@ export default function App() {
 
   // Explore mode: landing page with options to explore EV points with their attributes
   return (
-    <div className="h-[100dvh] max-h-[100dvh] overflow-hidden bg-[#f8f9ff] text-[#0d1c2f] flex flex-col justify-between selection:bg-[#85f8c4] selection:text-[#002114]">
+    <div className="h-[100dvh] max-h-[100dvh] overflow-hidden bg-[#f8f9ff] dark:bg-[#06150f] text-[#0d1c2f] dark:text-[#f0fbf6] flex flex-col justify-between selection:bg-[#85f8c4] selection:text-[#002114] transition-colors duration-200">
       {/* Toast Alert */}
       {toastMessage && (
         <div className="fixed top-20 inset-x-4 z-[200] max-w-sm mx-auto bg-[#0d1c2f] text-white p-3 rounded-2xl shadow-xl flex items-center gap-2.5 text-xs font-semibold animate-in fade-in">
@@ -511,7 +511,7 @@ export default function App() {
 
         {/* Smooth Slide-up Station Details Sheet with Native Physics & Fluid Animation */}
         <div
-          className={`absolute inset-0 z-40 bg-[#f8f9ff] flex flex-col transition-all duration-300 ease-out will-change-transform ${
+          className={`absolute inset-0 z-40 bg-[#f8f9ff] dark:bg-[#06150f] text-[#0d1c2f] dark:text-[#f0fbf6] flex flex-col transition-all duration-300 ease-out will-change-transform ${
             isDetailsView && selectedStation
               ? 'translate-y-0 opacity-100 pointer-events-auto shadow-2xl'
               : 'translate-y-full opacity-0 pointer-events-none'

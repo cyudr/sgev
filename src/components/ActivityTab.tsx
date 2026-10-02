@@ -69,30 +69,30 @@ export const ActivityTab: React.FC<ActivityTabProps> = ({
       )}
 
       {/* Green Impact & Summary Widget */}
-      <div className="p-4 rounded-3xl bg-white shadow-sm border border-[#dde9ff] flex flex-col gap-3">
-        <span className="text-xs font-bold text-[#0d1c2f] flex items-center gap-1.5">
-          <span className="material-symbols-outlined text-[#006948] text-[18px]">eco</span>
+      <div className="p-4 rounded-3xl bg-white dark:bg-[#0e291f] shadow-sm border border-[#dde9ff] dark:border-[#1b4434] flex flex-col gap-3 transition-colors">
+        <span className="text-xs font-bold text-[#0d1c2f] dark:text-[#f0fbf6] flex items-center gap-1.5">
+          <span className="material-symbols-outlined text-[#006948] dark:text-[#85f8c4] text-[18px]">eco</span>
           Singapore EV Green Impact
         </span>
 
         <div className="grid grid-cols-3 gap-2 text-center">
-          <div className="p-2.5 rounded-2xl bg-[#eff4ff]">
-            <span className="text-[10px] text-[#3d4a42] font-semibold">Total Energy</span>
-            <div className="text-base font-extrabold text-[#0d1c2f] mt-0.5">
+          <div className="p-2.5 rounded-2xl bg-[#eff4ff] dark:bg-[#143b2c]">
+            <span className="text-[10px] text-[#3d4a42] dark:text-[#a5d8c3] font-semibold">Total Energy</span>
+            <div className="text-base font-extrabold text-[#0d1c2f] dark:text-[#f0fbf6] mt-0.5">
               {totalKwh.toFixed(1)} <span className="text-[10px] font-normal">kWh</span>
             </div>
           </div>
 
-          <div className="p-2.5 rounded-2xl bg-[#eff4ff]">
-            <span className="text-[10px] text-[#3d4a42] font-semibold">Total Spent</span>
-            <div className="text-base font-extrabold text-[#0d1c2f] mt-0.5">
+          <div className="p-2.5 rounded-2xl bg-[#eff4ff] dark:bg-[#143b2c]">
+            <span className="text-[10px] text-[#3d4a42] dark:text-[#a5d8c3] font-semibold">Total Spent</span>
+            <div className="text-base font-extrabold text-[#0d1c2f] dark:text-[#f0fbf6] mt-0.5">
               S${totalSgd.toFixed(2)}
             </div>
           </div>
 
-          <div className="p-2.5 rounded-2xl bg-[#85f8c4]/30">
-            <span className="text-[10px] text-[#005137] font-semibold">CO₂ Offset</span>
-            <div className="text-base font-extrabold text-[#006948] mt-0.5">
+          <div className="p-2.5 rounded-2xl bg-[#85f8c4]/30 dark:bg-[#85f8c4]/15">
+            <span className="text-[10px] text-[#005137] dark:text-[#85f8c4] font-semibold">CO₂ Offset</span>
+            <div className="text-base font-extrabold text-[#006948] dark:text-[#85f8c4] mt-0.5">
               {totalCo2.toFixed(1)} <span className="text-[10px] font-normal">kg</span>
             </div>
           </div>
@@ -101,39 +101,39 @@ export const ActivityTab: React.FC<ActivityTabProps> = ({
 
       {/* Past Charging History */}
       <div className="flex flex-col gap-2.5">
-        <span className="text-xs font-bold text-[#0d1c2f]">Recent Charging Sessions</span>
+        <span className="text-xs font-bold text-[#0d1c2f] dark:text-[#f0fbf6]">Recent Charging Sessions</span>
 
         {pastSessions.length === 0 ? (
-          <div className="p-6 rounded-2xl bg-white border border-[#dde9ff] text-center flex flex-col items-center gap-2">
-            <span className="material-symbols-outlined text-[#6d7a72] text-[36px]">history</span>
-            <p className="text-xs font-semibold text-[#0d1c2f]">No charging sessions recorded yet</p>
-            <p className="text-[11px] text-[#3d4a42]">Select any live charging bay on the map to start a charging session.</p>
+          <div className="p-6 rounded-2xl bg-white dark:bg-[#0e291f] border border-[#dde9ff] dark:border-[#1b4434] text-center flex flex-col items-center gap-2">
+            <span className="material-symbols-outlined text-[#6d7a72] dark:text-[#a5d8c3] text-[36px]">history</span>
+            <p className="text-xs font-semibold text-[#0d1c2f] dark:text-[#f0fbf6]">No charging sessions recorded yet</p>
+            <p className="text-[11px] text-[#3d4a42] dark:text-[#a5d8c3]">Select any live charging bay on the map to start a charging session.</p>
           </div>
         ) : (
           pastSessions.map((session) => (
             <div
               key={session.id}
-              className="p-3.5 rounded-2xl bg-white shadow-sm border border-[#dde9ff] flex items-center justify-between hover:border-[#006948] transition-all cursor-pointer"
+              className="p-3.5 rounded-2xl bg-white dark:bg-[#0e291f] shadow-sm border border-[#dde9ff] dark:border-[#1b4434] flex items-center justify-between hover:border-[#006948] dark:hover:border-[#85f8c4] transition-all cursor-pointer"
               onClick={() => setSelectedReceipt(session)}
             >
               <div className="flex items-start gap-3">
-                <div className="w-10 h-10 rounded-xl bg-[#eff4ff] text-[#006948] flex items-center justify-center font-bold text-xs shrink-0">
+                <div className="w-10 h-10 rounded-xl bg-[#eff4ff] dark:bg-[#143b2c] text-[#006948] dark:text-[#85f8c4] flex items-center justify-center font-bold text-xs shrink-0">
                   <span className="material-symbols-outlined text-[20px]">bolt</span>
                 </div>
                 <div>
-                  <h4 className="text-xs font-bold text-[#0d1c2f]">{session.stationName}</h4>
-                  <p className="text-[11px] text-[#3d4a42]">
+                  <h4 className="text-xs font-bold text-[#0d1c2f] dark:text-[#f0fbf6]">{session.stationName}</h4>
+                  <p className="text-[11px] text-[#3d4a42] dark:text-[#a5d8c3]">
                     {session.bayCode} • {session.durationMins} mins
                   </p>
-                  <span className="text-[10px] text-[#6d7a72]">{session.dateStr}</span>
+                  <span className="text-[10px] text-[#6d7a72] dark:text-[#a5d8c3]/70">{session.dateStr}</span>
                 </div>
               </div>
 
               <div className="text-right">
-                <div className="text-sm font-extrabold text-[#0d1c2f]">
+                <div className="text-sm font-extrabold text-[#0d1c2f] dark:text-[#f0fbf6]">
                   S${session.totalCostSgd.toFixed(2)}
                 </div>
-                <span className="text-[11px] text-[#006948] font-semibold">
+                <span className="text-[11px] text-[#006948] dark:text-[#85f8c4] font-semibold">
                   +{session.energyKwh} kWh
                 </span>
               </div>
@@ -144,27 +144,27 @@ export const ActivityTab: React.FC<ActivityTabProps> = ({
 
       {/* Receipt Modal */}
       {selectedReceipt && (
-        <div className="fixed inset-0 z-[100] bg-[#0d1c2f]/70 backdrop-blur-md flex items-end sm:items-center justify-center p-0 sm:p-4 animate-in fade-in">
-          <div className="w-full max-w-md bg-white rounded-t-3xl sm:rounded-3xl shadow-2xl p-6 flex flex-col gap-4 border border-[#dde9ff]">
+        <div className="fixed inset-0 z-[100] bg-[#0d1c2f]/70 dark:bg-black/80 backdrop-blur-md flex items-end sm:items-center justify-center p-0 sm:p-4 animate-in fade-in">
+          <div className="w-full max-w-md bg-white dark:bg-[#0e291f] rounded-t-3xl sm:rounded-3xl shadow-2xl p-6 flex flex-col gap-4 border border-[#dde9ff] dark:border-[#1b4434] transition-colors">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2">
-                <span className="material-symbols-outlined text-[#006948] text-[24px]">
+                <span className="material-symbols-outlined text-[#006948] dark:text-[#85f8c4] text-[24px]">
                   receipt
                 </span>
-                <h3 className="text-lg font-bold text-[#0d1c2f]">Charging Receipt</h3>
+                <h3 className="text-lg font-bold text-[#0d1c2f] dark:text-[#f0fbf6]">Charging Receipt</h3>
               </div>
               <button
                 type="button"
                 aria-label="Close"
                 onClick={() => setSelectedReceipt(null)}
-                className="w-8 h-8 rounded-full bg-[#eff4ff] flex items-center justify-center text-[#3d4a42]"
+                className="w-8 h-8 rounded-full bg-[#eff4ff] dark:bg-[#143b2c] flex items-center justify-center text-[#3d4a42] dark:text-[#a5d8c3]"
               >
                 <span className="material-symbols-outlined text-[18px]">close</span>
               </button>
             </div>
 
-            <div className="p-4 rounded-2xl bg-[#eff4ff] flex flex-col gap-2 font-mono text-xs text-[#0d1c2f]">
-              <div className="flex justify-between border-b pb-2 border-slate-200">
+            <div className="p-4 rounded-2xl bg-[#eff4ff] dark:bg-[#143b2c] flex flex-col gap-2 font-mono text-xs text-[#0d1c2f] dark:text-[#f0fbf6]">
+              <div className="flex justify-between border-b pb-2 border-slate-200 dark:border-[#1b4434]">
                 <span>Station:</span>
                 <span className="font-bold">{selectedReceipt.stationName}</span>
               </div>
@@ -184,7 +184,7 @@ export const ActivityTab: React.FC<ActivityTabProps> = ({
                 <span>Duration:</span>
                 <span>{selectedReceipt.durationMins} mins</span>
               </div>
-              <div className="flex justify-between border-t pt-2 border-slate-200 font-bold text-sm text-[#006948]">
+              <div className="flex justify-between border-t pt-2 border-slate-200 dark:border-[#1b4434] font-bold text-sm text-[#006948] dark:text-[#85f8c4]">
                 <span>Total Paid (SGD):</span>
                 <span>S${selectedReceipt.totalCostSgd.toFixed(2)}</span>
               </div>
@@ -193,7 +193,7 @@ export const ActivityTab: React.FC<ActivityTabProps> = ({
             <button
               type="button"
               onClick={() => setSelectedReceipt(null)}
-              className="w-full py-3 rounded-2xl bg-[#006948] text-white text-xs font-bold hover:bg-[#00855d]"
+              className="w-full py-3 rounded-2xl bg-[#006948] text-white text-xs font-bold hover:bg-[#00855d] transition-colors cursor-pointer"
             >
               Done
             </button>

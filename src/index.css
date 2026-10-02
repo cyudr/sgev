@@ -1,5 +1,7 @@
 @import "tailwindcss";
 
+@custom-variant dark (&:where([data-theme="dark"], [data-theme="dark"] *, .dark, .dark *));
+
 @theme {
   --font-sans: "Plus Jakarta Sans", system-ui, sans-serif;
 
@@ -83,5 +85,10 @@
   direction: ltr;
   font-feature-settings: 'liga';
   -webkit-font-smoothing: antialiased;
+}
+
+/* Dark Google Map Tiles Filter for Singapore Dark Emerald Theme */
+.dark .leaflet-tile-pane {
+  filter: invert(100%) hue-rotate(180deg) brightness(85%) contrast(92%);
 }
 

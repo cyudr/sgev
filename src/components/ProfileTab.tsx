@@ -285,14 +285,14 @@ export const ProfileTab: React.FC = () => {
       </div>
 
       {/* Vehicle Configuration Form */}
-      <form onSubmit={handleSave} className="p-4 rounded-3xl bg-white shadow-sm border border-[#dde9ff] flex flex-col gap-3.5">
-        <span className="text-xs font-bold text-[#0d1c2f] flex items-center gap-1.5">
-          <span className="material-symbols-outlined text-[#006948] text-[18px]">electric_car</span>
+      <form onSubmit={handleSave} className="p-4 rounded-3xl bg-white dark:bg-[#0e291f] shadow-sm border border-[#dde9ff] dark:border-[#1b4434] flex flex-col gap-3.5 transition-colors">
+        <span className="text-xs font-bold text-[#0d1c2f] dark:text-[#f0fbf6] flex items-center gap-1.5">
+          <span className="material-symbols-outlined text-[#006948] dark:text-[#85f8c4] text-[18px]">electric_car</span>
           Vehicle Information
         </span>
 
         <div>
-          <label className="text-[11px] font-bold text-[#3d4a42] uppercase tracking-wider block mb-1">
+          <label className="text-[11px] font-bold text-[#3d4a42] dark:text-[#a5d8c3] uppercase tracking-wider block mb-1">
             Electric Vehicle Model
           </label>
           <input
@@ -300,12 +300,12 @@ export const ProfileTab: React.FC = () => {
             value={vehicleModel}
             onChange={(e) => setVehicleModel(e.target.value)}
             placeholder="e.g. BYD Atto 3, Tesla Model Y, Hyundai Ioniq 5"
-            className="w-full px-3 py-2 text-xs rounded-xl border border-slate-200 focus:outline-none focus:border-[#006948]"
+            className="w-full px-3 py-2 text-xs rounded-xl border border-slate-200 dark:border-[#1b4434] bg-white dark:bg-[#071711] text-[#0d1c2f] dark:text-[#f0fbf6] focus:outline-none focus:border-[#006948] dark:focus:border-[#85f8c4]"
           />
         </div>
 
         <div>
-          <label className="text-[11px] font-bold text-[#3d4a42] uppercase tracking-wider block mb-1">
+          <label className="text-[11px] font-bold text-[#3d4a42] dark:text-[#a5d8c3] uppercase tracking-wider block mb-1">
             Vehicle License Plate (Optional)
           </label>
           <input
@@ -313,12 +313,12 @@ export const ProfileTab: React.FC = () => {
             value={carPlate}
             onChange={(e) => setCarPlate(e.target.value.toUpperCase())}
             placeholder="e.g. SNE 1234 A"
-            className="w-full px-3 py-2 text-xs rounded-xl border border-slate-200 focus:outline-none focus:border-[#006948] uppercase"
+            className="w-full px-3 py-2 text-xs rounded-xl border border-slate-200 dark:border-[#1b4434] bg-white dark:bg-[#071711] text-[#0d1c2f] dark:text-[#f0fbf6] focus:outline-none focus:border-[#006948] dark:focus:border-[#85f8c4] uppercase"
           />
         </div>
 
         <div>
-          <label className="text-[11px] font-bold text-[#3d4a42] uppercase tracking-wider block mb-1">
+          <label className="text-[11px] font-bold text-[#3d4a42] dark:text-[#a5d8c3] uppercase tracking-wider block mb-1">
             Default Connector Standard (Used by "Preferred" Filter)
           </label>
           <div className="grid grid-cols-3 gap-2">
@@ -328,7 +328,7 @@ export const ProfileTab: React.FC = () => {
               className={`py-2 px-2.5 rounded-xl text-xs font-bold border transition-all cursor-pointer ${
                 preferredPlug === 'CCS2'
                   ? 'bg-[#006948] text-white border-[#006948] shadow-sm'
-                  : 'bg-[#eff4ff] text-[#3d4a42] border-transparent hover:border-slate-300'
+                  : 'bg-[#eff4ff] dark:bg-[#143b2c] text-[#3d4a42] dark:text-[#a5d8c3] border-transparent hover:border-slate-300 dark:hover:border-[#1b4434]'
               }`}
             >
               CCS2 (DC)
@@ -339,7 +339,7 @@ export const ProfileTab: React.FC = () => {
               className={`py-2 px-2.5 rounded-xl text-xs font-bold border transition-all cursor-pointer ${
                 preferredPlug === 'Type 2'
                   ? 'bg-[#006948] text-white border-[#006948] shadow-sm'
-                  : 'bg-[#eff4ff] text-[#3d4a42] border-transparent hover:border-slate-300'
+                  : 'bg-[#eff4ff] dark:bg-[#143b2c] text-[#3d4a42] dark:text-[#a5d8c3] border-transparent hover:border-slate-300 dark:hover:border-[#1b4434]'
               }`}
             >
               Type 2 (AC)
@@ -350,7 +350,7 @@ export const ProfileTab: React.FC = () => {
               className={`py-2 px-2.5 rounded-xl text-xs font-bold border transition-all cursor-pointer ${
                 preferredPlug === 'CHAdeMO'
                   ? 'bg-[#006948] text-white border-[#006948] shadow-sm'
-                  : 'bg-[#eff4ff] text-[#3d4a42] border-transparent hover:border-slate-300'
+                  : 'bg-[#eff4ff] dark:bg-[#143b2c] text-[#3d4a42] dark:text-[#a5d8c3] border-transparent hover:border-slate-300 dark:hover:border-[#1b4434]'
               }`}
             >
               CHAdeMO
@@ -448,23 +448,23 @@ export const ProfileTab: React.FC = () => {
       </div>
 
       {/* Live Data Connection Info */}
-      <div className="p-4 rounded-3xl bg-white shadow-sm border border-[#dde9ff] flex flex-col gap-2">
-        <span className="text-xs font-bold text-[#0d1c2f] flex items-center gap-1.5">
-          <span className="material-symbols-outlined text-[#006948] text-[18px]">dataset</span>
+      <div className="p-4 rounded-3xl bg-white dark:bg-[#0e291f] shadow-sm border border-[#dde9ff] dark:border-[#1b4434] flex flex-col gap-2 transition-colors">
+        <span className="text-xs font-bold text-[#0d1c2f] dark:text-[#f0fbf6] flex items-center gap-1.5">
+          <span className="material-symbols-outlined text-[#006948] dark:text-[#85f8c4] text-[18px]">dataset</span>
           LTA DataMall Singapore Feeds
         </span>
-        <div className="text-[11px] text-[#3d4a42] flex flex-col gap-1.5">
-          <div className="flex items-center justify-between p-2 rounded-xl bg-[#eff4ff]">
+        <div className="text-[11px] text-[#3d4a42] dark:text-[#a5d8c3] flex flex-col gap-1.5">
+          <div className="flex items-center justify-between p-2 rounded-xl bg-[#eff4ff] dark:bg-[#143b2c]">
             <span>1. EVChargingPoints (Postal Code)</span>
-            <span className="font-bold text-[#006948]">Active</span>
+            <span className="font-bold text-[#006948] dark:text-[#85f8c4]">Active</span>
           </div>
-          <div className="flex items-center justify-between p-2 rounded-xl bg-[#eff4ff]">
+          <div className="flex items-center justify-between p-2 rounded-xl bg-[#eff4ff] dark:bg-[#143b2c]">
             <span>2. EVCBatch (All Charging Points)</span>
-            <span className="font-bold text-[#006948]">Active</span>
+            <span className="font-bold text-[#006948] dark:text-[#85f8c4]">Active</span>
           </div>
-          <div className="flex items-center justify-between p-2 rounded-xl bg-[#eff4ff]">
+          <div className="flex items-center justify-between p-2 rounded-xl bg-[#eff4ff] dark:bg-[#143b2c]">
             <span>3. GeospatialWholeIsland (SHP Layer)</span>
-            <span className="font-bold text-[#006948]">Active</span>
+            <span className="font-bold text-[#006948] dark:text-[#85f8c4]">Active</span>
           </div>
         </div>
       </div>
